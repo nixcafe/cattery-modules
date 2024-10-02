@@ -69,8 +69,6 @@ in
       };
     })
     // (optionalAttrs isLinux {
-      # disable automatic creation. enabling it will mess up my configuration.
-      snowfallorg.users.${cfg.name}.create = false;
       users = {
         users.${cfg.name} =
           (optionalAttrs (cfg.name != "root") {

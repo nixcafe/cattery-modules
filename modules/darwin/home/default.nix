@@ -1,12 +1,13 @@
 {
-  options,
   config,
   lib,
   namespace,
   ...
 }:
 let
-  inherit (lib) mkOption mkAliasDefinitions types;
+  inherit (lib) mkOption types;
+
+  cfg = config.${namespace}.home;
 in
 {
   options.${namespace}.home = with types; {
@@ -18,8 +19,8 @@ in
 
   config = {
     # home manager config
-    snowfallorg.users.${config.${namespace}.user.name}.home.config =
-      mkAliasDefinitions
-        options.${namespace}.home.extraOptions;
+    home-manager = {
+      users.${config.${namespace}.user.name} = cfg.extraOptions;
+    };
   };
 }

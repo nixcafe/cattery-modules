@@ -13,7 +13,7 @@ in
   options.${namespace}.user = with types; {
     name = mkOption {
       type = str;
-      default = config.snowfallorg.user.name or cfg.settings.name or "";
+      default = cfg.settings.name or "";
       readOnly = true;
     };
     nickname = mkOption {
