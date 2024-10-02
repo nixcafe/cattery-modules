@@ -19,6 +19,8 @@ in
       enable = true;
       enableSSHSupport = true;
     };
+    # enable udev rules for gnupg smart cards.
+    hardware.gpgSmartcards.enable = true;
   };
 
 }
