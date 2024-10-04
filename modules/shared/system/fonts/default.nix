@@ -8,10 +8,10 @@
 let
   inherit (pkgs.stdenv) isLinux;
 
-  cfg = config.${namespace}.shared.system.fonts;
+  cfg = config.${namespace}.system.fonts;
 in
 {
-  options.${namespace}.shared.system.fonts = {
+  options.${namespace}.system.fonts = {
     enable = lib.mkEnableOption "fonts";
   };
 

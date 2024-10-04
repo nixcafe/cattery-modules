@@ -12,7 +12,6 @@ let
   linuxUserGroup = "users";
   user = config.users.users.${cfg.name};
 
-  # This option is special, it does not have the `shared` prefix
   cfg = config.${namespace}.user;
 in
 {
@@ -60,7 +59,7 @@ in
     };
   };
 
-  config =
+  config = lib.mkMerge [
     (optionalAttrs isDarwin {
       users.users.${cfg.name} = {
         # Just to ensure that it is not null when accessing, the default value on Mac is 501
@@ -68,7 +67,8 @@ in
         openssh.authorizedKeys = cfg.authorizedKeys;
       };
     })
-    // (optionalAttrs isLinux {
+
+    (optionalAttrs isLinux {
       users = {
         users.${cfg.name} =
           (optionalAttrs (cfg.name != "root") {
@@ -87,5 +87,6 @@ in
           };
         # default shell
       } // (optionalAttrs config.programs.zsh.enable { defaultUserShell = pkgs.zsh; });
-    });
+    })
+  ];
 }

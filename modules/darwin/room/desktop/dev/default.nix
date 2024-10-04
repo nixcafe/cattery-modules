@@ -18,10 +18,9 @@ in
     ${namespace} = {
       room.basis = mkDefaultEnabled;
 
-      shared = {
-        cli-apps = {
-          security.fido2 = mkDefaultEnabled;
-        };
+      # shared
+      cli-apps = {
+        security.fido2 = mkDefaultEnabled;
       };
     };
   };

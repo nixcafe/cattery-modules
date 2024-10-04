@@ -7,10 +7,10 @@
 let
   inherit (lib) mkOption types;
 
-  cfg = config.${namespace}.shared.system.ulimit;
+  cfg = config.${namespace}.system.ulimit;
 in
 {
-  options.${namespace}.shared.system.ulimit = {
+  options.${namespace}.system.ulimit = {
     enable = lib.mkEnableOption "ulimit";
     openFilesLimit = mkOption {
       type = types.int;

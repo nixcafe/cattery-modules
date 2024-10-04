@@ -6,10 +6,10 @@
   ...
 }:
 let
-  cfg = config.${namespace}.shared.services.openssh;
+  cfg = config.${namespace}.cli-apps.openssh;
 in
 {
-  options.${namespace}.shared.services.openssh = {
+  options.${namespace}.cli-apps.openssh = {
     enable = lib.mkEnableOption "openssh";
   };
 

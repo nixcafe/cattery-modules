@@ -16,7 +16,7 @@ let
   inherit (lib.${namespace}) mkMappingOption;
   inherit (config.age) secrets;
 
-  cfgParent = config.${namespace}.shared.cli-apps.security.gnupg;
+  cfgParent = config.${namespace}.cli-apps.security.gnupg;
   cfg = cfgParent.secrets;
 
   onlyOwner = {
@@ -26,10 +26,10 @@ let
   };
 in
 {
-  options.${namespace}.shared.cli-apps.security.gnupg.secrets = with types; {
+  options.${namespace}.cli-apps.security.gnupg.secrets = with types; {
     enable = lib.mkEnableOption "gnupg" // {
       # If gnupg is started, secrets are enabled by default
-      default = cfgParent.enable && config.${namespace}.shared.secrets.enable;
+      default = cfgParent.enable && config.${namespace}.secrets.enable;
     };
     etc = {
       enable = lib.mkEnableOption "bind to etc" // {
@@ -70,7 +70,7 @@ in
 
   config = lib.mkIf cfg.enable {
     # secrets
-    ${namespace}.shared.secrets.shared.gnupg.configFile = concatMapAttrs (_: value: {
+    ${namespace}.secrets.shared.gnupg.configFile = concatMapAttrs (_: value: {
       "${value.source}".beneficiary = cfg.owner;
     }) cfg.files;
 

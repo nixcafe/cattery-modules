@@ -19,26 +19,23 @@ in
 
     ${namespace} = {
       brew = mkDefaultEnabled;
-      nix = mkDefaultEnabled;
+      services.nix-daemon = mkDefaultEnabled;
       system = {
         sudoTouch = mkDefaultEnabled;
         useful = mkDefaultEnabled;
       };
 
       # shared
-      shared = {
-        nix = mkDefaultEnabled;
-        secrets = mkDefaultEnabled;
-        cli-apps = {
-          shell.zsh = mkDefaultEnabled;
-        };
-        services.openssh = mkDefaultEnabled;
-        system = {
-          fonts = mkDefaultEnabled;
-          ulimit = {
-            enable = mkDefault true;
-            openFilesLimit = 4096;
-          };
+      nix = mkDefaultEnabled;
+      cli-apps = {
+        openssh = mkDefaultEnabled;
+        shell.zsh = mkDefaultEnabled;
+      };
+      system = {
+        fonts = mkDefaultEnabled;
+        ulimit = {
+          enable = mkDefault true;
+          openFilesLimit = 4096;
         };
       };
     };

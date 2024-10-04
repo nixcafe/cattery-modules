@@ -1,14 +1,18 @@
 {
+  pkgs,
   config,
   lib,
   namespace,
   ...
 }:
 let
-  cfg = config.${namespace}.shared.nix;
+  inherit (pkgs.stdenv) isLinux isDarwin;
+  inherit (lib) optionalAttrs;
+
+  cfg = config.${namespace}.nix;
 in
 {
-  options.${namespace}.shared.nix = {
+  options.${namespace}.nix = {
     enable = lib.mkEnableOption "nix";
   };
 
@@ -17,17 +21,25 @@ in
       settings = {
         # enable flakes support
         experimental-features = "nix-command flakes";
-
-        substituters = [
-          "https://hyprland.cachix.org"
-          "https://cache.garnix.io"
-        ];
-
-        trusted-public-keys = [
-          "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
-          "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
-        ];
       };
+      gc =
+        {
+          automatic = true;
+          options = "--delete-older-than 30d";
+        }
+        // (optionalAttrs isLinux {
+          persistent = true;
+          dates = "0/4:0"; # expands to "*-*-* 00/04:00:00"
+          randomizedDelaySec = "45min";
+        })
+        // (optionalAttrs isDarwin {
+          user = "root";
+          interval = {
+            Weekday = 0;
+            Hour = 4;
+            Minute = 0;
+          };
+        });
     };
   };
 

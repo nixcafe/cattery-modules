@@ -18,10 +18,6 @@ in
     ${namespace} = {
       room.basis = mkDefaultEnabled;
 
-      cli-apps = {
-        security.gnupg = mkDefaultEnabled;
-      };
-
       system = {
         automount = mkDefaultEnabled;
         fcitx5 = mkDefaultEnabled;
@@ -37,14 +33,12 @@ in
       };
 
       # shared
-      shared = {
-        cli-apps = {
-          security.fido2 = mkDefaultEnabled;
-          security.gnupg = mkDefaultEnabled;
-        };
-        system = {
-          fonts = mkDefaultEnabled;
-        };
+      cli-apps = {
+        security.fido2 = mkDefaultEnabled;
+        security.gnupg = mkDefaultEnabled;
+      };
+      system = {
+        fonts = mkDefaultEnabled;
       };
     };
   };

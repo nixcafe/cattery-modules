@@ -5,10 +5,10 @@
   ...
 }:
 let
-  cfg = config.${namespace}.shared.cli-apps.shell.zsh;
+  cfg = config.${namespace}.cli-apps.shell.zsh;
 in
 {
-  options.${namespace}.shared.cli-apps.shell.zsh = {
+  options.${namespace}.cli-apps.shell.zsh = {
     enable = lib.mkEnableOption "zsh";
   };
 

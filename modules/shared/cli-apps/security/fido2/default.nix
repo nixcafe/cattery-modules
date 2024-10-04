@@ -6,10 +6,10 @@
   ...
 }:
 let
-  cfg = config.${namespace}.shared.cli-apps.security.fido2;
+  cfg = config.${namespace}.cli-apps.security.fido2;
 in
 {
-  options.${namespace}.shared.cli-apps.security.fido2 = {
+  options.${namespace}.cli-apps.security.fido2 = {
     enable = lib.mkEnableOption "fido2";
   };
 

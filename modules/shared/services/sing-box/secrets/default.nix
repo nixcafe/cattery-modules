@@ -11,7 +11,7 @@ let
   inherit (lib.${namespace}) mkMappingOption;
   inherit (config.age) secrets;
 
-  cfgParent = config.${namespace}.shared.services.sing-box;
+  cfgParent = config.${namespace}.services.sing-box;
   cfg = cfgParent.secrets;
 
   onlyOwner = {
@@ -21,10 +21,10 @@ let
   };
 in
 {
-  options.${namespace}.shared.services.sing-box.secrets = with types; {
+  options.${namespace}.services.sing-box.secrets = with types; {
     enable = lib.mkEnableOption "sing-box" // {
       # If sing-box is started, secrets are enabled by default
-      default = cfgParent.enable && config.${namespace}.shared.secrets.enable;
+      default = cfgParent.enable && config.${namespace}.secrets.enable;
     };
     etc = {
       enable = lib.mkEnableOption "bind to etc" // {
@@ -57,7 +57,7 @@ in
 
   config = lib.mkIf cfg.enable {
     # secrets
-    ${namespace}.shared.secrets.shared.sing-box.configFile = {
+    ${namespace}.secrets.shared.sing-box.configFile = {
       "${cfg.files.settingsPath.source}".beneficiary = cfg.owner;
     };
 

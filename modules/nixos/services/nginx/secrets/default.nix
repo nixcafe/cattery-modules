@@ -32,7 +32,7 @@ in
   options.${namespace}.services.nginx.secrets = with types; {
     enable = lib.mkEnableOption "nginx" // {
       # If nginx is started, secrets are enabled by default
-      default = cfgParent.enable && config.${namespace}.shared.secrets.enable;
+      default = cfgParent.enable && config.${namespace}.secrets.enable;
     };
     etc = {
       enable = lib.mkEnableOption "bind to etc" // {
@@ -76,7 +76,7 @@ in
 
   config = lib.mkIf cfg.enable {
     # secrets
-    ${namespace}.shared.secrets.hosts.configFile = concatMapAttrs (_: value: {
+    ${namespace}.secrets.hosts.configFile = concatMapAttrs (_: value: {
       "${value.source}".beneficiary = cfg.owner;
     }) cfg.files;
 

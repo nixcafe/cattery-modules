@@ -21,7 +21,7 @@ let
     mapAttrs'
     ;
 
-  cfg = config.${namespace}.shared.secrets;
+  cfg = config.${namespace}.secrets;
 
   # user home
   homeDir = config.${namespace}.user.home;
@@ -70,7 +70,7 @@ let
     );
 in
 {
-  options.${namespace}.shared.secrets = with types; {
+  options.${namespace}.secrets = with types; {
     enable = mkEnableOption "secrets";
     yubikey.enable = mkEnableOption "yubikey support";
     secretsPath = mkOption {

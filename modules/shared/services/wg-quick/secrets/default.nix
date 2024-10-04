@@ -17,7 +17,7 @@ let
   inherit (lib.${namespace}) mkMappingOption;
   inherit (config.age) secrets;
 
-  cfgParent = config.${namespace}.shared.services.wg-quick;
+  cfgParent = config.${namespace}.services.wg-quick;
   cfg = cfgParent.secrets;
 
   onlyOwner = {
@@ -27,10 +27,10 @@ let
   };
 in
 {
-  options.${namespace}.shared.services.wg-quick.secrets = with types; {
+  options.${namespace}.services.wg-quick.secrets = with types; {
     enable = lib.mkEnableOption "wg-quick" // {
       # If wg-quick is started, secrets are enabled by default
-      default = cfgParent.enable && config.${namespace}.shared.secrets.enable;
+      default = cfgParent.enable && config.${namespace}.secrets.enable;
     };
     etc = {
       enable = lib.mkEnableOption "bind to etc" // {
@@ -71,7 +71,7 @@ in
 
   config = lib.mkIf cfg.enable {
     # secrets
-    ${namespace}.shared.secrets.hosts.configFile = concatMapAttrs (_: value: {
+    ${namespace}.secrets.hosts.configFile = concatMapAttrs (_: value: {
       "${value.source}".beneficiary = cfg.owner;
     }) cfg.files;
 

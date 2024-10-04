@@ -27,7 +27,7 @@ in
   options.${namespace}.services.postgresql.secrets = with types; {
     enable = lib.mkEnableOption "postgresql" // {
       # If postgresql is started, secrets are enabled by default
-      default = cfgParent.enable && config.${namespace}.shared.secrets.enable;
+      default = cfgParent.enable && config.${namespace}.secrets.enable;
     };
     etc = {
       enable = lib.mkEnableOption "bind to etc" // {
@@ -71,7 +71,7 @@ in
 
   config = lib.mkIf cfg.enable {
     # secrets
-    ${namespace}.shared.secrets.hosts.configFile = {
+    ${namespace}.secrets.hosts.configFile = {
       "${cfg.files.settingsPath.source}".beneficiary = cfg.owner;
       "${cfg.files.identMapPath.source}".beneficiary = cfg.owner;
       "${cfg.files.authenticationPath.source}".beneficiary = cfg.owner;

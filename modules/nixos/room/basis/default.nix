@@ -16,8 +16,6 @@ in
 
   config = lib.mkIf cfg.enable {
     ${namespace} = {
-      nix = mkDefaultEnabled;
-
       cli-apps = {
         nix = {
           nix-ld = mkDefaultEnabled;
@@ -37,16 +35,13 @@ in
       };
 
       # shared
-      shared = {
-        nix = mkDefaultEnabled;
-        secrets = mkDefaultEnabled;
-        cli-apps = {
-          shell.zsh = mkDefaultEnabled;
-        };
-        services.openssh = mkDefaultEnabled;
-        system = {
-          ulimit = mkDefaultEnabled;
-        };
+      nix = mkDefaultEnabled;
+      cli-apps = {
+        openssh = mkDefaultEnabled;
+        shell.zsh = mkDefaultEnabled;
+      };
+      system = {
+        ulimit = mkDefaultEnabled;
       };
     };
 

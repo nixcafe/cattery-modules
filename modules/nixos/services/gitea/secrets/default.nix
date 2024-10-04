@@ -27,7 +27,7 @@ in
   options.${namespace}.services.gitea.secrets = with types; {
     enable = lib.mkEnableOption "gitea" // {
       # If gitea is started, secrets are enabled by default
-      default = cfgParent.enable && cfgParent.useWizard && config.${namespace}.shared.secrets.enable;
+      default = cfgParent.enable && cfgParent.useWizard && config.${namespace}.secrets.enable;
     };
     etc = {
       enable = lib.mkEnableOption "bind to etc" // {
@@ -63,7 +63,7 @@ in
 
   config = lib.mkIf cfg.enable {
     # secrets
-    ${namespace}.shared.secrets.hosts.configFile = {
+    ${namespace}.secrets.hosts.configFile = {
       "${cfg.files.settingsPath.source}".beneficiary = cfg.owner;
     };
 
