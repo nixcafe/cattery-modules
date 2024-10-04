@@ -17,15 +17,6 @@ in
   config = lib.mkIf cfg.enable {
     ${namespace} = {
       room.desktop.basis = mkDefaultEnabled;
-
-      apps = {
-        vscode = mkDefaultEnabled;
-      };
-
-      # linux config
-      apps = {
-        browser = mkDefaultEnabled;
-      };
     };
   };
 }
