@@ -3,7 +3,6 @@
   config,
   lib,
   namespace,
-  host,
   ...
 }:
 let
@@ -57,8 +56,8 @@ in
       acc
       // {
         ${name} = mkMappingOption rec {
-          source = "gnupg/${name}";
-          target = secrets."${host}/${source}".path;
+          source = name;
+          target = secrets."gnupg/${source}".path;
         };
       }
     ) { } cfg.configNames;
@@ -71,7 +70,7 @@ in
 
   config = lib.mkIf cfg.enable {
     # secrets
-    ${namespace}.shared.secrets.hosts.configFile = concatMapAttrs (_: value: {
+    ${namespace}.shared.secrets.shared.gnupg.configFile = concatMapAttrs (_: value: {
       "${value.source}".beneficiary = cfg.owner;
     }) cfg.files;
 
