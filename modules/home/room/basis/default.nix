@@ -28,10 +28,6 @@ in
           nix-index = mkDefaultEnabled;
         };
 
-        security = {
-          gnupg = mkDefaultEnabled;
-        };
-
         shell = {
           atuin = mkDefaultEnabled;
           direnv = mkDefaultEnabled;

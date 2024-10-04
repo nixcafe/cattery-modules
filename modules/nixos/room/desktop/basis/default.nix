@@ -18,8 +18,8 @@ in
     ${namespace} = {
       room.basis = mkDefaultEnabled;
 
-      services = {
-        openssh.X11Forwarding = true;
+      cli-apps = {
+        security.gnupg = mkDefaultEnabled;
       };
 
       system = {
@@ -38,6 +38,10 @@ in
 
       # shared
       shared = {
+        cli-apps = {
+          security.fido2 = mkDefaultEnabled;
+          security.gnupg = mkDefaultEnabled;
+        };
         system = {
           fonts = mkDefaultEnabled;
         };

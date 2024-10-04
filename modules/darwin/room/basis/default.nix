@@ -31,7 +31,6 @@ in
         secrets = mkDefaultEnabled;
         cli-apps = {
           shell.zsh = mkDefaultEnabled;
-          security.fido2 = mkDefaultEnabled;
         };
         services.openssh = mkDefaultEnabled;
         system = {
