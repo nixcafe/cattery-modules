@@ -1,6 +1,7 @@
 { inputs, ... }:
 let
   homes-modules = with inputs; [
+    agenix.homeManagerModules.default
     nix-index-database.hmModules.nix-index
   ];
 in

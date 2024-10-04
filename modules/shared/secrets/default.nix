@@ -27,7 +27,7 @@ let
   homeDir = config.${namespace}.user.home;
 
   # secrets path
-  hosts-secrets = "${homeDir}/.config/hosts-secrets";
+  hosts-secrets = cfg.secretsPath;
 
   # permissions
   ban = {
@@ -73,6 +73,10 @@ in
   options.${namespace}.shared.secrets = with types; {
     enable = mkEnableOption "secrets";
     yubikey.enable = mkEnableOption "yubikey support";
+    secretsPath = mkOption {
+      type = path;
+      default = "${homeDir}/agenix";
+    };
     # hosts private config
     hosts.configFile = mkOption {
       type = attrsOf secretType;
