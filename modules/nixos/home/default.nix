@@ -1,13 +1,12 @@
 {
+  options,
   config,
   lib,
   namespace,
   ...
 }:
 let
-  inherit (lib) mkOption types;
-
-  cfg = config.${namespace}.home;
+  inherit (lib) mkOption types mkAliasDefinitions;
 in
 {
   options.${namespace}.home = with types; {
@@ -20,7 +19,7 @@ in
   config = {
     # home manager config
     home-manager = {
-      users.${config.${namespace}.user.name} = cfg.extraOptions;
+      users.${config.${namespace}.user.name} = mkAliasDefinitions options.${namespace}.home.extraOptions;
       useUserPackages = true;
       useGlobalPkgs = true;
     };
