@@ -19,7 +19,7 @@ in
   options.${namespace}.user = with types; {
     name = mkOption {
       type = str;
-      default = cfg.settings.name or "";
+      default = cfg.settings.name or "nixos";
     };
     nickname = mkOption {
       type = nullOr str;

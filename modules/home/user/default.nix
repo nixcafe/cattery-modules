@@ -1,11 +1,16 @@
 {
+  pkgs,
   config,
   lib,
   namespace,
   ...
 }:
 let
-  inherit (lib) mkOption types;
+  inherit (pkgs.stdenv) isLinux;
+  inherit (lib) mkDefault mkOption types;
+
+  name = cfg.settings.name or "nixos";
+  home = if isLinux then "/home/${name}" else "/Users/${name}";
 
   cfg = config.${namespace}.user;
 in
@@ -13,7 +18,7 @@ in
   options.${namespace}.user = with types; {
     name = mkOption {
       type = str;
-      default = cfg.settings.name or "";
+      default = config.home.username;
       readOnly = true;
     };
     nickname = mkOption {
@@ -24,11 +29,21 @@ in
       type = nullOr str;
       default = cfg.settings.email or null;
     };
+    home = mkOption {
+      type = nullOr str;
+      default = config.home.homeDirectory;
+      readOnly = true;
+    };
     settings = mkOption {
       type = attrs;
       default = { };
     };
   };
 
-  config = { };
+  config = {
+    home = {
+      username = mkDefault name;
+      homeDirectory = mkDefault home;
+    };
+  };
 }
