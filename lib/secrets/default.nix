@@ -84,6 +84,47 @@ in
         }
       );
 
+    mkHomeMappingOption =
+      {
+        fileName,
+        source,
+        buildTarget ? (source: source),
+        mode ? "0400", # Read-only
+        description ? "",
+        ...
+      }:
+      types.submodule (
+        { name, config, ... }:
+        {
+          options = {
+            name = mkOption {
+              type = types.str;
+              default = name;
+              readOnly = true;
+            };
+            fileName = mkOption {
+              type = types.str;
+              default = fileName;
+            };
+            source = mkOption {
+              type = types.str;
+              default = source;
+              inherit description;
+            };
+            target = mkOption {
+              type = types.str;
+              default = buildTarget config.source;
+              readOnly = true;
+              inherit description;
+            };
+            mode = mkOption {
+              type = types.str;
+              default = mode;
+            };
+          };
+        }
+      );
+
     mkAppSecretsOption =
       {
         enable ? true,
@@ -202,6 +243,89 @@ in
                 type = types.str;
                 default = group;
                 description = "The group of the files.";
+              };
+            };
+          }
+        );
+        default = { };
+      };
+
+    mkHomeAppSecretsOption =
+      {
+        enable ? true,
+        appName,
+        dirPath ? appName,
+        configNames ? [ ],
+        fixedConfig ? [ ],
+        scope ? "hosts-user",
+        currentInfo,
+        buildTargetPath ? (sourcePath: sourcePath),
+        mode ? "0400", # Read-only
+        ...
+      }:
+      mkOption {
+        type = types.submodule (
+          { config, ... }:
+          {
+            options = {
+              enable = mkEnableOption "enable ${appName} secrets" // {
+                default = enable;
+              };
+              scope = mkOption {
+                type = types.enum scopeList;
+                default = scope;
+              };
+              secretMappingFiles = mkOption {
+                type = types.attrs;
+                default =
+                  let
+                    user = currentInfo.user or "root";
+                    files = concatMapAttrs (_: item: {
+                      "${item.source}" = {
+                        inherit (item) mode;
+                      };
+                    }) config.files;
+                  in
+                  if scope == "hosts-global" then
+                    { hosts.global.files = files; }
+                  else if scope == "hosts-user" then
+                    { hosts.users.${user}.files = files; }
+                  else if scope == "shared-global" then
+                    { shared.global.files = files; }
+                  else if scope == "shared-user" then
+                    { shared.users.${user}.files = files; }
+                  else
+                    { };
+                readOnly = true;
+                visible = false;
+              };
+              configNames = mkOption {
+                type = types.listOf types.str;
+                default = configNames;
+              };
+              files = foldl' (
+                acc: item:
+                acc
+                // {
+                  ${item.name} = mkOption {
+                    type = mkHomeMappingOption {
+                      inherit (config) mode;
+                      fileName = item.fileName or item.name;
+                      source = "${dirPath}/${item.fileName or item.name}";
+                      buildTarget =
+                        source:
+                        (buildTargetPath "${
+                          getSecretPrefix config.scope (currentInfo.host or "localhost") (currentInfo.user or "root")
+                        }/${source}");
+                      description = item.description or "The ${item.name} configuration file.";
+                    };
+                    default = { };
+                  };
+                }
+              ) { } (fixedConfig ++ (map (name: { inherit name; }) config.configNames));
+              mode = mkOption {
+                type = types.str;
+                default = mode;
               };
             };
           }
