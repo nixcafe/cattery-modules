@@ -1,71 +1,43 @@
 {
-  pkgs,
   config,
   lib,
   namespace,
+  host,
   ...
 }:
 let
-  inherit (pkgs.stdenv) isDarwin;
-  inherit (lib) mkOption types;
-  inherit (lib.${namespace}) mkMappingOption;
-  inherit (config.age) secrets;
+  inherit (lib.${namespace}.secrets) mkAppSecretsOption;
+  inherit (config.${namespace}.secrets) files;
 
   cfgParent = config.${namespace}.services.sing-box;
   cfg = cfgParent.secrets;
-
-  onlyOwner = {
-    inherit (config.users.users.${cfg.owner}) uid;
-    # Read-only
-    mode = "0400";
-  };
 in
 {
-  options.${namespace}.services.sing-box.secrets = with types; {
-    enable = lib.mkEnableOption "sing-box" // {
-      # If sing-box is started, secrets are enabled by default
-      default = cfgParent.enable && config.${namespace}.secrets.enable;
+  options.${namespace}.services.sing-box.secrets = mkAppSecretsOption {
+    enable = cfgParent.enable && config.${namespace}.secrets.enable;
+    appName = "sing-box";
+    dirPath = "sing-box";
+    fixedConfig = [
+      {
+        name = "settingsPath";
+        fileName = "config.json";
+      }
+    ];
+    scope = "shared-global";
+    currentInfo = {
+      inherit host;
+      user = config.${namespace}.user.name;
     };
-    etc = {
-      enable = lib.mkEnableOption "bind to etc" // {
-        default = true;
-      };
-      useSymlink = lib.mkEnableOption "use symlink to etc" // {
-        default = isDarwin || (onlyOwner.uid == null);
-      };
-      dirPath = mkOption {
-        type = str;
-        default = "sing-box";
-        description = ''
-          relative to the path of etc.
-          Just like: `/etc/{etc.dirPath}`
-        '';
-      };
-    };
-    files = {
-      settingsPath = mkMappingOption rec {
-        source = "config.json";
-        target = secrets."sing-box/${source}".path;
-      };
-    };
-    owner = mkOption {
-      type = str;
-      default = "root";
-      description = "The owner of the files.";
-    };
+    buildTargetPath = name: files.${name}.path;
+    owner = "root";
+    # Read-only
+    mode = "0400";
   };
 
   config = lib.mkIf cfg.enable {
     # secrets
-    ${namespace}.secrets.shared.sing-box.configFile = {
-      "${cfg.files.settingsPath.source}".beneficiary = cfg.owner;
-    };
-
+    ${namespace}.secrets = cfg.secretMappingFiles;
     # etc configuration default path: `/etc/sing-box`
-    environment.etc = lib.mkIf cfg.etc.enable {
-      "${cfg.etc.dirPath}/config.json" = {
-        source = cfg.files.settingsPath.target;
-      } // (lib.optionalAttrs (!cfg.etc.useSymlink) onlyOwner);
-    };
+    environment.etc = lib.mkIf cfg.etc.enable cfg.etc.files;
   };
 }

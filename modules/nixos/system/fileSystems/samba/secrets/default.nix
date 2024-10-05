@@ -1,73 +1,38 @@
 {
-  pkgs,
   config,
   lib,
   namespace,
+  host,
   ...
 }:
 let
-  inherit (pkgs.stdenv) isDarwin;
-  inherit (lib) mkOption types concatMapAttrs;
-  inherit (lib.${namespace}) mkMappingOption;
-  inherit (config.age) secrets;
+  inherit (lib.${namespace}.secrets) mkAppSecretsOption;
+  inherit (config.${namespace}.secrets) files;
 
   cfgParent = config.${namespace}.system.fileSystems.samba;
   cfg = cfgParent.secrets;
-
-  onlyOwner = {
-    inherit (config.users.users.${cfg.owner}) uid;
-    # Read-only
-    mode = "0400";
-  };
 in
 {
-  options.${namespace}.system.fileSystems.samba.secrets = with types; {
-    enable = lib.mkEnableOption "samba" // {
-      # If samba is started, secrets are enabled by default
-      default = cfgParent.enable && config.${namespace}.secrets.enable;
+  options.${namespace}.system.fileSystems.samba.secrets = mkAppSecretsOption {
+    enable = cfgParent.enable && config.${namespace}.secrets.enable;
+    appName = "samba";
+    dirPath = "samba/secrets";
+    configNames = map (name: "${name}.conf") (builtins.attrNames cfgParent.client);
+    scope = "shared-global";
+    currentInfo = {
+      inherit host;
+      user = config.${namespace}.user.name;
     };
-    etc = {
-      enable = lib.mkEnableOption "bind to etc" // {
-        default = true;
-      };
-      useSymlink = lib.mkEnableOption "use symlink to etc" // {
-        default = isDarwin || (onlyOwner.uid == null);
-      };
-      dirPath = mkOption {
-        type = str;
-        default = "samba/secrets";
-        description = ''
-          relative to the path of etc.
-          Just like: `/etc/{etc.dirPath}`
-        '';
-      };
-    };
-    files = concatMapAttrs (name: _: {
-      ${name} = mkMappingOption rec {
-        source = "${name}.conf";
-        target = secrets."samba/${source}".path;
-      };
-    }) cfgParent.client;
-    owner = mkOption {
-      type = str;
-      default = "root";
-      description = "The owner of the files.";
-    };
+    buildTargetPath = name: files.${name}.path;
+    owner = "root";
+    # Read-only
+    mode = "0400";
   };
 
   config = lib.mkIf cfg.enable {
     # secrets
-    ${namespace}.secrets.shared.samba.configFile = concatMapAttrs (_: value: {
-      "${value.source}".beneficiary = cfg.owner;
-    }) cfg.files;
-
+    ${namespace}.secrets = cfg.secretMappingFiles;
     # etc configuration default path: `/etc/samba/secrets`
-    environment.etc = lib.mkIf cfg.etc.enable (
-      concatMapAttrs (name: value: {
-        "${cfg.etc.dirPath}/${name}.conf" = {
-          source = value.target;
-        } // (lib.optionalAttrs (!cfg.etc.useSymlink) onlyOwner);
-      }) cfg.files
-    );
+    environment.etc = lib.mkIf cfg.etc.enable cfg.etc.files;
   };
 }

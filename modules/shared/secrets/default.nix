@@ -15,11 +15,11 @@ let
     mkEnableOption
     optional
     optionalAttrs
-    types
-    nameValuePair
     concatMapAttrs
-    mapAttrs'
+    types
+    foldl'
     ;
+  inherit (config.age) secrets;
 
   cfg = config.${namespace}.secrets;
 
@@ -29,45 +29,116 @@ let
   # secrets path
   hosts-secrets = cfg.secretsPath;
 
-  # permissions
-  ban = {
-    mode = "0000";
-    owner = "root";
-  };
-  onlyBeneficiary = name: {
-    # Read-only and executable
-    mode = "0500";
-    owner = name;
-  };
-
   # type
-  secretType = types.submodule {
-    options = with types; {
-      beneficiary = mkOption {
-        type = nullOr str;
-        default = null;
+  secretType =
+    {
+      owner ? "root",
+      filePrefixPath,
+      secretPrefixName ? filePrefixPath,
+      ...
+    }:
+    types.submodule (
+      { name, config, ... }:
+      {
+        options = with types; {
+          name = mkOption {
+            type = str;
+            default = name;
+          };
+          secretName = mkOption {
+            type = str;
+            default = "${secretPrefixName}/${config.name}";
+          };
+          file = mkOption {
+            type = path;
+            default = "${hosts-secrets}/${filePrefixPath}/${config.name}.age";
+          };
+          mode = mkOption {
+            type = str;
+            default = "0400"; # Read-only
+          };
+          path = mkOption {
+            type = str;
+            default = secrets.${config.secretName}.path;
+            readOnly = true;
+          };
+          symlink = mkEnableOption "symlinking secrets to their destination" // {
+            default = true;
+          };
+          owner = mkOption {
+            type = str;
+            default = owner;
+          };
+          group = mkOption {
+            type = str;
+            default = users.${config.owner}.group or "0";
+          };
+        };
+      }
+    );
+
+  secretSet =
+    {
+      prefixPath,
+      prefixName ? prefixPath,
+      ...
+    }:
+    with types;
+    {
+      users = mkOption {
+        type = attrsOf (
+          submodule (
+            { name, ... }:
+            {
+              options.files = mkOption {
+                type = attrsOf (secretType {
+                  owner = name;
+                  filePrefixPath = "${prefixPath}users/${name}";
+                  secretPrefixName = "${prefixName}users/${name}";
+                });
+                default = { };
+              };
+            }
+          )
+        );
+        default = { };
+      };
+      global.files = mkOption {
+        type = attrsOf (secretType {
+          owner = "root";
+          filePrefixPath = "${prefixPath}global";
+          secretPrefixName = "${prefixName}global";
+        });
+        default = { };
       };
     };
-  };
 
-  # secrets object
-  toHostSecret =
-    name: value:
-    nameValuePair "${host}/${name}" (
-      {
-        file = "${hosts-secrets}/hosts/${host}/${name}.age";
+  # conversion
+  toAgeSecrets =
+    set:
+    let
+      globalFiles = builtins.attrValues set.global.files;
+      usersFiles = builtins.concatMap (x: (builtins.attrValues x.files)) (builtins.attrValues set.users);
+      files = globalFiles ++ usersFiles;
+    in
+    foldl' (
+      acc: x:
+      acc
+      // {
+        ${x.secretName} = {
+          inherit (x)
+            file
+            mode
+            symlink
+            owner
+            group
+            path
+            ;
+          name = x.secretName;
+        };
       }
-      // (if value.beneficiary == null then ban else (onlyBeneficiary value.beneficiary))
-    );
+    ) { } files;
 
-  toSharedSecret =
-    name: value:
-    nameValuePair "${value.programName}/${name}" (
-      {
-        file = "${hosts-secrets}/shared/${value.programName}/${name}.age";
-      }
-      // (if value.beneficiary == null then ban else (onlyBeneficiary value.beneficiary))
-    );
 in
 {
   options.${namespace}.secrets = with types; {
@@ -78,19 +149,17 @@ in
       default = "${homeDir}/agenix";
     };
     # hosts private config
-    hosts.configFile = mkOption {
-      type = attrsOf secretType;
-      default = { };
+    hosts = secretSet {
+      prefixPath = "hosts/${host}/";
     };
     # shared config
-    shared = mkOption {
-      type = attrsOf (submodule {
-        options.configFile = mkOption {
-          type = attrsOf secretType;
-          default = { };
-        };
-      });
-      default = { };
+    shared = secretSet {
+      prefixPath = "shared/";
+    };
+    files = mkOption {
+      type = attrs;
+      default = (toAgeSecrets cfg.shared) // (toAgeSecrets cfg.hosts);
+      readOnly = true;
     };
   };
 
@@ -106,23 +175,9 @@ in
     };
 
     # secrets
-    age.secrets =
-      let
-        hosts-config = mapAttrs' toHostSecret cfg.hosts.configFile;
-        shared-config = concatMapAttrs (
-          name: value:
-          mapAttrs' toSharedSecret (
-            mapAttrs' (
-              name2: value2:
-              nameValuePair name2 {
-                programName = name;
-                inherit (value2) beneficiary;
-              }
-            ) value.configFile
-          )
-        ) cfg.shared;
-      in
-      hosts-config // shared-config;
+    age.secrets = concatMapAttrs (name: item: {
+      ${name} = builtins.removeAttrs item [ "path" ];
+    }) cfg.files;
   };
 
 }
