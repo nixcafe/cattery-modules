@@ -14,6 +14,32 @@ let
     ;
   inherit (config.${namespace}) user;
 
+  signModule = types.submodule {
+    options = {
+      key = mkOption {
+        type = types.nullOr types.str;
+        default = user.signKey or null;
+        description = ''
+          The default GPG signing key fingerprint.
+
+          Set to `null` to let GnuPG decide what signing key
+          to use depending on commit’s author.
+        '';
+      };
+      signByDefault = mkOption {
+        type = types.bool;
+        default = true;
+        description = "Whether commits and tags should be signed by default.";
+      };
+      gpgPath = mkOption {
+        type = types.str;
+        default = "${pkgs.gnupg}/bin/gpg2";
+        defaultText = "\${pkgs.gnupg}/bin/gpg2";
+        description = "Path to GnuPG binary to use.";
+      };
+    };
+  };
+
   cfg = config.${namespace}.cli-apps.dev-kit.git;
 in
 {
@@ -27,9 +53,9 @@ in
       type = nullOr str;
       default = user.email or null;
     };
-    signKey = mkOption {
-      type = nullOr str;
-      default = user.signKey or null;
+    signing = mkOption {
+      type = nullOr signModule;
+      default = if ((user.signKey or null) != null) then { } else null;
     };
     sendEmail = mkOption {
       type = nullOr (submodule {
@@ -73,15 +99,11 @@ in
   config = lib.mkIf cfg.enable {
     programs = {
       git = {
-        inherit (cfg) userName userEmail;
+        inherit (cfg) userName userEmail signing;
         enable = true;
         package = pkgs.gitFull;
         lfs.enable = true;
         difftastic.enable = true;
-        signing = {
-          key = cfg.signKey;
-          signByDefault = cfg.signKey != null;
-        };
         extraConfig = mkMerge [
           {
             pull.rebase = true;
