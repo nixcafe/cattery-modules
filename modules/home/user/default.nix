@@ -34,6 +34,10 @@ in
       default = config.home.homeDirectory;
       readOnly = true;
     };
+    signKey = mkOption {
+      type = nullOr str;
+      default = cfg.settings.signKey or null;
+    };
     settings = mkOption {
       type = attrs;
       default = { };
