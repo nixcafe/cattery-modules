@@ -204,6 +204,7 @@ in
                   else
                     { };
                 readOnly = true;
+                internal = true;
                 visible = false;
               };
               configNames = mkOption {
