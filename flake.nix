@@ -3,9 +3,13 @@
     flake-schemas.url = "github:DeterminateSystems/flake-schemas";
 
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
 
     vscode-server.url = "github:nix-community/nixos-vscode-server";
+
+    nixos-wsl = {
+      url = "github:nix-community/NixOS-WSL/main";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     lanzaboote = {
       url = "github:nix-community/lanzaboote";
