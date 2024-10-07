@@ -1,9 +1,6 @@
 {
   inputs = {
-    flake-schemas.url = "github:DeterminateSystems/flake-schemas";
-
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-
     vscode-server.url = "github:nix-community/nixos-vscode-server";
 
     nixos-wsl = {
@@ -22,7 +19,7 @@
     };
 
     pre-commit-hooks = {
-      url = "github:cachix/pre-commit-hooks.nix";
+      url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
