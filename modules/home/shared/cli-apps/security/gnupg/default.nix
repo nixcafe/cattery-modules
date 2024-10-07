@@ -13,6 +13,11 @@ in
     enable = lib.mkEnableOption "gnupg";
   };
 
-  config = lib.mkIf cfg.enable { home.packages = with pkgs; [ gnupg ]; };
+  config = lib.mkIf cfg.enable {
+    home.packages = with pkgs; [
+      gnupg
+      gpgme
+    ];
+  };
 
 }

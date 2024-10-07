@@ -23,7 +23,10 @@ in
   config = lib.mkIf cfg.enable (
     lib.mkMerge [
       {
-        environment.systemPackages = with pkgs; [ gnupg ];
+        environment.systemPackages = with pkgs; [
+          gnupg
+          gpgme
+        ];
         programs.gnupg.agent = {
           inherit (cfg.agent) enable enableSSHSupport;
         };
