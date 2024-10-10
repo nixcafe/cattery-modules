@@ -5,6 +5,7 @@
   ...
 }:
 let
+  inherit (lib) mkDefault;
   inherit (lib.${namespace}) mkDefaultEnabled;
 
   cfg = config.${namespace}.room.desktop.general;
@@ -19,7 +20,10 @@ in
       room.desktop.basis = mkDefaultEnabled;
 
       apps = {
-        vscode = mkDefaultEnabled;
+        vscode = {
+          enable = mkDefault true;
+          defaultEditor = mkDefault true;
+        };
       };
 
       # linux config

@@ -32,16 +32,12 @@ in
       };
     };
 
-    ${namespace}.home.extraOptions = {
-      programs = {
-        zsh.initExtra = lib.mkAfter ''
-          # brew
-          export BREW_HOME="/opt/homebrew"
-          # check brew home exists in path
-          if [[ ":$PATH:" != *":$BREW_HOME/bin:"* ]]; then
-              export PATH="$PATH:$BREW_HOME/bin"
-          fi
-        '';
+    environment = {
+      systemPath = [
+        "$BREW_HOME/bin"
+      ];
+      variables = {
+        BREW_HOME = "/opt/homebrew";
       };
     };
   };

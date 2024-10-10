@@ -21,22 +21,21 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    home.packages = with pkgs; [
-      # js
-      nodejs_22
-      corepack_22
-      bun
-      dprint
-    ];
-
-    programs.zsh.initExtra = lib.mkAfter ''
-      # pnpm
-      export PNPM_HOME="${pnpmHome}"
-      # check pnpm home exists in path
-      if [[ ":$PATH:" != *":$PNPM_HOME:"* ]]; then
-          export PATH="$PATH:$PNPM_HOME"
-      fi
-    '';
+    home = {
+      packages = with pkgs; [
+        # js
+        nodejs_22
+        corepack_22
+        bun
+        dprint
+      ];
+      sessionVariables = {
+        PNPM_HOME = pnpmHome;
+      };
+      sessionPath = [
+        "$PNPM_HOME"
+      ];
+    };
   };
 
 }

@@ -17,6 +17,7 @@ in
       default = [ ];
       type = listOf str;
     };
+    defaultEditor = lib.mkEnableOption "vscode to $EDITOR";
   };
 
   config = lib.mkIf cfg.enable {
@@ -28,6 +29,9 @@ in
           "--ozone-platform=wayland"
         ] ++ cfg.commandLineArgs;
       };
+    };
+    home.sessionVariables = lib.mkIf cfg.defaultEditor {
+      EDITOR = "code --new-window --wait";
     };
   };
 
