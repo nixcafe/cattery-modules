@@ -9,12 +9,10 @@
   ...
 }:
 let
-  inherit (pkgs.stdenv) isLinux;
   inherit (lib)
     mkOption
     mkEnableOption
     optional
-    optionalAttrs
     concatMapAttrs
     types
     foldl'
@@ -170,9 +168,6 @@ in
         plugins = optional cfg.yubikey.enable pkgs.age-plugin-yubikey;
       })
     ];
-    services = optionalAttrs (cfg.yubikey.enable && isLinux) {
-      pcscd.enable = true;
-    };
 
     # secrets
     age.secrets = concatMapAttrs (name: item: {
