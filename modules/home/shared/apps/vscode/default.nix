@@ -24,8 +24,8 @@ in
       enable = true;
       package = pkgs.vscode.override {
         commandLineArgs = [
-          "--ozone-platform=wayland"
           "--enable-wayland-ime"
+          "--ozone-platform=wayland"
         ] ++ cfg.commandLineArgs;
       };
     };
