@@ -19,10 +19,14 @@ in
     environment.systemPackages = with pkgs; [
       yubikey-manager-qt
       yubikey-manager
+      yubikey-personalization
+      yubikey-personalization-gui
       yubico-piv-tool
+      yubioath-flutter
     ];
     services = {
       pcscd.enable = true;
+      udev.packages = [ pkgs.yubikey-personalization ];
       yubikey-agent.enable = cfg.agent.enable;
     };
     programs.yubikey-touch-detector.enable = cfg.agent.enable;
