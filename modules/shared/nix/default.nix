@@ -29,13 +29,13 @@ in
         }
         // (optionalAttrs isLinux {
           persistent = true;
-          dates = "0/4:0"; # expands to "*-*-* 00/04:00:00"
+          dates = "months";
           randomizedDelaySec = "45min";
         })
         // (optionalAttrs isDarwin {
           user = "root";
           interval = {
-            Weekday = 0;
+            Weekday = 1;
             Hour = 4;
             Minute = 0;
           };
