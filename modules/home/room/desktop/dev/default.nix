@@ -58,7 +58,6 @@ in
       # linux config
       apps = {
         mail = mkDefaultEnabled;
-        safety = mkDefaultEnabled;
         science = mkDefaultEnabled;
         video = mkDefaultEnabled;
       };
