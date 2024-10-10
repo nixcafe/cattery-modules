@@ -44,6 +44,10 @@ in
           kubernetes = mkDefaultEnabled;
         };
 
+        security = {
+          gnupg = mkDefaultEnabled;
+        };
+
         tool = {
           ollama = mkDefaultEnabled;
           thefuck = mkDefaultEnabled;

@@ -17,6 +17,7 @@ in
   config = lib.mkIf cfg.enable {
     ${namespace} = {
       cli-apps = {
+        mtr = mkDefaultEnabled;
         nix = {
           nix-ld = mkDefaultEnabled;
         };

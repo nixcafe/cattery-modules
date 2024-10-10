@@ -15,9 +15,15 @@ in
 
   config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [
-      gnupg
       gpgme
     ];
+
+    programs.gpg = {
+      enable = true;
+      scdaemonSettings = {
+        disable-ccid = true;
+      };
+    };
   };
 
 }

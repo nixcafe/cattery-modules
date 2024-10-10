@@ -35,7 +35,6 @@ in
       # shared
       cli-apps = {
         security.fido2 = mkDefaultEnabled;
-        security.gnupg = mkDefaultEnabled;
       };
       system = {
         fonts = mkDefaultEnabled;
