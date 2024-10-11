@@ -32,6 +32,7 @@ in
     };
     home.sessionVariables = lib.mkIf cfg.defaultEditor {
       EDITOR = "code --new-window --wait";
+      VISUAL = "$EDITOR";
     };
   };
 
