@@ -38,6 +38,7 @@ in
         pciutils # lspci
         openssl # a cryptographic library that implements the SSL and TLS protocols
         tree # command to produce a depth indented directory listing
+        ast-grep # a new AST based tool for managing your code, at massive scale.
 
         # tui
         dua # most convenient disk stuff I've ever used
