@@ -13,10 +13,9 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    xdg = {
-      portal = {
-        enable = true;
-      };
+    xdg.portal = {
+      enable = true;
+      wlr.enable = true;
     };
   };
 

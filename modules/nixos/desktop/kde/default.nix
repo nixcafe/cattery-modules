@@ -6,6 +6,8 @@
   ...
 }:
 let
+  inherit (lib.${namespace}) mkDefaultEnabled;
+
   cfg = config.${namespace}.desktop.kde;
 in
 {
@@ -14,8 +16,12 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    ${namespace}.home.extraOptions = {
-      home.packages = with pkgs; [ kwalletcli ];
+    ${namespace} = {
+      desktop.addons.xdg-portal = mkDefaultEnabled;
+
+      home.extraOptions = {
+        home.packages = with pkgs; [ kwalletcli ];
+      };
     };
 
     # sddm for login
