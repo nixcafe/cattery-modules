@@ -23,6 +23,15 @@ in
         package = pkgs.firefox-devedition-bin;
       };
 
+      chromium = {
+        enable = true;
+        package = pkgs.ungoogled-chromium;
+        commandLineArgs = [
+          "--ozone-platform=wayland"
+          "--enable-wayland-ime"
+        ];
+      };
+
       # google chrome
       # source code: https://github.com/nix-community/home-manager/blob/master/modules/programs/chromium.nix
       google-chrome = {
