@@ -19,6 +19,8 @@ in
     home.packages = with pkgs; [
       gimp
       inkscape-with-extensions
+      nomacs
+      imv
     ];
   };
 

@@ -5,6 +5,8 @@
   ...
 }:
 let
+  inherit (lib.${namespace}) mkDefaultEnabled;
+
   cfg = config.${namespace}.desktop.hyprland;
 in
 {
@@ -15,6 +17,8 @@ in
   config = lib.mkIf cfg.enable {
 
     ${namespace} = {
+      desktop.addons.xdg-portal = mkDefaultEnabled;
+
       # home manager
       home.extraOptions = {
         wayland.windowManager.hyprland = {

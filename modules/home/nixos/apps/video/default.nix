@@ -21,7 +21,6 @@ in
       vlc # media player
     ];
 
-    # player for things that vlc can't
     programs = {
       # player for things that vlc can't
       mpv.enable = true;

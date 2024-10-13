@@ -5,6 +5,8 @@
   ...
 }:
 let
+  inherit (lib.${namespace}) mkDefaultEnabled;
+
   cfg = config.${namespace}.desktop.gnome;
 in
 {
@@ -13,6 +15,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    ${namespace}.desktop.addons.xdg-portal = mkDefaultEnabled;
+
     services.xserver = {
       enable = true;
 
