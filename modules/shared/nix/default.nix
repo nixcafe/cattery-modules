@@ -18,6 +18,7 @@ in
 
   config = lib.mkIf cfg.enable {
     nix = {
+      optimise.automatic = isLinux;
       settings = {
         # enable flakes support
         experimental-features = "nix-command flakes";
