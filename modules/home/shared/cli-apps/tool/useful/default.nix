@@ -48,6 +48,8 @@ in
         cat = "bat";
         diff = "difft";
         ls = "eza";
+        # nix uses too many links, this is really needed
+        rl = "readlink -f";
       };
     };
 

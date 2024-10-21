@@ -89,6 +89,7 @@ in
           "audio/aac" = cfg.app.audio;
           "audio/flac" = cfg.app.audio;
           # browser
+          "text/html" = cfg.app.browser;
           "application/json" = cfg.app.browser;
           "application/ld+json" = cfg.app.browser;
           "application/pdf" = cfg.app.browser;
@@ -111,7 +112,6 @@ in
           # editor
           "text/css" = cfg.app.editor;
           "text/csv" = cfg.app.editor;
-          "text/html" = cfg.app.editor;
           "text/javascript" = cfg.app.editor;
           "text/markdown" = cfg.app.editor;
           "text/plain" = cfg.app.editor;
