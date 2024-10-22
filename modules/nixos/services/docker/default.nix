@@ -22,7 +22,7 @@ in
     # the program that i have to use to do any work
     virtualisation.docker = {
       enable = true;
-      storageDriver = "btrfs";
+      storageDriver = if config.boot.isContainer then null else "btrfs";
     } // cfg.extraOptions;
 
     users.users.${config.${namespace}.user.name} = {
