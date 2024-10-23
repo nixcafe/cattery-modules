@@ -6,6 +6,7 @@
   ...
 }:
 let
+  inherit (lib) optional;
   inherit (lib.${namespace}.secrets) mkAppSecretsOption;
   inherit (config.${namespace}.secrets) files;
 
@@ -17,12 +18,10 @@ in
     enable = cfgParent.enable && config.${namespace}.secrets.enable;
     appName = "forgejo";
     dirPath = "forgejo/conf";
-    fixedConfig = [
-      {
-        name = "settingsPath";
-        fileName = "app.ini";
-      }
-    ];
+    fixedConfig = optional cfgParent.useWizard {
+      name = "settingsPath";
+      fileName = "app.ini";
+    };
     scope = "hosts-global";
     currentInfo = {
       inherit host;
