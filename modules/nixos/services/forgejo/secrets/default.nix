@@ -10,14 +10,14 @@ let
   inherit (lib.${namespace}.secrets) mkAppSecretsOption;
   inherit (config.${namespace}.secrets) files;
 
-  cfgParent = config.${namespace}.services.gitea;
+  cfgParent = config.${namespace}.services.forgejo;
   cfg = cfgParent.secrets;
 in
 {
-  options.${namespace}.services.gitea.secrets = mkAppSecretsOption {
+  options.${namespace}.services.forgejo.secrets = mkAppSecretsOption {
     enable = cfgParent.enable && config.${namespace}.secrets.enable;
-    appName = "gitea";
-    dirPath = "gitea/conf";
+    appName = "forgejo";
+    dirPath = "forgejo/conf";
     fixedConfig = optional cfgParent.useWizard {
       name = "settingsPath";
       fileName = "app.ini";
@@ -28,7 +28,7 @@ in
       user = config.${namespace}.user.name;
     };
     buildTargetPath = name: files.${name}.path;
-    owner = "gitea";
+    owner = "forgejo";
     # Read-only
     mode = "0400";
   };
@@ -36,7 +36,7 @@ in
   config = lib.mkIf cfg.enable {
     # secrets
     ${namespace}.secrets = cfg.secretMappingFiles;
-    # etc configuration default path: `/etc/gitea/conf`
+    # etc configuration default path: `/etc/forgejo/conf`
     environment.etc = lib.mkIf cfg.etc.enable cfg.etc.files;
   };
 }

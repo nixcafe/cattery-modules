@@ -11,5 +11,10 @@ let
   cfg = config.${namespace}.apps.instant-messengers;
 in
 {
-  config = lib.mkIf (cfg.enable && isLinux) { home.packages = with pkgs; [ signal-desktop ]; };
+  config = lib.mkIf (cfg.enable && isLinux) {
+    home.packages = with pkgs; [
+      signal-desktop
+      element-desktop
+    ];
+  };
 }

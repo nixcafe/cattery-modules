@@ -1,6 +1,5 @@
 {
   config,
-  pkgs,
   lib,
   namespace,
   ...
@@ -67,7 +66,7 @@ in
     # postgresql
     services.postgresql = {
       enable = true;
-      package = pkgs.postgresql_16;
+      # https://www.postgresql.org/docs/current/pgupgrade.html
       settings = mkForce (
         {
           hba_file = cfg.configFile.authenticationPath;
