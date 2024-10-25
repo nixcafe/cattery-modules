@@ -1,5 +1,4 @@
 {
-  pkgs,
   config,
   lib,
   namespace,
@@ -13,6 +12,10 @@ in
     enable = lib.mkEnableOption "youtube";
   };
 
-  config = lib.mkIf cfg.enable { home.packages = with pkgs; [ yt-dlp ]; };
+  config = lib.mkIf cfg.enable {
+    programs.yt-dlp = {
+      enable = true;
+    };
+  };
 
 }

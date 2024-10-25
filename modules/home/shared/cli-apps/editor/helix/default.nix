@@ -1,6 +1,5 @@
 {
   config,
-  pkgs,
   lib,
   namespace,
   ...
@@ -14,9 +13,9 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    home.packages = with pkgs; [
-      helix
-    ];
+    programs.helix = {
+      enable = true;
+    };
   };
 
 }
