@@ -45,6 +45,10 @@ in
           useful = mkDefaultEnabled;
         };
 
+        file-manager = {
+          yazi = mkDefaultEnabled;
+        };
+
         # linux config
         disk = mkDefaultEnabled;
         git-credentials = mkDefaultEnabled;
