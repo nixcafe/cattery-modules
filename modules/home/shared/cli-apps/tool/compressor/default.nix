@@ -20,6 +20,8 @@ in
       gzip
       zip
       unzip
+      xz # a general-purpose data compression software, successor of LZMA
+      zstd # zstandard real-time compression algorithm
     ];
   };
 

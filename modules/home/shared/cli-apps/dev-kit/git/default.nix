@@ -121,6 +121,10 @@ in
       gh.enable = true;
       gitui.enable = true;
     };
+
+    home.shellAliases = {
+      diff = "difft";
+    };
   };
 
 }

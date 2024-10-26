@@ -17,10 +17,6 @@ in
     home = {
       packages = with pkgs; [
         # cli utils
-        fd # better find, why debian uses `fd-find` still bothers me
-        jq # i should learn this
-        eza # ls
-        ripgrep # grep
         lrzsz # communication package providing the XMODEM, YMODEM ZMODEM file transfer protocols
         parallel # for executing jobs in parallel using one or more computers
         rsync # fast incremental file transfer utility
@@ -28,13 +24,9 @@ in
         smartmontools # tools for monitoring the health of hard drives
         tldr # simplified and community-driven man pages
         tokei # a program that allows you to count your code, quickly
-        xz # a general-purpose data compression software, successor of LZMA
-        zstd # zstandard real-time compression algorithm
         iperf # tool to measure IP bandwidth using UDP or TCP
         nmap # a free and open source utility for network discovery and security auditing
         rmlint # file dedupe
-        wrk # http benchmarking tool
-        oha # http load generator inspired by rakyll/hey with tui animation
         pciutils # lspci
         openssl # a cryptographic library that implements the SSL and TLS protocols
         tree # command to produce a depth indented directory listing
@@ -46,14 +38,24 @@ in
 
       shellAliases = {
         cat = "bat";
-        diff = "difft";
-        ls = "eza";
         # nix uses too many links, this is really needed
         rl = "readlink -f";
       };
     };
 
     programs = {
+      # ls
+      eza.enable = true;
+
+      # better find, why debian uses `fd-find` still bothers me
+      fd.enable = true;
+
+      # i should learn this
+      jq.enable = true;
+
+      # grep
+      ripgrep.enable = true;
+
       # the cat replacement that actually does something
       bat.enable = true;
 
