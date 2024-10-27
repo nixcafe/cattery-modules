@@ -16,6 +16,8 @@ in
     programs = {
       # command not found in nix
       nix-index.enable = true;
+      # use: , cowsay neato
+      nix-index-database.comma.enable = true;
     };
   };
 
