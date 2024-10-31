@@ -11,8 +11,11 @@ let
     mkOption
     types
     optionals
+    removePrefix
     ;
   inherit (pkgs.stdenv) isLinux;
+
+  userName = config.${namespace}.user.name;
 
   getAbsolutePath =
     attrName: prefix: list:
@@ -28,61 +31,61 @@ let
   getFilePath = getAbsolutePath "file";
   getDirectoryPath = getAbsolutePath "directory";
 
-  xdg = {
-    # can only be used in home, otherwise infinite recursion encountered
-    # old code: 
-    #   getDirectory = removePrefix "${config.home.homeDirectory}/";
-    #   (getDirectory config.xdg.userDirs.desktop)
-    # so pin these directories
-    userDirs = optionals (cfg.xdg.userDirs.enable && cfg.xdg.userDirs.full) [
-      "Desktop"
-      "Documents"
-      "Downloads"
-      "Music"
-      "Pictures"
-      "Public"
-      "Templates"
-      "Videos"
-    ];
-    cache = {
-      directories = optionals cfg.xdg.cache.enable (
-        if cfg.xdg.cache.full then [ ".cache" ] else getDirectoryPath ".cache" cfg.xdg.cache.directories
-      );
-      files = optionals (cfg.xdg.cache.enable && !cfg.xdg.cache.full) (
-        getFilePath ".cache" cfg.xdg.cache.files
-      );
+  xdg =
+    let
+      getDirectory = removePrefix "${config.home.homeDirectory}/";
+      cacheHome = getDirectory config.xdg.cacheHome;
+      configHome = getDirectory config.xdg.configHome;
+      dataHome = getDirectory config.xdg.dataHome;
+      stateHome = getDirectory config.xdg.stateHome;
+    in
+    {
+      userDirs = optionals (cfg.xdg.userDirs.enable && cfg.xdg.userDirs.full) [
+        (getDirectory config.xdg.userDirs.desktop)
+        (getDirectory config.xdg.userDirs.documents)
+        (getDirectory config.xdg.userDirs.download)
+        (getDirectory config.xdg.userDirs.music)
+        (getDirectory config.xdg.userDirs.pictures)
+        (getDirectory config.xdg.userDirs.publicShare)
+        (getDirectory config.xdg.userDirs.templates)
+        (getDirectory config.xdg.userDirs.videos)
+      ];
+      cache = {
+        directories = optionals cfg.xdg.cache.enable (
+          if cfg.xdg.cache.full then [ cacheHome ] else getDirectoryPath cacheHome cfg.xdg.cache.directories
+        );
+        files = optionals (cfg.xdg.cache.enable && !cfg.xdg.cache.full) (
+          getFilePath cacheHome cfg.xdg.cache.files
+        );
+      };
+      config = {
+        directories = optionals cfg.xdg.config.enable (
+          if cfg.xdg.config.full then
+            [ configHome ]
+          else
+            getDirectoryPath configHome cfg.xdg.config.directories
+        );
+        files = optionals (cfg.xdg.config.enable && !cfg.xdg.config.full) (
+          getFilePath configHome cfg.xdg.config.files
+        );
+      };
+      data = {
+        directories = optionals cfg.xdg.data.enable (
+          if cfg.xdg.data.full then [ dataHome ] else getDirectoryPath dataHome cfg.xdg.data.directories
+        );
+        files = optionals (cfg.xdg.data.enable && !cfg.xdg.data.full) (
+          getFilePath dataHome cfg.xdg.data.files
+        );
+      };
+      state = {
+        directories = optionals cfg.xdg.state.enable (
+          if cfg.xdg.state.full then [ stateHome ] else getDirectoryPath stateHome cfg.xdg.state.directories
+        );
+        files = optionals (cfg.xdg.state.enable && !cfg.xdg.state.full) (
+          getFilePath stateHome cfg.xdg.state.files
+        );
+      };
     };
-    config = {
-      directories = optionals cfg.xdg.config.enable (
-        if cfg.xdg.config.full then [ ".config" ] else getDirectoryPath ".config" cfg.xdg.config.directories
-      );
-      files = optionals (cfg.xdg.config.enable && !cfg.xdg.config.full) (
-        getFilePath ".config" cfg.xdg.config.files
-      );
-    };
-    data = {
-      directories = optionals cfg.xdg.data.enable (
-        if cfg.xdg.data.full then
-          [ ".local/share" ]
-        else
-          getDirectoryPath ".local/share" cfg.xdg.data.directories
-      );
-      files = optionals (cfg.xdg.data.enable && !cfg.xdg.data.full) (
-        getFilePath ".local/share" cfg.xdg.data.files
-      );
-    };
-    state = {
-      directories = optionals cfg.xdg.state.enable (
-        if cfg.xdg.state.full then
-          [ ".local/state" ]
-        else
-          getDirectoryPath ".local/state" cfg.xdg.state.directories
-      );
-      files = optionals (cfg.xdg.state.enable && !cfg.xdg.state.full) (
-        getFilePath ".local/state" cfg.xdg.state.files
-      );
-    };
-  };
 
   cfg = config.${namespace}.system.impermanence;
 in
@@ -171,33 +174,34 @@ in
       type = attrs;
       default = { };
     };
-    persistence = mkOption {
-      type = attrs;
-      default = {
-        files = xdg.cache.files ++ xdg.config.files ++ xdg.data.files ++ xdg.state.files;
-        directories =
-          [
-            {
-              directory = ".ssh";
-              mode = "0700";
-            }
-          ]
-          ++ xdg.userDirs
-          ++ xdg.cache.directories
-          ++ xdg.config.directories
-          ++ xdg.data.directories
-          ++ xdg.state.directories
-          ++ cfg.directories;
-      } // cfg.extraOptions;
-      readOnly = true;
-      internal = true;
-      visible = false;
-    };
   };
 
   config = lib.mkIf (cfg.enable && isLinux) {
-    # Because impermanence home-manager has too few functions,
-    # such as the lack of mode, the results here will be called by nixos
+    home.persistence."/persistent/home/${userName}" = {
+      files = xdg.cache.files ++ xdg.config.files ++ xdg.data.files ++ xdg.state.files;
+      # all file permissions need to be set in the directory yourself
+      # (if there are existing files, please copy them to the persistent directory intact)
+      directories = map (x: if builtins.isAttrs x then builtins.removeAttrs x [ "mode" ] else x) (
+        [
+          {
+            directory = ".ssh";
+            mode = "0700";
+          }
+          {
+            directory = ".pki";
+            mode = "0700";
+          }
+        ]
+        ++ xdg.userDirs
+        ++ xdg.cache.directories
+        ++ xdg.config.directories
+        ++ xdg.data.directories
+        ++ xdg.state.directories
+        ++ cfg.directories
+      );
+      allowOther = true;
+    } // cfg.extraOptions;
+
     age.identityPaths = mkDefault [
       "/persistent${config.home.homeDirectory}/.ssh/id_ed25519"
       "/persistent${config.home.homeDirectory}/.ssh/id_rsa"

@@ -18,9 +18,6 @@ let
         "/etc/ssh/ssh_host_rsa_key"
       ];
 
-  userName = config.${namespace}.user.name;
-  homeImpermanence = config.home-manager.users.${userName}.${namespace}.system.impermanence;
-
   cfg = config.${namespace}.system.impermanence;
 in
 {
@@ -56,8 +53,10 @@ in
       files = [
         "/etc/machine-id"
       ] ++ cfg.files;
-      users.${userName} = homeImpermanence.persistence;
     } // cfg.extraOptions;
+
+    # allow non-root users to specify the allow_other or allow_root mount options, see mount.fuse3(8).
+    programs.fuse.userAllowOther = true;
 
     age.identityPaths = mkDefault (map (x: "/persistent${x}") identityPaths);
   };
