@@ -12,6 +12,7 @@ let
     mkMerge
     optionalAttrs
     ;
+  inherit (pkgs.stdenv) isLinux;
   inherit (config.${namespace}) user;
 
   signModule = types.submodule {
@@ -94,9 +95,17 @@ in
       type = attrs;
       default = { };
     };
+    persistence = lib.mkEnableOption "add files and directories to impermanence" // {
+      default = true;
+    };
   };
 
   config = lib.mkIf cfg.enable {
+    home.packages = with pkgs; [
+      # common lib
+      libsecret # for git credentials
+    ];
+
     programs = {
       git = {
         inherit (cfg) userName userEmail signing;
@@ -115,6 +124,10 @@ in
 
           (optionalAttrs (cfg.sendEmail != null) { sendemail = cfg.sendEmail; })
 
+          (optionalAttrs isLinux {
+            credential.helper = "/etc/profiles/per-user/$(whoami)/bin/git-credential-libsecret";
+          })
+
           cfg.extraConfig
         ];
       };
@@ -124,6 +137,12 @@ in
 
     home.shellAliases = {
       diff = "difft";
+    };
+
+    ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
+      xdg.config.files = [
+        "gh/hosts.yml"
+      ];
     };
   };
 

@@ -51,7 +51,6 @@ in
 
         # linux config
         disk = mkDefaultEnabled;
-        git-credentials = mkDefaultEnabled;
         misc = mkDefaultEnabled;
       };
     };

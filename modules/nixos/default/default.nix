@@ -4,6 +4,7 @@ let
   nixos-modules = with inputs; [
     agenix.nixosModules.default
     lanzaboote.nixosModules.lanzaboote
+    impermanence.nixosModules.impermanence
     vscode-server.nixosModules.default
     nixos-wsl.nixosModules.default
     nix-gaming.nixosModules.pipewireLowLatency
