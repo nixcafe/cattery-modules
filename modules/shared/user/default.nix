@@ -7,10 +7,17 @@
 }:
 let
   inherit (pkgs.stdenv) isLinux isDarwin;
-  inherit (lib) mkOption types optionalAttrs;
+  inherit (lib)
+    mkDefault
+    mkOption
+    types
+    optionalAttrs
+    ;
 
   linuxUserGroup = "users";
   user = config.users.users.${cfg.name};
+  shadowPath = "shadow/${cfg.name}";
+  passwordFile = config.${namespace}.secrets.hosts.global.files.${shadowPath}.path;
 
   cfg = config.${namespace}.user;
 in
@@ -42,6 +49,11 @@ in
       type = nullOr int;
       default = if isLinux then config.users.groups.${linuxUserGroup}.gid else user.gid;
       readOnly = true;
+    };
+    useSecretPasswordFile = lib.mkEnableOption "use secret password file to `hashedPasswordFile`";
+    initialHashedPassword = mkOption {
+      type = nullOr str;
+      default = cfg.settings.initialHashedPassword or null;
     };
     authorizedKeys = {
       keys = lib.mkOption {
@@ -87,10 +99,21 @@ in
             extraGroups = [ "wheel" ];
           })
           // {
+            # `mkpasswd -m scrypt`
+            inherit (cfg) initialHashedPassword;
+            # https://github.com/NixOS/nixpkgs/issues/148044
+            # https://discourse.nixos.org/t/how-to-use-users-users-name-passwordfile/12378
+            hashedPasswordFile = if cfg.useSecretPasswordFile then passwordFile else null;
             openssh.authorizedKeys = cfg.authorizedKeys;
           };
+
+        mutableUsers = mkDefault (!cfg.useSecretPasswordFile);
         # default shell
       } // (optionalAttrs config.programs.zsh.enable { defaultUserShell = pkgs.zsh; });
+
+      ${namespace}.secrets.hosts.global.files = optionalAttrs cfg.useSecretPasswordFile {
+        ${shadowPath}.mode = "0440";
+      };
     })
   ];
 }
