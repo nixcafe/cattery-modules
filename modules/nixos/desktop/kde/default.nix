@@ -13,6 +13,7 @@ in
 {
   options.${namespace}.desktop.kde = {
     enable = lib.mkEnableOption "kde";
+    useConnect = lib.mkEnableOption "kdeconnect";
   };
 
   config = lib.mkIf cfg.enable {
@@ -23,6 +24,8 @@ in
         home.packages = with pkgs; [ kwalletcli ];
       };
     };
+
+    programs.kdeconnect.enable = cfg.useConnect;
 
     # sddm for login
     services.displayManager.sddm = {
