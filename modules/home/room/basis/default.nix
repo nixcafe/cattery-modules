@@ -43,6 +43,7 @@ in
           network = mkDefaultEnabled;
           compressor = mkDefaultEnabled;
           useful = mkDefaultEnabled;
+          misc = mkDefaultEnabled;
         };
 
         file-manager = {

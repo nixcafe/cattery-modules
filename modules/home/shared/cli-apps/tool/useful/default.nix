@@ -11,6 +11,9 @@ in
 {
   options.${namespace}.cli-apps.tool.useful = {
     enable = lib.mkEnableOption "useful";
+    persistence = lib.mkEnableOption "add files and directories to impermanence" // {
+      default = true;
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -67,6 +70,12 @@ in
         enable = true;
         options = [ "--cmd cd" ];
       };
+    };
+
+    ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
+      directories = [ ".tldrc" ];
+      xdg.cache.directories = [ "bat" ];
+      xdg.data.directories = [ "zoxide" ];
     };
   };
 

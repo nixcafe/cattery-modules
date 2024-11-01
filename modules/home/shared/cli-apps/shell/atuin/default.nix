@@ -10,6 +10,9 @@ in
 {
   options.${namespace}.cli-apps.shell.atuin = {
     enable = lib.mkEnableOption "atuin";
+    persistence = lib.mkEnableOption "add files and directories to impermanence" // {
+      default = true;
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -23,6 +26,10 @@ in
           style = "compact";
         };
       };
+    };
+
+    ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
+      xdg.data.directories = [ "atuin" ];
     };
   };
 

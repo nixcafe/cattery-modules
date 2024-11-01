@@ -5,23 +5,21 @@
   ...
 }:
 let
-  cfg = config.${namespace}.system.fonts;
+  cfg = config.${namespace}.cli-apps.tool.misc;
 in
 {
-  options.${namespace}.system.fonts = {
-    enable = lib.mkEnableOption "fonts";
+  options.${namespace}.cli-apps.tool.misc = {
+    enable = lib.mkEnableOption "misc";
     persistence = lib.mkEnableOption "add files and directories to impermanence" // {
       default = true;
     };
   };
 
-  config = {
-    fonts.fontconfig = {
-      inherit (cfg) enable;
-    };
-
+  config = lib.mkIf cfg.enable {
     ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
-      xdg.cache.directories = [ "fontconfig" ];
+      xdg.cache.directories = [
+        "pre-commit"
+      ];
     };
   };
 

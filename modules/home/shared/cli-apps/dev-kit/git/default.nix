@@ -143,6 +143,7 @@ in
       xdg.config.files = [
         "gh/hosts.yml"
       ];
+      xdg.cache.directories = [ "gh" ];
     };
   };
 

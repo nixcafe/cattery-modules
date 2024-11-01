@@ -6,6 +6,13 @@
   ...
 }:
 let
+  inherit (lib)
+    any
+    mkOption
+    types
+    optional
+    optionalAttrs
+    ;
   inherit (pkgs.stdenv) isDarwin;
 
   pnpmHome =
@@ -16,8 +23,18 @@ let
   cfg = config.${namespace}.cli-apps.dev-kit.javascript;
 in
 {
-  options.${namespace}.cli-apps.dev-kit.javascript = {
+  options.${namespace}.cli-apps.dev-kit.javascript = with types; {
     enable = lib.mkEnableOption "javascript";
+    needs = mkOption {
+      type = listOf (enum [
+        "pnpm"
+        "yarn"
+      ]);
+      default = [ "pnpm" ];
+    };
+    persistence = lib.mkEnableOption "add files and directories to impermanence" // {
+      default = true;
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -29,12 +46,35 @@ in
         bun
         dprint
       ];
-      sessionVariables = {
+      sessionVariables = optionalAttrs (any (x: x == "pnpm") cfg.needs) {
         PNPM_HOME = pnpmHome;
       };
-      sessionPath = [
-        "$PNPM_HOME"
-      ];
+      sessionPath = optional (any (x: x == "pnpm") cfg.needs) "$PNPM_HOME";
+    };
+
+    ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
+      directories = [ ".npm" ];
+      xdg.cache.directories =
+        [
+          "node"
+        ]
+        ++ (builtins.filter (x: x != "") (
+          map (
+            x:
+            if x == "pnpm" then
+              "pnpm"
+            else if x == "yarn" then
+              "yarn"
+            else
+              ""
+          ) cfg.needs
+        ));
+      xdg.data.directories = builtins.filter (x: x != "") (
+        map (x: if x == "pnpm" then "pnpm" else "") cfg.needs
+      );
+      xdg.state.directories = builtins.filter (x: x != "") (
+        map (x: if x == "pnpm" then "pnpm" else "") cfg.needs
+      );
     };
   };
 
