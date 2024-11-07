@@ -16,5 +16,12 @@ in
       signal-desktop
       element-desktop
     ];
+
+    ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
+      xdg.config.directories = [
+        "Signal"
+        "Element"
+      ];
+    };
   };
 }

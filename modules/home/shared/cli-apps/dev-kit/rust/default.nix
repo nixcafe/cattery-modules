@@ -11,6 +11,9 @@ in
 {
   options.${namespace}.cli-apps.dev-kit.rust = {
     enable = lib.mkEnableOption "rust";
+    persistence = lib.mkEnableOption "add files and directories to impermanence" // {
+      default = true;
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -19,6 +22,13 @@ in
       rustup
       sccache
     ];
+
+    ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
+      directories = [
+        ".rustup"
+        ".cargo"
+      ];
+    };
   };
 
 }

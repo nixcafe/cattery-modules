@@ -29,7 +29,7 @@ in
     '';
     email = mkOption {
       type = nullOr str;
-      default = user.email or null;
+      default = user.email.address or null;
     };
     group = mkOption {
       type = str;

@@ -61,7 +61,7 @@ in
 
       # linux config
       apps = {
-        mail = mkDefaultEnabled;
+        thunderbird = mkDefaultEnabled;
         science = mkDefaultEnabled;
         video = mkDefaultEnabled;
       };

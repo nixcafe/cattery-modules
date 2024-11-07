@@ -27,13 +27,59 @@ in
       type = str;
       default = cfg.settings.name or "nixos";
     };
-    nickname = mkOption {
+    realName = mkOption {
       type = nullOr str;
-      default = cfg.settings.nickname or cfg.name or null;
+      default = cfg.settings.realName or cfg.name or null;
     };
-    email = mkOption {
-      type = nullOr str;
-      default = cfg.settings.email or null;
+    email = {
+      address = mkOption {
+        type = nullOr str;
+        default = cfg.settings.email.address or null;
+      };
+      userName = mkOption {
+        type = nullOr str;
+        default = cfg.email.address;
+        description = ''
+          The server username of this account. This will be used as
+          the SMTP, IMAP, and JMAP user name.
+        '';
+      };
+      imap = mkOption {
+        type = nullOr (submodule {
+          options = {
+            host = mkOption {
+              type = str;
+              example = "imap.example.org";
+              description = ''
+                Hostname of IMAP server.
+              '';
+            };
+            port = mkOption {
+              type = nullOr port;
+              default = 993;
+            };
+          };
+        });
+        default = cfg.settings.email.imap or null;
+      };
+      smtp = mkOption {
+        type = nullOr (submodule {
+          options = {
+            host = mkOption {
+              type = str;
+              example = "smtp.example.org";
+              description = ''
+                Hostname of SMTP server.
+              '';
+            };
+            port = mkOption {
+              type = nullOr port;
+              default = 587;
+            };
+          };
+        });
+        default = cfg.settings.email.smtp or null;
+      };
     };
     home = mkOption {
       type = nullOr str;

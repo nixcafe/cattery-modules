@@ -48,11 +48,11 @@ in
     enable = lib.mkEnableOption "git";
     userName = mkOption {
       type = nullOr str;
-      default = user.nickname or null;
+      default = user.realName or null;
     };
     userEmail = mkOption {
       type = nullOr str;
-      default = user.email or null;
+      default = user.email.address or null;
     };
     signing = mkOption {
       type = nullOr signModule;
@@ -63,11 +63,11 @@ in
         options = {
           smtpserver = mkOption {
             type = nullOr str;
-            default = null;
+            default = user.email.smtp.host or null;
           };
           smtpserverport = mkOption {
-            type = nullOr str;
-            default = "587";
+            type = nullOr port;
+            default = user.email.smtp.port or 587;
           };
           smtpencryption = mkOption {
             type = nullOr str;
@@ -75,7 +75,7 @@ in
           };
           smtpuser = mkOption {
             type = nullOr str;
-            default = cfg.userEmail or null;
+            default = user.email.userName or cfg.userEmail or null;
           };
           confirm = mkOption {
             type = enum [

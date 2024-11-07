@@ -18,5 +18,17 @@ in
       ## android studio
       android-studio
     ];
+
+    ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
+      directories = [
+        ".android"
+      ];
+      xdg.data.directories = [
+        "Google"
+      ];
+      xdg.config.directories = [
+        "Google"
+      ];
+    };
   };
 }
