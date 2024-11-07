@@ -1,32 +1,24 @@
 {
   config,
-  pkgs,
   lib,
   namespace,
   ...
 }:
 let
-  cfg = config.${namespace}.cli-apps.dev-kit.rust;
+  cfg = config.${namespace}.cli-apps.tool.misc;
 in
 {
-  options.${namespace}.cli-apps.dev-kit.rust = {
-    enable = lib.mkEnableOption "rust";
+  options.${namespace}.cli-apps.tool.misc = {
+    enable = lib.mkEnableOption "misc";
     persistence = lib.mkEnableOption "add files and directories to impermanence" // {
       default = true;
     };
   };
 
   config = lib.mkIf cfg.enable {
-    home.packages = with pkgs; [
-      # rust
-      rustup
-      sccache
-    ];
-
     ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
-      directories = [
-        ".rustup"
-        ".cargo"
+      xdg.cache.directories = [
+        "pre-commit"
       ];
     };
   };

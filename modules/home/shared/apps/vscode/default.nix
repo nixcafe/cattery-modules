@@ -18,6 +18,9 @@ in
       type = listOf str;
     };
     defaultEditor = lib.mkEnableOption "vscode to $EDITOR";
+    persistence = lib.mkEnableOption "add files and directories to impermanence" // {
+      default = true;
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -33,6 +36,15 @@ in
     home.sessionVariables = lib.mkIf cfg.defaultEditor {
       EDITOR = "code --new-window --wait";
       VISUAL = "$EDITOR";
+    };
+
+    ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
+      directories = [
+        ".vscode"
+      ];
+      xdg.config.directories = [
+        "Code"
+      ];
     };
   };
 

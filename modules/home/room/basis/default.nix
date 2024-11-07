@@ -43,11 +43,15 @@ in
           network = mkDefaultEnabled;
           compressor = mkDefaultEnabled;
           useful = mkDefaultEnabled;
+          misc = mkDefaultEnabled;
+        };
+
+        file-manager = {
+          yazi = mkDefaultEnabled;
         };
 
         # linux config
         disk = mkDefaultEnabled;
-        git-credentials = mkDefaultEnabled;
         misc = mkDefaultEnabled;
       };
     };

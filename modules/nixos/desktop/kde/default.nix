@@ -13,6 +13,10 @@ in
 {
   options.${namespace}.desktop.kde = {
     enable = lib.mkEnableOption "kde";
+    useConnect = lib.mkEnableOption "kdeconnect";
+    persistence = lib.mkEnableOption "add files and directories to impermanence" // {
+      default = true;
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -21,8 +25,18 @@ in
 
       home.extraOptions = {
         home.packages = with pkgs; [ kwalletcli ];
+
+        ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
+          xdg.config.files = [
+            "kwalletmanagerrc"
+            "kwalletrc"
+          ];
+          xdg.data.directories = [ "kwalletd" ];
+        };
       };
     };
+
+    programs.kdeconnect.enable = cfg.useConnect;
 
     # sddm for login
     services.displayManager.sddm = {

@@ -11,6 +11,9 @@ in
 {
   options.${namespace}.apps.instant-messengers = {
     enable = lib.mkEnableOption "instant messengers";
+    persistence = lib.mkEnableOption "add files and directories to impermanence" // {
+      default = true;
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -18,5 +21,14 @@ in
       telegram-desktop
       vesktop # replace discord
     ];
+
+    ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
+      xdg.data.directories = [
+        "TelegramDesktop"
+      ];
+      xdg.config.directories = [
+        "vesktop"
+      ];
+    };
   };
 }

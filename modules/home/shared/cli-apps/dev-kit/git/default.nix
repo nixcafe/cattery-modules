@@ -12,6 +12,7 @@ let
     mkMerge
     optionalAttrs
     ;
+  inherit (pkgs.stdenv) isLinux;
   inherit (config.${namespace}) user;
 
   signModule = types.submodule {
@@ -47,11 +48,11 @@ in
     enable = lib.mkEnableOption "git";
     userName = mkOption {
       type = nullOr str;
-      default = user.nickname or null;
+      default = user.realName or null;
     };
     userEmail = mkOption {
       type = nullOr str;
-      default = user.email or null;
+      default = user.email.address or null;
     };
     signing = mkOption {
       type = nullOr signModule;
@@ -62,11 +63,11 @@ in
         options = {
           smtpserver = mkOption {
             type = nullOr str;
-            default = null;
+            default = user.email.smtp.host or null;
           };
           smtpserverport = mkOption {
-            type = nullOr str;
-            default = "587";
+            type = nullOr port;
+            default = user.email.smtp.port or 587;
           };
           smtpencryption = mkOption {
             type = nullOr str;
@@ -74,7 +75,7 @@ in
           };
           smtpuser = mkOption {
             type = nullOr str;
-            default = cfg.userEmail or null;
+            default = user.email.userName or cfg.userEmail or null;
           };
           confirm = mkOption {
             type = enum [
@@ -94,9 +95,17 @@ in
       type = attrs;
       default = { };
     };
+    persistence = lib.mkEnableOption "add files and directories to impermanence" // {
+      default = true;
+    };
   };
 
   config = lib.mkIf cfg.enable {
+    home.packages = with pkgs; [
+      # common lib
+      libsecret # for git credentials
+    ];
+
     programs = {
       git = {
         inherit (cfg) userName userEmail signing;
@@ -115,11 +124,26 @@ in
 
           (optionalAttrs (cfg.sendEmail != null) { sendemail = cfg.sendEmail; })
 
+          (optionalAttrs isLinux {
+            credential.helper = "/etc/profiles/per-user/$(whoami)/bin/git-credential-libsecret";
+          })
+
           cfg.extraConfig
         ];
       };
       gh.enable = true;
       gitui.enable = true;
+    };
+
+    home.shellAliases = {
+      diff = "difft";
+    };
+
+    ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
+      xdg.config.files = [
+        "gh/hosts.yml"
+      ];
+      xdg.cache.directories = [ "gh" ];
     };
   };
 

@@ -19,14 +19,10 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    ${namespace}.home.extraOptions = {
-      programs = {
-        zsh.initExtra = lib.mkAfter ''
-          # ulimit
-          ulimit -n ${toString cfg.openFilesLimit}
-        '';
-      };
-    };
+    environment.extraInit = lib.mkAfter ''
+      # ulimit
+      ulimit -n ${toString cfg.openFilesLimit}
+    '';
   };
 
 }

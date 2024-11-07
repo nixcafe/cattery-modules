@@ -27,6 +27,8 @@ in
         wayland = true;
       };
     };
+
+    programs.seahorse.enable = true;
   };
 
 }

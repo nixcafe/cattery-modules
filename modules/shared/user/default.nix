@@ -7,10 +7,17 @@
 }:
 let
   inherit (pkgs.stdenv) isLinux isDarwin;
-  inherit (lib) mkOption types optionalAttrs;
+  inherit (lib)
+    mkDefault
+    mkOption
+    types
+    optionalAttrs
+    ;
 
   linuxUserGroup = "users";
   user = config.users.users.${cfg.name};
+  shadowPath = "shadow/${cfg.name}";
+  passwordFile = config.${namespace}.secrets.hosts.global.files.${shadowPath}.path;
 
   cfg = config.${namespace}.user;
 in
@@ -20,13 +27,59 @@ in
       type = str;
       default = cfg.settings.name or "nixos";
     };
-    nickname = mkOption {
+    realName = mkOption {
       type = nullOr str;
-      default = cfg.settings.nickname or cfg.name or null;
+      default = cfg.settings.realName or cfg.name or null;
     };
-    email = mkOption {
-      type = nullOr str;
-      default = cfg.settings.email or null;
+    email = {
+      address = mkOption {
+        type = nullOr str;
+        default = cfg.settings.email.address or null;
+      };
+      userName = mkOption {
+        type = nullOr str;
+        default = cfg.email.address;
+        description = ''
+          The server username of this account. This will be used as
+          the SMTP, IMAP, and JMAP user name.
+        '';
+      };
+      imap = mkOption {
+        type = nullOr (submodule {
+          options = {
+            host = mkOption {
+              type = str;
+              example = "imap.example.org";
+              description = ''
+                Hostname of IMAP server.
+              '';
+            };
+            port = mkOption {
+              type = nullOr port;
+              default = 993;
+            };
+          };
+        });
+        default = cfg.settings.email.imap or null;
+      };
+      smtp = mkOption {
+        type = nullOr (submodule {
+          options = {
+            host = mkOption {
+              type = str;
+              example = "smtp.example.org";
+              description = ''
+                Hostname of SMTP server.
+              '';
+            };
+            port = mkOption {
+              type = nullOr port;
+              default = 587;
+            };
+          };
+        });
+        default = cfg.settings.email.smtp or null;
+      };
     };
     home = mkOption {
       type = nullOr str;
@@ -42,6 +95,11 @@ in
       type = nullOr int;
       default = if isLinux then config.users.groups.${linuxUserGroup}.gid else user.gid;
       readOnly = true;
+    };
+    useSecretPasswordFile = lib.mkEnableOption "use secret password file to `hashedPasswordFile`";
+    initialHashedPassword = mkOption {
+      type = nullOr str;
+      default = cfg.settings.initialHashedPassword or null;
     };
     authorizedKeys = {
       keys = lib.mkOption {
@@ -87,10 +145,21 @@ in
             extraGroups = [ "wheel" ];
           })
           // {
+            # `mkpasswd -m scrypt`
+            inherit (cfg) initialHashedPassword;
+            # https://github.com/NixOS/nixpkgs/issues/148044
+            # https://discourse.nixos.org/t/how-to-use-users-users-name-passwordfile/12378
+            hashedPasswordFile = if cfg.useSecretPasswordFile then passwordFile else null;
             openssh.authorizedKeys = cfg.authorizedKeys;
           };
+
+        mutableUsers = mkDefault (!cfg.useSecretPasswordFile);
         # default shell
       } // (optionalAttrs config.programs.zsh.enable { defaultUserShell = pkgs.zsh; });
+
+      ${namespace}.secrets.hosts.global.files = optionalAttrs cfg.useSecretPasswordFile {
+        ${shadowPath}.mode = "0440";
+      };
     })
   ];
 }

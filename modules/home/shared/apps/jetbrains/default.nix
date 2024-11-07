@@ -11,6 +11,9 @@ in
 {
   options.${namespace}.apps.jetbrains = {
     enable = lib.mkEnableOption "jetbrains";
+    persistence = lib.mkEnableOption "add files and directories to impermanence" // {
+      default = true;
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -28,6 +31,15 @@ in
       jetbrains.datagrip
       jetbrains.clion
     ];
+
+    ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
+      xdg.data.directories = [
+        "JetBrains"
+      ];
+      xdg.config.directories = [
+        "JetBrains"
+      ];
+    };
   };
 
 }

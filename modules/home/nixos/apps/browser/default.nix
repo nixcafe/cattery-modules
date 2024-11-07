@@ -6,7 +6,12 @@
   ...
 }:
 let
-  inherit (lib) mkOption types any;
+  inherit (lib)
+    optional
+    mkOption
+    types
+    any
+    ;
   inherit (pkgs.stdenv) isLinux;
 
   cfg = config.${namespace}.apps.browser;
@@ -21,6 +26,9 @@ in
         "chrome"
       ]);
       default = [ "firefox" ];
+    };
+    persistence = lib.mkEnableOption "add files and directories to impermanence" // {
+      default = true;
     };
   };
 
@@ -50,10 +58,36 @@ in
           "--enable-wayland-ime"
         ];
       };
-
-      # browserpass for password management
-      browserpass.enable = true;
     };
+
+    ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
+      directories = optional (any (x: x == "firefox") cfg.needs) ".mozilla";
+      xdg.config.directories = builtins.filter (x: x != "") (
+        map (
+          x:
+          if x == "chromium" then
+            "chromium"
+          else if x == "chrome" then
+            "google-chrome"
+          else
+            ""
+        ) cfg.needs
+      );
+      xdg.cache.directories = builtins.filter (x: x != "") (
+        map (
+          x:
+          if x == "firefox" then
+            "mozilla/firefox"
+          else if x == "chromium" then
+            "chromium"
+          else if x == "chrome" then
+            "google-chrome"
+          else
+            ""
+        ) cfg.needs
+      );
+    };
+
   };
 
 }

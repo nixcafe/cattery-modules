@@ -18,6 +18,7 @@ let
     foldl'
     ;
   inherit (config.age) secrets;
+  inherit (config.users) users;
 
   cfg = config.${namespace}.secrets;
 
