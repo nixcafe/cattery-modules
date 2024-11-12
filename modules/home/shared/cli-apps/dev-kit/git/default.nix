@@ -19,7 +19,7 @@ let
     options = {
       key = mkOption {
         type = types.nullOr types.str;
-        default = user.signKey or null;
+        default = user.gpg.signKey or null;
         description = ''
           The default GPG signing key fingerprint.
 
@@ -56,7 +56,7 @@ in
     };
     signing = mkOption {
       type = nullOr signModule;
-      default = if ((user.signKey or null) != null) then { } else null;
+      default = if ((user.gpg.signKey or null) != null) then { } else null;
     };
     sendEmail = mkOption {
       type = nullOr (submodule {

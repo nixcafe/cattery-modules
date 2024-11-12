@@ -86,9 +86,15 @@ in
       default = config.home.homeDirectory;
       readOnly = true;
     };
-    signKey = mkOption {
-      type = nullOr str;
-      default = cfg.settings.signKey or null;
+    gpg = {
+      signKey = mkOption {
+        type = nullOr str;
+        default = cfg.settings.gpg.signKey or null;
+      };
+      encryptKey = mkOption {
+        type = nullOr str;
+        default = cfg.settings.gpg.encryptKey or null;
+      };
     };
     settings = mkOption {
       type = attrs;
@@ -115,8 +121,8 @@ in
             useStartTls = true;
           };
         };
-        gpg = optionalAttrs (cfg.signKey != null) {
-          key = cfg.signKey;
+        gpg = optionalAttrs (cfg.gpg.encryptKey != null) {
+          key = cfg.gpg.encryptKey;
           signByDefault = true;
         };
       };
