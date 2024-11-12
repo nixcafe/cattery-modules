@@ -20,6 +20,7 @@ in
       room.desktop.basis = mkDefaultEnabled;
 
       apps = {
+        wezterm = mkDefaultEnabled;
         vscode = {
           enable = mkDefault true;
           defaultEditor = mkDefault true;
