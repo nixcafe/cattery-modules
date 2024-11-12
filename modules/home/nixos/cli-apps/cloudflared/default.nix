@@ -13,6 +13,9 @@ in
 {
   options.${namespace}.cli-apps.cloudflared = {
     enable = lib.mkEnableOption "cloudflared";
+    persistence = lib.mkEnableOption "add files and directories to impermanence" // {
+      default = true;
+    };
   };
 
   config = lib.mkIf (cfg.enable && isLinux) {
@@ -20,6 +23,11 @@ in
       # network
       cloudflared # tunnel
     ];
+    ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
+      directories = [
+        ".cloudflared"
+      ];
+    };
   };
 
 }
