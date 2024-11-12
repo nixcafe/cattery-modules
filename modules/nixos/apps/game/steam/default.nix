@@ -10,6 +10,9 @@ in
 {
   options.${namespace}.apps.game.steam = {
     enable = lib.mkEnableOption "steam";
+    persistence = lib.mkEnableOption "add files and directories to impermanence" // {
+      default = true;
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -19,6 +22,14 @@ in
       remotePlay.openFirewall = true;
     };
     hardware.steam-hardware.enable = true;
+
+    ${namespace}.home.extraOptions = {
+      ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
+        directories = [
+          ".steam"
+        ];
+      };
+    };
   };
 
 }
