@@ -7,11 +7,11 @@
 let
   inherit (lib) mkOption types;
 
-  cfg = config.${namespace}.cli-apps.tool.fastfetch;
+  cfg = config.${namespace}.cli-apps.tool.hyfetch;
 in
 {
-  options.${namespace}.cli-apps.tool.fastfetch = with types; {
-    enable = lib.mkEnableOption "fastfetch";
+  options.${namespace}.cli-apps.tool.hyfetch = with types; {
+    enable = lib.mkEnableOption "hyfetch";
     settings = mkOption {
       type = attrs;
       default = { };
@@ -19,9 +19,9 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    programs.fastfetch = {
-      inherit (cfg) settings;
+    programs.hyfetch = {
       enable = true;
+      inherit (cfg) settings;
     };
   };
 
