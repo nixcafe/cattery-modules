@@ -27,10 +27,6 @@ in
         home.packages = with pkgs; [ kwalletcli ];
 
         ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
-          xdg.config.files = [
-            "kwalletmanagerrc"
-            "kwalletrc"
-          ];
           xdg.data.directories = [ "kwalletd" ];
         };
       };
