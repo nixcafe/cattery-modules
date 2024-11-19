@@ -28,6 +28,9 @@ in
         directories = [
           ".steam"
         ];
+        xdg.data.directories = [
+          "Steam"
+        ];
       };
     };
   };
