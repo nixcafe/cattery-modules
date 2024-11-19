@@ -8,11 +8,11 @@
 let
   inherit (lib.${namespace}) mkDefaultEnabled;
 
-  cfg = config.${namespace}.desktop.kde;
+  cfg = config.${namespace}.desktop.plasma;
 in
 {
-  options.${namespace}.desktop.kde = {
-    enable = lib.mkEnableOption "kde";
+  options.${namespace}.desktop.plasma = {
+    enable = lib.mkEnableOption "plasma";
     useConnect = lib.mkEnableOption "kdeconnect";
     persistence = lib.mkEnableOption "add files and directories to impermanence" // {
       default = true;
