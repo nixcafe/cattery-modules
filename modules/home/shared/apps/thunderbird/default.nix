@@ -6,7 +6,6 @@
   ...
 }:
 let
-  inherit (pkgs.stdenv) isLinux;
   inherit (lib) mkDefault mkOption types;
   inherit (config.${namespace}) user;
 
@@ -35,7 +34,7 @@ in
     };
   };
 
-  config = lib.mkIf (cfg.enable && isLinux) {
+  config = lib.mkIf cfg.enable {
     programs.thunderbird = {
       enable = true;
       profiles.${user.name} = {
