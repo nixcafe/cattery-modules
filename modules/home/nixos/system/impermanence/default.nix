@@ -23,7 +23,7 @@ let
       x:
       if builtins.isString x then
         "${prefix}/${x}"
-      else if builtins.isAttrs x && builtins.isString x.attrName or null then
+      else if builtins.isAttrs x && builtins.isString x.${attrName} or null then
         x // { ${attrName} = "${prefix}/${x.${attrName}}"; }
       else
         x

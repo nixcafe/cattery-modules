@@ -26,10 +26,16 @@ in
     ${namespace}.home.extraOptions = {
       ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
         directories = [
-          ".steam"
+          {
+            directory = ".steam";
+            method = "symlink";
+          }
         ];
         xdg.data.directories = [
-          "Steam"
+          {
+            directory = "Steam";
+            method = "symlink";
+          }
         ];
       };
     };
