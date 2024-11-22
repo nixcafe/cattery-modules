@@ -55,6 +55,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
+
+    # theme
+    catppuccin = {
+      url = "github:catppuccin/nix";
+    };
   };
 
   outputs =
