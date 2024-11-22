@@ -91,7 +91,20 @@ in
       });
       default = null;
     };
+    ignores = mkOption {
+      type = listOf str;
+      default = [ ];
+      example = [
+        "*~"
+        "*.swp"
+      ];
+      description = "List of paths that should be globally ignored.";
+    };
     extraConfig = mkOption {
+      type = attrs;
+      default = { };
+    };
+    extraOptions = mkOption {
       type = attrs;
       default = { };
     };
@@ -108,7 +121,12 @@ in
 
     programs = {
       git = {
-        inherit (cfg) userName userEmail signing;
+        inherit (cfg)
+          userName
+          userEmail
+          signing
+          ignores
+          ;
         enable = true;
         package = pkgs.gitFull;
         lfs.enable = true;
@@ -130,7 +148,7 @@ in
 
           cfg.extraConfig
         ];
-      };
+      } // cfg.extraOptions;
       gh.enable = true;
       gitui.enable = true;
     };
