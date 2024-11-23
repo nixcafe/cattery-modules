@@ -36,6 +36,7 @@ in
             directory = "Steam";
             method = "symlink";
           }
+          "vulkan"
         ];
       };
     };
