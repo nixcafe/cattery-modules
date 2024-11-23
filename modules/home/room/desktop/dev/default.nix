@@ -19,7 +19,6 @@ in
       room.desktop.general = mkDefaultEnabled;
 
       apps = {
-        thunderbird = mkDefaultEnabled;
         instant-messengers = mkDefaultEnabled;
         jetbrains = mkDefaultEnabled;
       };
@@ -62,6 +61,7 @@ in
 
       # linux config
       apps = {
+        thunderbird = mkDefaultEnabled;
         science = mkDefaultEnabled;
         video = mkDefaultEnabled;
       };
