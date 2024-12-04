@@ -37,14 +37,11 @@ in
         fira-code
         fira-code-symbols
         monaspace
-        (nerdfonts.override {
-          fonts = [
-            "FiraCode"
-            "JetBrainsMono"
-            "Iosevka"
-            "Monaspace"
-          ];
-        })
+
+        nerd-fonts.fira-code
+        nerd-fonts.jetbrains-mono
+        nerd-fonts.iosevka
+        nerd-fonts.monaspace
       ];
     })
 
