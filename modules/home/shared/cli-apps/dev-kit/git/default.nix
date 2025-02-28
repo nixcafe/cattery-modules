@@ -27,12 +27,26 @@ let
           to use depending on commit’s author.
         '';
       };
+      format = mkOption {
+        type = types.nullOr (
+          types.enum [
+            "openpgp"
+            "ssh"
+            "x509"
+          ]
+        );
+        default = "openpgp";
+        description = ''
+          The signing method to use when signing commits and tags.
+          Valid values are `openpgp` (OpenPGP/GnuPG), `ssh` (SSH), and `x509` (X.509 certificates).
+        '';
+      };
       signByDefault = mkOption {
         type = types.bool;
         default = true;
         description = "Whether commits and tags should be signed by default.";
       };
-      gpgPath = mkOption {
+      signer = mkOption {
         type = types.str;
         default = "${pkgs.gnupg}/bin/gpg2";
         defaultText = "\${pkgs.gnupg}/bin/gpg2";
