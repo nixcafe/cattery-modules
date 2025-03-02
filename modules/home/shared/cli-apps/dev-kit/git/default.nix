@@ -19,7 +19,7 @@ let
     options = {
       key = mkOption {
         type = types.nullOr types.str;
-        default = user.signKey or null;
+        default = user.gpg.signKey or null;
         description = ''
           The default GPG signing key fingerprint.
 
@@ -27,12 +27,26 @@ let
           to use depending on commit’s author.
         '';
       };
+      format = mkOption {
+        type = types.nullOr (
+          types.enum [
+            "openpgp"
+            "ssh"
+            "x509"
+          ]
+        );
+        default = "openpgp";
+        description = ''
+          The signing method to use when signing commits and tags.
+          Valid values are `openpgp` (OpenPGP/GnuPG), `ssh` (SSH), and `x509` (X.509 certificates).
+        '';
+      };
       signByDefault = mkOption {
         type = types.bool;
         default = true;
         description = "Whether commits and tags should be signed by default.";
       };
-      gpgPath = mkOption {
+      signer = mkOption {
         type = types.str;
         default = "${pkgs.gnupg}/bin/gpg2";
         defaultText = "\${pkgs.gnupg}/bin/gpg2";
@@ -56,7 +70,7 @@ in
     };
     signing = mkOption {
       type = nullOr signModule;
-      default = if ((user.signKey or null) != null) then { } else null;
+      default = if ((user.gpg.signKey or null) != null) then { } else null;
     };
     sendEmail = mkOption {
       type = nullOr (submodule {
@@ -91,7 +105,20 @@ in
       });
       default = null;
     };
+    ignores = mkOption {
+      type = listOf str;
+      default = [ ];
+      example = [
+        "*~"
+        "*.swp"
+      ];
+      description = "List of paths that should be globally ignored.";
+    };
     extraConfig = mkOption {
+      type = attrs;
+      default = { };
+    };
+    extraOptions = mkOption {
       type = attrs;
       default = { };
     };
@@ -108,7 +135,12 @@ in
 
     programs = {
       git = {
-        inherit (cfg) userName userEmail signing;
+        inherit (cfg)
+          userName
+          userEmail
+          signing
+          ignores
+          ;
         enable = true;
         package = pkgs.gitFull;
         lfs.enable = true;
@@ -130,7 +162,7 @@ in
 
           cfg.extraConfig
         ];
-      };
+      } // cfg.extraOptions;
       gh.enable = true;
       gitui.enable = true;
     };

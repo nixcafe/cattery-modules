@@ -43,14 +43,21 @@ in
         description = ''List of libraries to be preloaded. '';
       };
       log_line_prefix = mkOption {
-        type = types.str;
+        type = str;
         default = "%q%r ";
         example = "%q[%r]%u@%d%a ";
         description = ''Ref: <https://www.postgresql.org/docs/current/runtime-config-logging.html#GUC-LOG-LINE-PREFIX>.'';
       };
       port = mkOption {
-        type = types.port;
+        type = port;
         default = 5432;
+      };
+      jit = mkOption {
+        type = enum [
+          "on"
+          "off"
+        ];
+        default = "off";
       };
     };
     extraOptions = mkOption {

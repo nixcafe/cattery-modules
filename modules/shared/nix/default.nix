@@ -34,7 +34,6 @@ in
           randomizedDelaySec = "45min";
         })
         // (optionalAttrs isDarwin {
-          user = "root";
           interval = {
             Weekday = 1;
             Hour = 4;

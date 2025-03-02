@@ -13,6 +13,9 @@ in
 {
   options.${namespace}.apps.useful = {
     enable = lib.mkEnableOption "useful";
+    persistence = lib.mkEnableOption "add files and directories to impermanence" // {
+      default = true;
+    };
   };
 
   config = lib.mkIf (cfg.enable && isLinux) {
@@ -25,6 +28,19 @@ in
       ventoy-full # usb boot creator
       libreoffice # office suite
     ];
+
+    ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
+      xdg = {
+        cache.directories = [
+          "filezilla"
+        ];
+        config.directories = [
+          "filezilla"
+          "obsidian"
+          "libreoffice"
+        ];
+      };
+    };
   };
 
 }

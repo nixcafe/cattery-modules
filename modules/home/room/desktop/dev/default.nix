@@ -67,7 +67,6 @@ in
       };
       cli-apps = {
         cloudflared = mkDefaultEnabled;
-        tailscale = mkDefaultEnabled;
         warp = mkDefaultEnabled;
       };
 

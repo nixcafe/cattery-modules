@@ -16,11 +16,15 @@ in
   config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [
       # tui
-      btop
-      htop
       glances
-      inxi # yep i have 4 monitoring tools for some reason
+      inxi
+      iftop
     ];
+
+    programs = {
+      btop.enable = true;
+      htop.enable = true;
+    };
   };
 
 }

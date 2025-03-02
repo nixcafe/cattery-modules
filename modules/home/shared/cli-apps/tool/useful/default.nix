@@ -29,7 +29,6 @@ in
         tokei # a program that allows you to count your code, quickly
         iperf # tool to measure IP bandwidth using UDP or TCP
         nmap # a free and open source utility for network discovery and security auditing
-        rmlint # file dedupe
         pciutils # lspci
         openssl # a cryptographic library that implements the SSL and TLS protocols
         tree # command to produce a depth indented directory listing

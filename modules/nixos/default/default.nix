@@ -8,6 +8,7 @@ let
     vscode-server.nixosModules.default
     nixos-wsl.nixosModules.default
     nix-gaming.nixosModules.pipewireLowLatency
+    catppuccin.nixosModules.catppuccin
   ];
 in
 {

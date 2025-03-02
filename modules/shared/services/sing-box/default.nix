@@ -22,7 +22,11 @@ in
         services.sing-box.enable = true;
         systemd.services.sing-box = {
           # use own config
-          preStart = lib.mkForce "";
+          preStart = lib.mkAfter ''
+            if [ -f "/etc/sing-box/config.json" ]; then
+              cp -f /etc/sing-box/config.json /run/sing-box/config.json
+            fi
+          '';
         };
       })
     ]

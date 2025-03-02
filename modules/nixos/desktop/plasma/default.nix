@@ -8,11 +8,11 @@
 let
   inherit (lib.${namespace}) mkDefaultEnabled;
 
-  cfg = config.${namespace}.desktop.kde;
+  cfg = config.${namespace}.desktop.plasma;
 in
 {
-  options.${namespace}.desktop.kde = {
-    enable = lib.mkEnableOption "kde";
+  options.${namespace}.desktop.plasma = {
+    enable = lib.mkEnableOption "plasma";
     useConnect = lib.mkEnableOption "kdeconnect";
     persistence = lib.mkEnableOption "add files and directories to impermanence" // {
       default = true;
@@ -27,10 +27,6 @@ in
         home.packages = with pkgs; [ kwalletcli ];
 
         ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
-          xdg.config.files = [
-            "kwalletmanagerrc"
-            "kwalletrc"
-          ];
           xdg.data.directories = [ "kwalletd" ];
         };
       };
@@ -41,6 +37,7 @@ in
     # sddm for login
     services.displayManager.sddm = {
       enable = true;
+      autoNumlock = true;
       wayland.enable = true;
     };
 

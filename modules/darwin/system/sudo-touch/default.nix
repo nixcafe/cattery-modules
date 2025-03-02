@@ -13,6 +13,6 @@ in
   };
 
   config = {
-    security.pam.enableSudoTouchIdAuth = cfg.enable;
+    security.pam.services.sudo_local.touchIdAuth = cfg.enable;
   };
 }

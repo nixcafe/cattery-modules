@@ -19,7 +19,6 @@ in
 
     ${namespace} = {
       brew = mkDefaultEnabled;
-      services.nix-daemon = mkDefaultEnabled;
       system = {
         sudoTouch = mkDefaultEnabled;
         useful = mkDefaultEnabled;

@@ -11,6 +11,9 @@ in
 {
   options.${namespace}.system.fcitx5 = {
     enable = lib.mkEnableOption "fcitx5";
+    persistence = lib.mkEnableOption "add files and directories to impermanence" // {
+      default = true;
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -34,6 +37,17 @@ in
         # cli stuff
         rime-cli
       ];
+
+      ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
+        xdg = {
+          config.directories = [
+            "fcitx5"
+          ];
+          data.directories = [
+            "fcitx5"
+          ];
+        };
+      };
     };
   };
 

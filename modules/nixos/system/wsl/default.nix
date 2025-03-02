@@ -19,7 +19,6 @@ in
     wsl = {
       enable = true;
       defaultUser = "${config.${namespace}.user.name}";
-      nativeSystemd = true;
       useWindowsDriver = true;
       # docker-desktop.enable = true;
       interop.register = binfmt.enable;
