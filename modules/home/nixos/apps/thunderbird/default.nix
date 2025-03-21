@@ -19,11 +19,11 @@ in
       enable = lib.mkEnableOption "thunderbird";
       default = mkOption {
         type = str;
-        default = "Nix Packages";
+        default = "nix-packages";
       };
       privateDefault = mkOption {
         type = str;
-        default = "Google";
+        default = "google";
       };
     };
     settings = mkOption {
@@ -46,13 +46,14 @@ in
           inherit (cfg.search) default privateDefault;
           force = true;
           order = mkDefault [
-            "Nix Packages"
-            "NixOS Options"
-            "NixOS Wiki"
-            "Google"
+            "nix-packages"
+            "nixos-options"
+            "nixos-wiki"
+            "google"
           ];
           engines = mkDefault {
-            "Nix Packages" = {
+            "nix-packages" = {
+              name = "Nix Packages";
               urls = [
                 {
                   template = "https://search.nixos.org/packages";
@@ -73,7 +74,8 @@ in
               definedAliases = [ "@np" ];
             };
 
-            "NixOS Options" = {
+            "nixos-options" = {
+              name = "NixOS Options";
               urls = [
                 {
                   template = "https://search.nixos.org/options";
@@ -94,14 +96,15 @@ in
               definedAliases = [ "@no" ];
             };
 
-            "NixOS Wiki" = {
+            "nixos-wiki" = {
+              name = "NixOS Wiki";
               urls = [ { template = "https://wiki.nixos.org/index.php?search={searchTerms}"; } ];
               icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
               updateInterval = 24 * 60 * 60 * 1000; # every day
               definedAliases = [ "@nw" ];
             };
 
-            "Google".metaData.alias = "@g"; # builtin engines only support specifying one additional alias
+            "google".metaData.alias = "@g"; # builtin engines only support specifying one additional alias
           };
         };
       };
