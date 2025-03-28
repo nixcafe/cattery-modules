@@ -21,7 +21,8 @@ in
 
       apps = {
         ghostty = mkDefaultEnabled;
-        vscode = {
+        vscode = mkDefaultEnabled;
+        zed-editor = {
           enable = mkDefault true;
           defaultEditor = mkDefault true;
         };

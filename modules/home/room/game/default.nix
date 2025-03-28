@@ -20,6 +20,7 @@ in
 
       apps = {
         vscode = mkDefaultEnabled;
+        zed-editor = mkDefaultEnabled;
         instant-messengers = mkDefaultEnabled;
       };
       cli-apps = {
