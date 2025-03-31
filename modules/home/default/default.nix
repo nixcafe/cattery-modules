@@ -5,7 +5,7 @@ let
     nix-index-database.hmModules.nix-index
     impermanence.nixosModules.home-manager.impermanence
     plasma-manager.homeManagerModules.plasma-manager
-    catppuccin.homeManagerModules.catppuccin
+    catppuccin.homeModules.catppuccin
   ];
 in
 {
