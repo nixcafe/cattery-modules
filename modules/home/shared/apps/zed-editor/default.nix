@@ -67,6 +67,9 @@ in
 
     ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
       xdg = {
+        cache.directories = [
+          "zed"
+        ];
         data.directories = [
           "zed"
         ];
