@@ -21,6 +21,7 @@ in
       apps = {
         instant-messengers = mkDefaultEnabled;
         jetbrains = mkDefaultEnabled;
+        code-cursor = mkDefaultEnabled;
       };
       cli-apps = {
 
