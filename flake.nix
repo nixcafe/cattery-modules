@@ -60,6 +60,11 @@
     catppuccin = {
       url = "github:catppuccin/nix";
     };
+
+    develop-templates = {
+      url = "git+https://github.com/nixcafe/develop-templates.git?submodules=1";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
