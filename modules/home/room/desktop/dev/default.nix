@@ -5,6 +5,7 @@
   ...
 }:
 let
+  inherit (lib) mkDefault;
   inherit (lib.${namespace}) mkDefaultEnabled;
 
   cfg = config.${namespace}.room.desktop.dev;
@@ -12,6 +13,7 @@ in
 {
   options.${namespace}.room.desktop.dev = {
     enable = lib.mkEnableOption "room desktop dev";
+    allDevKit = lib.mkEnableOption "enable all dev-kit apps";
   };
 
   config = lib.mkIf cfg.enable {
@@ -30,10 +32,15 @@ in
           sqlite = mkDefaultEnabled;
         };
 
-        dev-kit = {
+        dev-kit = lib.mkIf cfg.allDevKit {
           cpp = mkDefaultEnabled;
           dive = mkDefaultEnabled;
           go = mkDefaultEnabled;
+          java = {
+            enable = mkDefault true;
+            maven = mkDefaultEnabled;
+            gradle = mkDefaultEnabled;
+          };
           javascript = mkDefaultEnabled;
           lua = mkDefaultEnabled;
           rust = mkDefaultEnabled;
