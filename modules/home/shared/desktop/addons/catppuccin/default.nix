@@ -15,7 +15,7 @@ in
     enable = lib.mkEnableOption "catppuccin";
     extraOptions = mkOption {
       type = attrs;
-      default = user.settings.catppuccin.global or { };
+      default = user.settings.catppuccin.home or { };
     };
   };
 

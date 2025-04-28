@@ -41,8 +41,8 @@ in
     home = {
       packages = with pkgs; [
         # js
-        nodejs_22
-        corepack_22
+        nodejs_23
+        corepack_23
         bun
         dprint
       ];

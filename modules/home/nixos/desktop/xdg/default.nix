@@ -24,7 +24,6 @@ in
       browser = mkOption {
         type = listOf str;
         default = [
-          "cfg.app.browser;"
           "chromium.desktop"
           "google-chrome.desktop"
         ];
@@ -32,6 +31,8 @@ in
       editor = mkOption {
         type = listOf str;
         default = [
+          "dev.zed.Zed.desktop"
+          "cursor.desktop"
           "code-insiders.desktop"
           "code.desktop"
         ];

@@ -54,9 +54,9 @@ in
           delete_subvolume_recursively() {
             IFS=$'\n'
             for i in $(btrfs subvolume list -o "$1" | cut -f 9- -d ' '); do
-            delete_subvolume_recursively "${x.tempDir}/$i"
+              delete_subvolume_recursively "${x.tempDir}/$i"
             done
-            btrfs subvolume delete "${x.tempDir}/${x.oldSubvolDir}/$1"
+            btrfs subvolume delete "$1"
           }
 
           for i in $(find ${x.tempDir}/${x.oldSubvolDir}/ -maxdepth 1 -mtime +30); do

@@ -3,6 +3,7 @@
   config,
   lib,
   namespace,
+  inputs,
   ...
 }:
 let
@@ -19,6 +20,10 @@ in
   config = lib.mkIf cfg.enable {
     nix = {
       optimise.automatic = isLinux;
+      registry = {
+        # use: `nix flake init -t beans#<name>`
+        beans.flake = inputs.develop-templates;
+      };
       settings = {
         # enable flakes support
         experimental-features = "nix-command flakes";

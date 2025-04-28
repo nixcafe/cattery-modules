@@ -33,13 +33,20 @@ in
     ];
 
     ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
-      xdg.data.directories = [
-        "JetBrains"
-      ];
-      xdg.config.directories = [
-        "JetBrains"
-      ];
+      xdg = {
+        cache.directories = [
+          "JetBrains"
+        ];
+        data.directories = [
+          "JetBrains"
+        ];
+        config.directories = [
+          "JetBrains"
+        ];
+      };
+      directories = [ ".java/.userPrefs/jetbrains" ];
     };
+
   };
 
 }
