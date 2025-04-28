@@ -7,11 +7,11 @@
 let
   inherit (lib) mkOption types;
 
-  cfg = config.${namespace}.cli-apps.editor.helix;
+  cfg = config.${namespace}.cli-apps.editor.vim;
 in
 {
-  options.${namespace}.cli-apps.editor.helix = with types; {
-    enable = lib.mkEnableOption "helix";
+  options.${namespace}.cli-apps.editor.vim = with types; {
+    enable = lib.mkEnableOption "vim";
     extraOptions = mkOption {
       type = attrs;
       default = { };
@@ -19,7 +19,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    programs.helix = {
+    programs.vim = {
       enable = true;
     } // cfg.extraOptions;
   };
