@@ -24,7 +24,6 @@ in
       browser = mkOption {
         type = listOf str;
         default = [
-          "cfg.app.browser;"
           "chromium.desktop"
           "google-chrome.desktop"
         ];
