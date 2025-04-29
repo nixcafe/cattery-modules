@@ -24,13 +24,26 @@ in
       inkscape-with-extensions
       nomacs
       imv
+      krita
     ];
 
     ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
-      xdg.config.directories = [
-        "GIMP"
-        "nomacs"
-      ];
+      xdg = {
+        data.directories = [
+          "krita"
+          "nomacs"
+        ];
+        config = {
+          files = [
+            "kritarc"
+          ];
+          directories = [
+            "GIMP"
+            "nomacs"
+            "inkscape"
+          ];
+        };
+      };
     };
   };
 
