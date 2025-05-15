@@ -20,7 +20,7 @@ in
       room.desktop.basis = mkDefaultEnabled;
 
       apps = {
-        ghostty = mkDefaultEnabled;
+        wezterm = mkDefaultEnabled;
         vscode = mkDefaultEnabled;
         zed-editor = {
           enable = mkDefault true;
