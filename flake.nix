@@ -2,7 +2,6 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     impermanence.url = "github:nix-community/impermanence";
-    vscode-server.url = "github:nix-community/nixos-vscode-server";
 
     darwin = {
       url = "github:LnL7/nix-darwin";
@@ -11,6 +10,11 @@
 
     home-manager = {
       url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    vscode-server = {
+      url = "github:nix-community/nixos-vscode-server";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -37,6 +41,15 @@
     agenix = {
       url = "github:yaxitech/ragenix";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.agenix.follows = "agenix-source";
+    };
+
+    # fix multiple agenix, home-manager, darwin
+    agenix-source = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+      inputs.darwin.follows = "darwin";
     };
 
     snowfall-lib = {
@@ -59,6 +72,7 @@
     # theme
     catppuccin = {
       url = "github:catppuccin/nix";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     develop-templates = {

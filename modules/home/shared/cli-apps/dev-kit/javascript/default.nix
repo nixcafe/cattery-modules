@@ -20,6 +20,10 @@ let
       "/Users/${config.${namespace}.user.name}/Library/pnpm"
     else
       "$HOME/.local/share/pnpm";
+
+  version = "24";
+  nodejs = pkgs."nodejs_${version}";
+  corepack = pkgs."corepack_${version}";
   cfg = config.${namespace}.cli-apps.dev-kit.javascript;
 in
 {
@@ -41,10 +45,13 @@ in
     home = {
       packages = with pkgs; [
         # js
-        nodejs_23
-        corepack_23
+        nodejs
+        corepack
         bun
         dprint
+
+        # automatic installation
+        ni
       ];
       sessionVariables = optionalAttrs (any (x: x == "pnpm") cfg.needs) {
         PNPM_HOME = pnpmHome;

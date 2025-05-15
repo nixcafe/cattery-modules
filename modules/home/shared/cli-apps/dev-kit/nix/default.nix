@@ -19,6 +19,9 @@ in
       alejandra
       nixfmt-rfc-style # An opinionated formatter for Nix
       nil # nix language server
+
+      # tree view
+      nix-tree
     ];
   };
 
