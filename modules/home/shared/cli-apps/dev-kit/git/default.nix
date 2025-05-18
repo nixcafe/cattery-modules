@@ -152,6 +152,7 @@ in
             column.ui = "auto";
             branch.sort = "-committerdate";
             init.defaultBranch = "main";
+            diff.algorithm = "histogram";
           }
 
           (optionalAttrs (cfg.sendEmail != null) { sendemail = cfg.sendEmail; })
