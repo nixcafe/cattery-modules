@@ -50,7 +50,7 @@ in
         bun
         dprint
 
-        # automatic installation
+        # @antfu/ni (automatic installation)
         ni
       ];
       sessionVariables = optionalAttrs (any (x: x == "pnpm") cfg.needs) {
