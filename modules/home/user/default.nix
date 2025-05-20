@@ -114,13 +114,17 @@ in
         inherit (cfg) realName;
         inherit (cfg.email) address userName imap;
         primary = mkDefault true;
-        smtp = {
-          inherit (cfg.email.smtp) host port;
-          tls = optionalAttrs (cfg.email.smtp.port == 587) {
-            enable = true;
-            useStartTls = true;
-          };
-        };
+        smtp =
+          if cfg.email.smtp != null then
+            {
+              inherit (cfg.email.smtp) host port;
+              tls = optionalAttrs (cfg.email.smtp.port == 587) {
+                enable = true;
+                useStartTls = true;
+              };
+            }
+          else
+            null;
         gpg = optionalAttrs (cfg.gpg.encryptKey != null) {
           key = cfg.gpg.encryptKey;
           signByDefault = true;
