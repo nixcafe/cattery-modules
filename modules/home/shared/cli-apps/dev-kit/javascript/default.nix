@@ -49,9 +49,6 @@ in
         corepack
         bun
         dprint
-
-        # @antfu/ni (automatic installation)
-        ni
       ];
       sessionVariables = optionalAttrs (any (x: x == "pnpm") cfg.needs) {
         PNPM_HOME = pnpmHome;
