@@ -17,6 +17,34 @@ in
   config = lib.mkIf cfg.enable {
     ${namespace} = {
       room.basis = mkDefaultEnabled;
+
+      cli-apps = {
+        shell = {
+          atuin = mkDefaultEnabled;
+          direnv = mkDefaultEnabled;
+          starship = mkDefaultEnabled;
+          zsh = mkDefaultEnabled;
+          # darwin config
+          powershell = mkDefaultEnabled;
+        };
+
+        tool = {
+          http-utils = mkDefaultEnabled;
+          monitoring = mkDefaultEnabled;
+          network = mkDefaultEnabled;
+          compressor = mkDefaultEnabled;
+          useful = mkDefaultEnabled;
+          misc = mkDefaultEnabled;
+        };
+
+        file-manager = {
+          yazi = mkDefaultEnabled;
+        };
+
+        # linux config
+        disk = mkDefaultEnabled;
+        misc = mkDefaultEnabled;
+      };
     };
   };
 }

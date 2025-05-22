@@ -28,31 +28,6 @@ in
           nix-index = mkDefaultEnabled;
         };
 
-        shell = {
-          atuin = mkDefaultEnabled;
-          direnv = mkDefaultEnabled;
-          starship = mkDefaultEnabled;
-          zsh = mkDefaultEnabled;
-          # darwin config
-          powershell = mkDefaultEnabled;
-        };
-
-        tool = {
-          http-utils = mkDefaultEnabled;
-          monitoring = mkDefaultEnabled;
-          network = mkDefaultEnabled;
-          compressor = mkDefaultEnabled;
-          useful = mkDefaultEnabled;
-          misc = mkDefaultEnabled;
-        };
-
-        file-manager = {
-          yazi = mkDefaultEnabled;
-        };
-
-        # linux config
-        disk = mkDefaultEnabled;
-        misc = mkDefaultEnabled;
       };
     };
   };
