@@ -121,6 +121,14 @@ in
         default = cfg.settings.gpg.encryptKey or null;
       };
     };
+    defaultUserShell = lib.mkOption {
+      type = either path shellPackage;
+      default =
+        if (cfg.settings.defaultUserShell or null) != null then
+          pkgs.${cfg.settings.defaultUserShell}
+        else
+          null;
+    };
     settings = mkOption {
       type = attrs;
       default = { };
@@ -137,31 +145,35 @@ in
     })
 
     (optionalAttrs isLinux {
-      users = {
-        users.${cfg.name} =
-          (optionalAttrs (cfg.name != "root") {
-            isNormalUser = true;
+      users =
+        {
+          users.${cfg.name} =
+            (optionalAttrs (cfg.name != "root") {
+              isNormalUser = true;
 
-            group = linuxUserGroup;
-            # single user
-            uid = 1000;
-            home = "/home/${cfg.name}";
+              group = linuxUserGroup;
+              # single user
+              uid = 1000;
+              home = "/home/${cfg.name}";
 
-            # for sudo
-            extraGroups = [ "wheel" ];
-          })
-          // {
-            # `mkpasswd -m scrypt`
-            inherit (cfg) initialHashedPassword;
-            # https://github.com/NixOS/nixpkgs/issues/148044
-            # https://discourse.nixos.org/t/how-to-use-users-users-name-passwordfile/12378
-            hashedPasswordFile = if cfg.useSecretPasswordFile then passwordFile else null;
-            openssh.authorizedKeys = cfg.authorizedKeys;
-          };
+              # for sudo
+              extraGroups = [ "wheel" ];
+            })
+            // {
+              # `mkpasswd -m scrypt`
+              inherit (cfg) initialHashedPassword;
+              # https://github.com/NixOS/nixpkgs/issues/148044
+              # https://discourse.nixos.org/t/how-to-use-users-users-name-passwordfile/12378
+              hashedPasswordFile = if cfg.useSecretPasswordFile then passwordFile else null;
+              openssh.authorizedKeys = cfg.authorizedKeys;
+            };
 
-        mutableUsers = mkDefault (!cfg.useSecretPasswordFile);
-        # default shell
-      } // (optionalAttrs config.programs.zsh.enable { defaultUserShell = pkgs.zsh; });
+          mutableUsers = mkDefault (!cfg.useSecretPasswordFile);
+          # default shell
+        }
+        // (optionalAttrs (cfg.defaultUserShell != null) {
+          inherit (cfg) defaultUserShell;
+        });
 
       ${namespace}.secrets.hosts.global.files = optionalAttrs cfg.useSecretPasswordFile {
         ${shadowPath}.mode = "0440";
