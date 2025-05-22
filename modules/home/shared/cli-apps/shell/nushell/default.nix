@@ -17,13 +17,24 @@ in
       type = attrs;
       default = settings.nushell.settings or { };
     };
+    extraConfig = mkOption {
+      type = lines;
+      default = '''';
+    };
+    persistence = lib.mkEnableOption "add files and directories to impermanence" // {
+      default = true;
+    };
   };
 
   config = lib.mkIf cfg.enable {
     programs.nushell = {
-      inherit (cfg) settings;
+      inherit (cfg) settings extraConfig;
 
       enable = true;
+    };
+
+    ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
+      xdg.config.directories = [ "nushell" ];
     };
   };
 

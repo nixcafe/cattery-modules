@@ -8,34 +8,12 @@
 let
   inherit (lib) optionalAttrs;
 
-  aliases = {
+  cdCommands = "zoxide";
+  lsCommands = "eza";
+
+  baseAliases = {
     # nix uses too many links, this is really needed
     rl = "readlink -f";
-    # cd aliases
-    "..." = "cd ../..";
-    "...." = "cd ../../..";
-    "....." = "cd ../../../..";
-    "......" = "cd ../../../../..";
-    "1" = "cd -1";
-    "2" = "cd -2";
-    "3" = "cd -3";
-    "4" = "cd -4";
-    "5" = "cd -5";
-    "6" = "cd -6";
-    "7" = "cd -7";
-    "8" = "cd -8";
-    "9" = "cd -9";
-    "~" = "cd ~";
-    "-" = "cd -";
-
-    # ls aliases
-    l = "ls -lah";
-    la = "ls -lAh";
-    ll = "ls -lh";
-    lsa = "ls -lah";
-
-    # grep aliases
-    grep = "grep --color=auto";
 
     # git aliases
     g = "git";
@@ -59,10 +37,56 @@ let
     please = "sudo";
     _ = "sudo";
     h = "history";
-    j = "jobs -l";
-    md = "mkdir -p";
-    dud = "du -d 1 -h";
-    duf = "du -sh *";
+    dud = "du -d 1";
+  };
+
+  directoriesAliases = {
+    # cd aliases
+    "..." = "cd ../..";
+    "...." = "cd ../../..";
+    "....." = "cd ../../../..";
+    "......" = "cd ../../../../..";
+    "1" = "cd -1";
+    "2" = "cd -2";
+    "3" = "cd -3";
+    "4" = "cd -4";
+    "5" = "cd -5";
+    "6" = "cd -6";
+    "7" = "cd -7";
+    "8" = "cd -8";
+    "9" = "cd -9";
+    "-" = "cd -";
+
+    # ls aliases
+    l = "ls -lah";
+    la = "ls -lAh";
+    ll = "ls -lh";
+    lsa = "ls -lah";
+  };
+
+  # nushell aliases
+  nushellDirectoriesAliases = {
+    # cd aliases
+    "..." = "${cdCommands} ../..";
+    "...." = "${cdCommands} ../../..";
+    "....." = "${cdCommands} ../../../..";
+    "......" = "${cdCommands} ../../../../..";
+    c1 = "${cdCommands} -1";
+    c2 = "${cdCommands} -2";
+    c3 = "${cdCommands} -3";
+    c4 = "${cdCommands} -4";
+    c5 = "${cdCommands} -5";
+    c6 = "${cdCommands} -6";
+    c7 = "${cdCommands} -7";
+    c8 = "${cdCommands} -8";
+    c9 = "${cdCommands} -9";
+    "-" = "${cdCommands} -";
+
+    # ls aliases
+    l = "${lsCommands} -lah";
+    la = "${lsCommands} -lAh";
+    ll = "${lsCommands} -lh";
+    lsa = "${lsCommands} -lah";
   };
 
   cfg = config.${namespace}.cli-apps.tool.useful;
@@ -99,40 +123,47 @@ in
       ];
 
       shellAliases = {
-        ls = "eza";
+        ls = "${lsCommands}";
         find = "fd";
         grep = "rg --smart-case";
         cat = "bat";
-        z = "zoxide";
-        cd = "z";
-      } // (optionalAttrs cfg.commonAliases aliases);
-    };
-
-    programs = {
-      # ls
-      eza.enable = true;
-
-      # better find, why debian uses `fd-find` still bothers me
-      fd.enable = true;
-
-      # i should learn this
-      jq.enable = true;
-
-      # grep
-      ripgrep.enable = true;
-
-      # the cat replacement that actually does something
-      bat.enable = true;
-
-      # great file fuzzy finder
-      fzf.enable = true;
-
-      # use zoxide to replace cd
-      zoxide = {
-        enable = true;
-        options = [ "--cmd cd" ];
+        z = "${cdCommands}";
+        cd = "${cdCommands}";
       };
     };
+
+    programs =
+      {
+        # ls
+        eza.enable = true;
+
+        # better find, why debian uses `fd-find` still bothers me
+        fd.enable = true;
+
+        # i should learn this
+        jq.enable = true;
+
+        # grep
+        ripgrep.enable = true;
+
+        # the cat replacement that actually does something
+        bat.enable = true;
+
+        # great file fuzzy finder
+        fzf.enable = true;
+
+        # use zoxide to replace cd
+        zoxide = {
+          enable = true;
+          options = [ "--cmd cd" ];
+        };
+      }
+      // (optionalAttrs cfg.commonAliases {
+        bash.shellAliases = directoriesAliases // baseAliases;
+        zsh.shellAliases = directoriesAliases // baseAliases;
+        fish.shellAliases = directoriesAliases // baseAliases;
+        nushell.shellAliases = nushellDirectoriesAliases // baseAliases;
+      });
 
     ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
       directories = [ ".tldrc" ];
