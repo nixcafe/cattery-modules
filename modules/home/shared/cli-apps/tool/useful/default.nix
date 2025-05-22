@@ -6,11 +6,69 @@
   ...
 }:
 let
+  aliases = {
+    # nix uses too many links, this is really needed
+    rl = "readlink -f";
+    # cd aliases
+    "..." = "cd ../..";
+    "...." = "cd ../../..";
+    "....." = "cd ../../../..";
+    "......" = "cd ../../../../..";
+    "1" = "cd -1";
+    "2" = "cd -2";
+    "3" = "cd -3";
+    "4" = "cd -4";
+    "5" = "cd -5";
+    "6" = "cd -6";
+    "7" = "cd -7";
+    "8" = "cd -8";
+    "9" = "cd -9";
+    "~" = "cd ~";
+    "-" = "cd -";
+
+    # ls aliases
+    l = "ls -lah";
+    la = "ls -lAh";
+    ll = "ls -lh";
+    lsa = "ls -lah";
+
+    # grep aliases
+    grep = "grep --color=auto";
+
+    # git aliases
+    g = "git";
+    ga = "git add";
+    gaa = "git add --all";
+    gb = "git branch";
+    gba = "git branch -a";
+    gc = "git commit -v";
+    gcm = "git commit -m";
+    gco = "git checkout";
+    gd = "git diff";
+    gf = "git fetch";
+    gl = "git pull";
+    gp = "git push";
+    gpf = "git push --force-with-lease";
+    gst = "git status";
+    glg = "git log --stat";
+    glog = "git log --oneline --decorate --graph";
+
+    # general convenience aliases
+    please = "sudo";
+    _ = "sudo";
+    h = "history";
+    j = "jobs -l";
+    md = "mkdir -p";
+    dud = "du -d 1 -h";
+    duf = "du -sh *";
+  };
+
   cfg = config.${namespace}.cli-apps.tool.useful;
 in
 {
   options.${namespace}.cli-apps.tool.useful = {
     enable = lib.mkEnableOption "useful";
+    commonAliases = lib.mkEnableOption "common aliases";
     persistence = lib.mkEnableOption "add files and directories to impermanence" // {
       default = true;
     };
@@ -39,10 +97,13 @@ in
       ];
 
       shellAliases = {
+        ls = "eza";
+        find = "fd";
+        grep = "rg --smart-case";
         cat = "bat";
-        # nix uses too many links, this is really needed
-        rl = "readlink -f";
-      };
+        z = "zoxide";
+        cd = "z";
+      } // lib.mkIf cfg.commonAliases aliases;
     };
 
     programs = {
