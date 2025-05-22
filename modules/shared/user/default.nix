@@ -122,7 +122,7 @@ in
       };
     };
     defaultUserShell = lib.mkOption {
-      type = either path shellPackage;
+      type = nullOr (either path shellPackage);
       default =
         if (cfg.settings.defaultUserShell or null) != null then
           pkgs.${cfg.settings.defaultUserShell}
