@@ -6,6 +6,8 @@
   ...
 }:
 let
+  inherit (lib) optionalAttrs;
+
   aliases = {
     # nix uses too many links, this is really needed
     rl = "readlink -f";
@@ -103,7 +105,7 @@ in
         cat = "bat";
         z = "zoxide";
         cd = "z";
-      } // lib.mkIf cfg.commonAliases aliases;
+      } // (optionalAttrs cfg.commonAliases aliases);
     };
 
     programs = {

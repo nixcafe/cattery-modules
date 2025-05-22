@@ -5,6 +5,7 @@
   ...
 }:
 let
+  inherit (lib) mkDefault;
   inherit (lib.${namespace}) mkDefaultEnabled;
 
   cfg = config.${namespace}.room.general;
@@ -33,7 +34,10 @@ in
           monitoring = mkDefaultEnabled;
           network = mkDefaultEnabled;
           compressor = mkDefaultEnabled;
-          useful = mkDefaultEnabled;
+          useful = {
+            enable = mkDefault true;
+            commonAliases = mkDefault true;
+          };
           misc = mkDefaultEnabled;
         };
 
