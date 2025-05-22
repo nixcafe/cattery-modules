@@ -23,7 +23,7 @@ in
           atuin = mkDefaultEnabled;
           direnv = mkDefaultEnabled;
           starship = mkDefaultEnabled;
-          zsh = mkDefaultEnabled;
+          nushell = mkDefaultEnabled;
           # darwin config
           powershell = mkDefaultEnabled;
         };

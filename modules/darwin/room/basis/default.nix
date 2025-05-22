@@ -28,7 +28,6 @@ in
       nix = mkDefaultEnabled;
       cli-apps = {
         openssh = mkDefaultEnabled;
-        shell.zsh = mkDefaultEnabled;
       };
       system = {
         fonts = mkDefaultEnabled;

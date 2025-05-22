@@ -39,7 +39,6 @@ in
       nix = mkDefaultEnabled;
       cli-apps = {
         openssh = mkDefaultEnabled;
-        shell.zsh = mkDefaultEnabled;
       };
       system = {
         ulimit = mkDefaultEnabled;
