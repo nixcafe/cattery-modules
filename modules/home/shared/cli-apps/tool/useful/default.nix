@@ -109,7 +109,6 @@ in
         rsync # fast incremental file transfer utility
         rclone # command line program to sync files and directories to and from major cloud storage
         smartmontools # tools for monitoring the health of hard drives
-        tldr # simplified and community-driven man pages
         tokei # a program that allows you to count your code, quickly
         iperf # tool to measure IP bandwidth using UDP or TCP
         nmap # a free and open source utility for network discovery and security auditing
@@ -166,7 +165,6 @@ in
       });
 
     ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
-      directories = [ ".tldrc" ];
       xdg.cache.directories = [ "bat" ];
       xdg.data.directories = [ "zoxide" ];
     };

@@ -34,7 +34,7 @@ in
     buildTargetPath = name: files.${name}.path;
     owner = "root";
     # Read-only
-    mode = "0440";
+    mode = "0444";
   };
 
   config = lib.mkIf cfg.enable {

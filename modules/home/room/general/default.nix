@@ -38,6 +38,7 @@ in
             enable = mkDefault true;
             commonAliases = mkDefault true;
           };
+          tldr = mkDefaultEnabled;
           misc = mkDefaultEnabled;
         };
 
