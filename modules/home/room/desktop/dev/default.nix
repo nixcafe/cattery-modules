@@ -58,7 +58,6 @@ in
 
         tool = {
           ollama = mkDefaultEnabled;
-          thefuck = mkDefaultEnabled;
         };
 
         video = {
