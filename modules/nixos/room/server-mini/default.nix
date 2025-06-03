@@ -5,14 +5,13 @@
   ...
 }:
 let
-  inherit (lib) mkDefault;
   inherit (lib.${namespace}) mkDefaultEnabled;
 
-  cfg = config.${namespace}.room.server;
+  cfg = config.${namespace}.room.server-mini;
 in
 {
-  options.${namespace}.room.server = {
-    enable = lib.mkEnableOption "room server";
+  options.${namespace}.room.server-mini = {
+    enable = lib.mkEnableOption "room server mini";
     qemu-guest = {
       enable = lib.mkEnableOption "qemu guest";
     };
@@ -25,9 +24,11 @@ in
   config = lib.mkIf cfg.enable {
     ${namespace} = {
       room.basis = mkDefaultEnabled;
-      room.server-mini = {
-        enable = mkDefault true;
-        inherit (cfg) qemu-guest cloud-init;
+
+      services = {
+        inherit (cfg) cloud-init qemu-guest;
+
+        acme = mkDefaultEnabled;
       };
     };
   };
