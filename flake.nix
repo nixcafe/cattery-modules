@@ -23,11 +23,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    lanzaboote = {
-      url = "github:nix-community/lanzaboote";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -38,10 +33,22 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.rust-overlay.follows = "rust-overlay";
+    };
+
     agenix = {
       url = "github:yaxitech/ragenix";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.agenix.follows = "agenix-source";
+      inputs.rust-overlay.follows = "rust-overlay";
     };
 
     # fix multiple agenix, home-manager, darwin
@@ -78,6 +85,7 @@
     develop-templates = {
       url = "git+https://github.com/nixcafe/develop-templates.git?submodules=1";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.snowfall-lib.follows = "snowfall-lib";
     };
   };
 
