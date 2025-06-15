@@ -139,6 +139,9 @@ in
           enable = true;
           options = [ "--cmd cd" ];
         };
+
+        # completions
+        carapace.enable = true;
       }
       // (optionalAttrs cfg.commonAliases {
         bash.shellAliases = directoriesAliases // baseAliases;
