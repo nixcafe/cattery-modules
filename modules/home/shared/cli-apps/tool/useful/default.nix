@@ -8,9 +8,6 @@
 let
   inherit (lib) optionalAttrs;
 
-  cdCommands = "zoxide";
-  lsCommands = "eza";
-
   baseAliases = {
     # nix uses too many links, this is really needed
     rl = "readlink -f";
@@ -38,14 +35,16 @@ let
     _ = "sudo";
     h = "history";
     dud = "du -d 1";
-  };
 
-  directoriesAliases = {
     # cd aliases
     "..." = "cd ../..";
     "...." = "cd ../../..";
     "....." = "cd ../../../..";
     "......" = "cd ../../../../..";
+    "-" = "cd -";
+  };
+
+  directoriesAliases = {
     "1" = "cd -1";
     "2" = "cd -2";
     "3" = "cd -3";
@@ -55,7 +54,6 @@ let
     "7" = "cd -7";
     "8" = "cd -8";
     "9" = "cd -9";
-    "-" = "cd -";
 
     # ls aliases
     l = "ls -lah";
@@ -66,27 +64,15 @@ let
 
   # nushell aliases
   nushellDirectoriesAliases = {
-    # cd aliases
-    "..." = "${cdCommands} ../..";
-    "...." = "${cdCommands} ../../..";
-    "....." = "${cdCommands} ../../../..";
-    "......" = "${cdCommands} ../../../../..";
-    c1 = "${cdCommands} -1";
-    c2 = "${cdCommands} -2";
-    c3 = "${cdCommands} -3";
-    c4 = "${cdCommands} -4";
-    c5 = "${cdCommands} -5";
-    c6 = "${cdCommands} -6";
-    c7 = "${cdCommands} -7";
-    c8 = "${cdCommands} -8";
-    c9 = "${cdCommands} -9";
-    "-" = "${cdCommands} -";
-
-    # ls aliases
-    l = "${lsCommands} -lah";
-    la = "${lsCommands} -lAh";
-    ll = "${lsCommands} -lh";
-    lsa = "${lsCommands} -lah";
+    c1 = "cd -1";
+    c2 = "cd -2";
+    c3 = "cd -3";
+    c4 = "cd -4";
+    c5 = "cd -5";
+    c6 = "cd -6";
+    c7 = "cd -7";
+    c8 = "cd -8";
+    c9 = "cd -9";
   };
 
   cfg = config.${namespace}.cli-apps.tool.useful;
@@ -122,12 +108,9 @@ in
       ];
 
       shellAliases = {
-        ls = "${lsCommands}";
         find = "fd";
         grep = "rg --smart-case";
         cat = "bat";
-        z = "${cdCommands}";
-        cd = "${cdCommands}";
       };
     };
 
