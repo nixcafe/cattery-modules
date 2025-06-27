@@ -33,8 +33,12 @@ in
       type = listOf (enum [
         "pnpm"
         "yarn"
+        "bun"
       ]);
-      default = [ "pnpm" ];
+      default = [
+        "pnpm"
+        "bun"
+      ];
     };
     persistence = lib.mkEnableOption "add files and directories to impermanence" // {
       default = true;
@@ -69,6 +73,8 @@ in
               "pnpm"
             else if x == "yarn" then
               "yarn"
+            else if x == "bun" then
+              ".bun"
             else
               ""
           ) cfg.needs
