@@ -15,6 +15,7 @@ in
     home.packages = with pkgs; [
       signal-desktop
       element-desktop
+      feishu
     ];
 
     ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
