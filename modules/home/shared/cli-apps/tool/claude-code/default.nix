@@ -25,6 +25,9 @@ in
       directories = [
         ".claude"
       ];
+      files = [
+        ".claude.json"
+      ];
     };
   };
 
