@@ -23,6 +23,10 @@ in
           nix = mkDefaultEnabled;
         };
 
+        tool = {
+          gh = mkDefaultEnabled;
+        };
+
         nix = {
           home-manager = mkDefaultEnabled;
           nix-index = mkDefaultEnabled;

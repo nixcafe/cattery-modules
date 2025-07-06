@@ -122,9 +122,6 @@ in
       type = attrs;
       default = { };
     };
-    persistence = lib.mkEnableOption "add files and directories to impermanence" // {
-      default = true;
-    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -164,19 +161,11 @@ in
           cfg.extraConfig
         ];
       } // cfg.extraOptions;
-      gh.enable = true;
       gitui.enable = true;
     };
 
     home.shellAliases = {
       diff = "difft";
-    };
-
-    ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
-      xdg.config.files = [
-        "gh/hosts.yml"
-      ];
-      xdg.cache.directories = [ "gh" ];
     };
   };
 
