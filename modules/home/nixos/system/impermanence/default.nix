@@ -178,7 +178,7 @@ in
 
   config = lib.mkIf (cfg.enable && isLinux) {
     home.persistence."/persistent/home/${userName}" = {
-      files = xdg.cache.files ++ xdg.config.files ++ xdg.data.files ++ xdg.state.files;
+      files = xdg.cache.files ++ xdg.config.files ++ xdg.data.files ++ xdg.state.files ++ cfg.files;
       # all file permissions need to be set in the directory yourself
       # (if there are existing files, please copy them to the persistent directory intact)
       directories = map (x: if builtins.isAttrs x then builtins.removeAttrs x [ "mode" ] else x) (
