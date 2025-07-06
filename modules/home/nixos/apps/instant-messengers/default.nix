@@ -19,9 +19,15 @@ in
     ];
 
     ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
+      directories = [
+        # feishu
+        ".bytertc"
+      ];
       xdg.config.directories = [
         "Signal"
         "Element"
+        # feishu
+        "bytertc"
       ];
     };
   };
