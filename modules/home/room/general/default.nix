@@ -24,7 +24,6 @@ in
           atuin = mkDefaultEnabled;
           direnv = mkDefaultEnabled;
           starship = mkDefaultEnabled;
-          nushell = mkDefaultEnabled;
           # darwin config
           powershell = mkDefaultEnabled;
         };

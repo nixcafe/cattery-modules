@@ -1,4 +1,5 @@
 {
+  pkgs,
   config,
   lib,
   namespace,
@@ -6,13 +7,15 @@
 }:
 let
   inherit (lib) mkOption types;
-  inherit (config.${namespace}.user) settings;
+  inherit (config.${namespace}.user) settings defaultUserShell;
 
   cfg = config.${namespace}.cli-apps.shell.nushell;
 in
 {
   options.${namespace}.cli-apps.shell.nushell = with types; {
-    enable = lib.mkEnableOption "nushell";
+    enable = lib.mkEnableOption "nushell" // {
+      default = defaultUserShell == pkgs.nushell;
+    };
     settings = mkOption {
       type = attrs;
       default = settings.nushell.settings or { };

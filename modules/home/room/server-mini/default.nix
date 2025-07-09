@@ -21,7 +21,6 @@ in
       cli-apps = {
         shell = {
           starship = mkDefaultEnabled;
-          nushell = mkDefaultEnabled;
         };
       };
     };

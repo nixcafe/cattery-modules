@@ -19,6 +19,10 @@ in
       room.basis = mkDefaultEnabled;
 
       cli-apps = {
+        shell = {
+          starship = mkDefaultEnabled;
+        };
+
         tool = {
           acme-sh = mkDefaultEnabled;
         };

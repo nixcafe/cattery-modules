@@ -24,12 +24,11 @@ in
     addToAccounts = lib.mkEnableOption "add user to home accounts";
     name = mkOption {
       type = str;
-      default = config.home.username;
-      readOnly = true;
+      default = cfg.settings.name or "nixos";
     };
     realName = mkOption {
       type = nullOr str;
-      default = cfg.settings.realName or cfg.name;
+      default = cfg.settings.realName or cfg.name or null;
     };
     email = {
       address = mkOption {
@@ -95,6 +94,14 @@ in
         type = nullOr str;
         default = cfg.settings.gpg.encryptKey or null;
       };
+    };
+    defaultUserShell = lib.mkOption {
+      type = nullOr (either path shellPackage);
+      default =
+        if (cfg.settings.defaultUserShell or null) != null then
+          pkgs.${cfg.settings.defaultUserShell}
+        else
+          null;
     };
     settings = mkOption {
       type = attrs;
