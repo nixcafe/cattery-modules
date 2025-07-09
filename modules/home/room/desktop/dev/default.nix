@@ -28,7 +28,6 @@ in
       cli-apps = {
 
         database = {
-          postgresql = mkDefaultEnabled;
           sqlite = mkDefaultEnabled;
         };
 
