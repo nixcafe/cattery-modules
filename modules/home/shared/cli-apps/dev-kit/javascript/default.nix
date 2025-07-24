@@ -21,6 +21,12 @@ let
     else
       "$HOME/.local/share/pnpm";
 
+  bunHome =
+    if isDarwin then
+      "/Users/${config.${namespace}.user.name}/Library/bun"
+    else
+      "$HOME/.local/share/bun";
+
   version = "24";
   nodejs = pkgs."nodejs_${version}";
   corepack = pkgs."corepack_${version}";
@@ -54,33 +60,46 @@ in
         bun
         dprint
       ];
-      sessionVariables = optionalAttrs (any (x: x == "pnpm") cfg.needs) {
-        PNPM_HOME = pnpmHome;
-      };
-      sessionPath = optional (any (x: x == "pnpm") cfg.needs) "$PNPM_HOME";
+      sessionVariables =
+        (optionalAttrs (any (x: x == "pnpm") cfg.needs) {
+          PNPM_HOME = pnpmHome;
+        })
+        // (optionalAttrs (any (x: x == "bun") cfg.needs) {
+          BUN_INSTALL = bunHome;
+        });
+      sessionPath =
+        (optional (any (x: x == "pnpm") cfg.needs) "$PNPM_HOME")
+        ++ (optional (any (x: x == "bun") cfg.needs) "$BUN_INSTALL/bin");
     };
 
     ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
       directories = [ ".npm" ];
-      xdg.cache.directories =
-        [
-          "node"
-        ]
-        ++ (builtins.filter (x: x != "") (
-          map (
-            x:
-            if x == "pnpm" then
-              "pnpm"
-            else if x == "yarn" then
-              "yarn"
-            else if x == "bun" then
-              ".bun"
-            else
-              ""
-          ) cfg.needs
-        ));
+      xdg.cache.directories = [
+        "node"
+      ]
+      ++ (builtins.filter (x: x != "") (
+        map (
+          x:
+          if x == "pnpm" then
+            "pnpm"
+          else if x == "yarn" then
+            "yarn"
+          else if x == "bun" then
+            ".bun"
+          else
+            ""
+        ) cfg.needs
+      ));
       xdg.data.directories = builtins.filter (x: x != "") (
-        map (x: if x == "pnpm" then "pnpm" else "") cfg.needs
+        map (
+          x:
+          if x == "pnpm" then
+            "pnpm"
+          else if x == "bun" then
+            "bun"
+          else
+            ""
+        ) cfg.needs
       );
       xdg.state.directories = builtins.filter (x: x != "") (
         map (x: if x == "pnpm" then "pnpm" else "") cfg.needs
