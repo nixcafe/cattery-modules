@@ -28,23 +28,22 @@ in
         # enable flakes support
         experimental-features = "nix-command flakes";
       };
-      gc =
-        {
-          automatic = true;
-          options = "--delete-older-than 30d";
-        }
-        // (optionalAttrs isLinux {
-          persistent = true;
-          dates = "months";
-          randomizedDelaySec = "45min";
-        })
-        // (optionalAttrs isDarwin {
-          interval = {
-            Weekday = 1;
-            Hour = 4;
-            Minute = 0;
-          };
-        });
+      gc = {
+        automatic = true;
+        options = "--delete-older-than 30d";
+      }
+      // (optionalAttrs isLinux {
+        persistent = true;
+        dates = "monthly";
+        randomizedDelaySec = "45min";
+      })
+      // (optionalAttrs isDarwin {
+        interval = {
+          Weekday = 1;
+          Hour = 4;
+          Minute = 0;
+        };
+      });
     };
   };
 

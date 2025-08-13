@@ -2,7 +2,7 @@
 let
   homes-modules = with inputs; [
     agenix.homeManagerModules.default
-    nix-index-database.hmModules.nix-index
+    nix-index-database.homeModules.nix-index
     impermanence.nixosModules.home-manager.impermanence
     plasma-manager.homeManagerModules.plasma-manager
     catppuccin.homeModules.catppuccin
