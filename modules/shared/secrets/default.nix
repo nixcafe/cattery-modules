@@ -1,5 +1,4 @@
 {
-  pkgs,
   inputs,
   host,
   system,
@@ -12,7 +11,6 @@ let
   inherit (lib)
     mkOption
     mkEnableOption
-    optional
     concatMapAttrs
     types
     foldl'
@@ -165,9 +163,10 @@ in
   config = lib.mkIf cfg.enable {
     # agenix cli
     environment.systemPackages = [
-      (inputs.agenix.packages.${system}.default.override {
-        plugins = optional cfg.yubikey.enable pkgs.age-plugin-yubikey;
-      })
+      inputs.agenix.packages.${system}.default
+      # (inputs.agenix.packages.${system}.default.override {
+      #   plugins = optional cfg.yubikey.enable pkgs.age-plugin-yubikey;
+      # })
     ];
 
     # secrets

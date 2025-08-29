@@ -44,15 +44,8 @@
       inputs.rust-overlay.follows = "rust-overlay";
     };
 
-    agenix = {
-      url = "github:yaxitech/ragenix";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.agenix.follows = "agenix-source";
-      inputs.rust-overlay.follows = "rust-overlay";
-    };
-
     # fix multiple agenix, home-manager, darwin
-    agenix-source = {
+    agenix = {
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
