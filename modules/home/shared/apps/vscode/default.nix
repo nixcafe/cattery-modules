@@ -39,9 +39,11 @@ in
         commandLineArgs = [
           "--enable-wayland-ime"
           "--ozone-platform=wayland"
-        ] ++ cfg.commandLineArgs;
+        ]
+        ++ cfg.commandLineArgs;
       };
-    } // cfg.extraOptions;
+    }
+    // cfg.extraOptions;
 
     home.sessionVariables = lib.mkIf cfg.defaultEditor {
       EDITOR = "code --new-window --wait";
