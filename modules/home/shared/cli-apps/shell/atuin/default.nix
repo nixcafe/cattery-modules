@@ -17,7 +17,6 @@ in
 
   config = lib.mkIf cfg.enable {
     programs = {
-      # zsh history is just too smol
       atuin = {
         enable = true;
         settings = {
