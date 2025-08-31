@@ -34,6 +34,7 @@ in
       inherit (cfg) settings extraConfig;
 
       enable = true;
+      environmentVariables = config.home.sessionVariables;
     };
 
     ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
