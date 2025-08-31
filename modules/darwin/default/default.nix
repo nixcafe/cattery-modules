@@ -3,6 +3,7 @@ let
   shared-modules = builtins.attrValues (lib.snowfall.module.create-modules { src = ../../shared; });
   darwin-modules = with inputs; [
     agenix.darwinModules.default
+    determinate.darwinModules.default
   ];
 in
 {

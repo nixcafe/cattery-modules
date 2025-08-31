@@ -2,6 +2,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     impermanence.url = "github:nix-community/impermanence";
+    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
 
     darwin = {
       url = "github:nix-darwin/nix-darwin";
