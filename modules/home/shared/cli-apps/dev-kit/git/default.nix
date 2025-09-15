@@ -160,8 +160,9 @@ in
 
           cfg.extraConfig
         ];
-      } // cfg.extraOptions;
-      gitui.enable = true;
+      }
+      // cfg.extraOptions;
+      lazygit.enable = true;
     };
 
     home.shellAliases = {

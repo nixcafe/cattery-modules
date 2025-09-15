@@ -119,8 +119,8 @@ in
   config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [
       # tui
-      lazyjj
-      # jjui
+      # lazyjj
+      jjui
       # jj-fzf
     ];
 
@@ -192,7 +192,8 @@ in
 
           cfg.settings
         ];
-      } // cfg.extraOptions;
+      }
+      // cfg.extraOptions;
     };
   };
 
