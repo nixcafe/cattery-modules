@@ -4,7 +4,7 @@ let
     agenix.homeManagerModules.default
     nix-index-database.homeModules.nix-index
     impermanence.nixosModules.home-manager.impermanence
-    plasma-manager.homeManagerModules.plasma-manager
+    plasma-manager.homeModules.plasma-manager
     catppuccin.homeModules.catppuccin
   ];
 in
