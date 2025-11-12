@@ -25,6 +25,9 @@ in
 
     ${namespace}.home.extraOptions = {
       ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
+        # Steam Proton/Wine prefix (game data) path:
+        # ~/.steam/steam/steamapps/compatdata/<AppID>/pfx/drive_c/
+        # Example: Portal 2 (AppID 620) https://store.steampowered.com/app/620/Portal_2/
         directories = [
           {
             directory = ".steam";
