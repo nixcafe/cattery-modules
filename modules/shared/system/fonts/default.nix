@@ -22,7 +22,7 @@ in
         noto-fonts
         noto-fonts-cjk-sans
         noto-fonts-cjk-serif
-        noto-fonts-emoji
+        noto-fonts-color-emoji
 
         # Source Han is a set of Pan-CJK fonts from Adobe
         source-sans

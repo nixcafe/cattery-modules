@@ -18,7 +18,7 @@ in
       # cli utils
       wget # fetch thing i don't use
       curl # fetch thing i do use
-      aria # no 2 needed
+      aria2 # no 2 needed
       wrk # http benchmarking tool
       oha # http load generator inspired by rakyll/hey with tui animation
     ];

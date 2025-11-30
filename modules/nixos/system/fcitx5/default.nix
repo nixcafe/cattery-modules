@@ -25,9 +25,9 @@ in
         waylandFrontend = true;
         addons = with pkgs; [
           fcitx5-rime
-          fcitx5-configtool
-          fcitx5-chinese-addons
           fcitx5-gtk
+          kdePackages.fcitx5-configtool
+          kdePackages.fcitx5-chinese-addons
         ];
       };
     };
