@@ -12,7 +12,7 @@ let
     types
     any
     ;
-  inherit (pkgs.stdenv) isLinux;
+  inherit (pkgs.stdenv.hostPlatform) isLinux;
 
   cfg = config.${namespace}.apps.browser;
 in

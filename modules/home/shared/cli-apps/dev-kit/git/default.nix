@@ -12,7 +12,7 @@ let
     mkMerge
     optionalAttrs
     ;
-  inherit (pkgs.stdenv) isLinux;
+  inherit (pkgs.stdenv.hostPlatform) isLinux;
   inherit (config.${namespace}) user;
 
   signModule = types.submodule {

@@ -7,7 +7,7 @@
 }:
 let
   inherit (lib) mkOption types;
-  inherit (pkgs.stdenv) isLinux;
+  inherit (pkgs.stdenv.hostPlatform) isLinux;
 
   cfg = config.${namespace}.desktop.xdg;
 in

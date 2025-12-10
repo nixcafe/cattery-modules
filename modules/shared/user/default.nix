@@ -6,7 +6,7 @@
   ...
 }:
 let
-  inherit (pkgs.stdenv) isLinux isDarwin;
+  inherit (pkgs.stdenv.hostPlatform) isLinux isDarwin;
   inherit (lib)
     mkDefault
     mkOption
@@ -145,35 +145,34 @@ in
     })
 
     (optionalAttrs isLinux {
-      users =
-        {
-          users.${cfg.name} =
-            (optionalAttrs (cfg.name != "root") {
-              isNormalUser = true;
+      users = {
+        users.${cfg.name} =
+          (optionalAttrs (cfg.name != "root") {
+            isNormalUser = true;
 
-              group = linuxUserGroup;
-              # single user
-              uid = 1000;
-              home = "/home/${cfg.name}";
+            group = linuxUserGroup;
+            # single user
+            uid = 1000;
+            home = "/home/${cfg.name}";
 
-              # for sudo
-              extraGroups = [ "wheel" ];
-            })
-            // {
-              # `mkpasswd -m scrypt`
-              inherit (cfg) initialHashedPassword;
-              # https://github.com/NixOS/nixpkgs/issues/148044
-              # https://discourse.nixos.org/t/how-to-use-users-users-name-passwordfile/12378
-              hashedPasswordFile = if cfg.useSecretPasswordFile then passwordFile else null;
-              openssh.authorizedKeys = cfg.authorizedKeys;
-            };
+            # for sudo
+            extraGroups = [ "wheel" ];
+          })
+          // {
+            # `mkpasswd -m scrypt`
+            inherit (cfg) initialHashedPassword;
+            # https://github.com/NixOS/nixpkgs/issues/148044
+            # https://discourse.nixos.org/t/how-to-use-users-users-name-passwordfile/12378
+            hashedPasswordFile = if cfg.useSecretPasswordFile then passwordFile else null;
+            openssh.authorizedKeys = cfg.authorizedKeys;
+          };
 
-          mutableUsers = mkDefault (!cfg.useSecretPasswordFile);
-          # default shell
-        }
-        // (optionalAttrs (cfg.defaultUserShell != null) {
-          inherit (cfg) defaultUserShell;
-        });
+        mutableUsers = mkDefault (!cfg.useSecretPasswordFile);
+        # default shell
+      }
+      // (optionalAttrs (cfg.defaultUserShell != null) {
+        inherit (cfg) defaultUserShell;
+      });
 
       ${namespace}.secrets.hosts.global.files = optionalAttrs cfg.useSecretPasswordFile {
         ${shadowPath}.mode = "0440";

@@ -7,7 +7,7 @@
 }:
 let
   inherit (lib) mkOption types;
-  inherit (pkgs.stdenv) isLinux;
+  inherit (pkgs.stdenv.hostPlatform) isLinux;
   inherit (config.${namespace}) user;
 
   cfg = config.${namespace}.desktop.plasma;
@@ -28,6 +28,7 @@ in
   config = lib.mkIf (cfg.enable && isLinux) {
     programs.plasma = {
       enable = true;
-    } // cfg.settings;
+    }
+    // cfg.settings;
   };
 }

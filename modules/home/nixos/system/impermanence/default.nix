@@ -13,7 +13,7 @@ let
     optionals
     removePrefix
     ;
-  inherit (pkgs.stdenv) isLinux;
+  inherit (pkgs.stdenv.hostPlatform) isLinux;
 
   userName = config.${namespace}.user.name;
 
@@ -200,7 +200,8 @@ in
         ++ cfg.directories
       );
       allowOther = true;
-    } // cfg.extraOptions;
+    }
+    // cfg.extraOptions;
 
     age.identityPaths = mkDefault [
       "/persistent${config.home.homeDirectory}/.ssh/id_ed25519"

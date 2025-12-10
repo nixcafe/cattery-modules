@@ -13,7 +13,7 @@ let
     optional
     optionalAttrs
     ;
-  inherit (pkgs.stdenv) isDarwin;
+  inherit (pkgs.stdenv.hostPlatform) isDarwin;
 
   pnpmHome =
     if isDarwin then
