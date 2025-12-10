@@ -82,14 +82,6 @@ in
 {
   options.${namespace}.cli-apps.dev-kit.jujutsu = with types; {
     enable = lib.mkEnableOption "jujutsu";
-    userName = mkOption {
-      type = nullOr str;
-      default = user.realName or null;
-    };
-    userEmail = mkOption {
-      type = nullOr str;
-      default = user.email.address or null;
-    };
     signing = mkOption {
       type = nullOr signModule;
       default = if ((user.gpg.signKey or null) != null) then { } else null;
@@ -131,11 +123,11 @@ in
         settings = mkMerge [
           {
             user = mkMerge [
-              (optionalAttrs (cfg.userName != null) {
-                name = cfg.userName;
+              (optionalAttrs ((user.realName or null) != null) {
+                name = user.realName;
               })
-              (optionalAttrs (cfg.userEmail != null) {
-                email = cfg.userEmail;
+              (optionalAttrs ((user.email.address or null) != null) {
+                email = user.email.address;
               })
             ];
 

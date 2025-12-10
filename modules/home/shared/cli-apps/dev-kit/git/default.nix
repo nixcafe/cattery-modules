@@ -60,14 +60,6 @@ in
 {
   options.${namespace}.cli-apps.dev-kit.git = with types; {
     enable = lib.mkEnableOption "git";
-    userName = mkOption {
-      type = nullOr str;
-      default = user.realName or null;
-    };
-    userEmail = mkOption {
-      type = nullOr str;
-      default = user.email.address or null;
-    };
     signing = mkOption {
       type = nullOr signModule;
       default = if ((user.gpg.signKey or null) != null) then { } else null;
@@ -89,7 +81,7 @@ in
           };
           smtpuser = mkOption {
             type = nullOr str;
-            default = user.email.userName or cfg.userEmail or null;
+            default = user.email.userName or null;
           };
           confirm = mkOption {
             type = enum [
@@ -114,7 +106,7 @@ in
       ];
       description = "List of paths that should be globally ignored.";
     };
-    extraConfig = mkOption {
+    settings = mkOption {
       type = attrs;
       default = { };
     };
@@ -133,16 +125,13 @@ in
     programs = {
       git = {
         inherit (cfg)
-          userName
-          userEmail
           signing
           ignores
           ;
         enable = true;
         package = pkgs.gitFull;
         lfs.enable = true;
-        difftastic.enable = true;
-        extraConfig = mkMerge [
+        settings = mkMerge [
           {
             pull.rebase = true;
             rerere.enabled = true;
@@ -158,11 +147,20 @@ in
             credential.helper = "/etc/profiles/per-user/$(whoami)/bin/git-credential-libsecret";
           })
 
-          cfg.extraConfig
+          (optionalAttrs ((user.realName or null) != null) { user.name = user.realName; })
+          (optionalAttrs ((user.email.address or null) != null) { user.email = user.email.address; })
+
+          cfg.settings
         ];
       }
       // cfg.extraOptions;
+
       lazygit.enable = true;
+
+      difftastic = {
+        enable = true;
+        git.enable = true;
+      };
     };
 
     home.shellAliases = {
