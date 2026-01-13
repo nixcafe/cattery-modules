@@ -15,8 +15,6 @@ let
     ;
   inherit (pkgs.stdenv.hostPlatform) isLinux;
 
-  userName = config.${namespace}.user.name;
-
   getAbsolutePath =
     attrName: prefix: list:
     map (
@@ -177,7 +175,7 @@ in
   };
 
   config = lib.mkIf (cfg.enable && isLinux) {
-    home.persistence."/persistent/home/${userName}" = {
+    home.persistence."/persistent" = {
       files = xdg.cache.files ++ xdg.config.files ++ xdg.data.files ++ xdg.state.files ++ cfg.files;
       # all file permissions need to be set in the directory yourself
       # (if there are existing files, please copy them to the persistent directory intact)
@@ -199,7 +197,6 @@ in
         ++ xdg.state.directories
         ++ cfg.directories
       );
-      allowOther = true;
     }
     // cfg.extraOptions;
 

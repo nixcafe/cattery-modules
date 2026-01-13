@@ -3,7 +3,6 @@ let
   homes-modules = with inputs; [
     agenix.homeManagerModules.default
     nix-index-database.homeModules.nix-index
-    impermanence.nixosModules.home-manager.impermanence
     plasma-manager.homeModules.plasma-manager
     catppuccin.homeModules.catppuccin
   ];

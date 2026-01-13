@@ -49,14 +49,14 @@ in
         # etc
         "/etc/NetworkManager/system-connections"
         "/etc/ssh"
-      ] ++ cfg.directories;
+      ]
+      ++ cfg.directories;
       files = [
         "/etc/machine-id"
-      ] ++ cfg.files;
-    } // cfg.extraOptions;
-
-    # allow non-root users to specify the allow_other or allow_root mount options, see mount.fuse3(8).
-    programs.fuse.userAllowOther = true;
+      ]
+      ++ cfg.files;
+    }
+    // cfg.extraOptions;
 
     age.identityPaths = mkDefault (map (x: "/persistent${x}") identityPaths);
   };

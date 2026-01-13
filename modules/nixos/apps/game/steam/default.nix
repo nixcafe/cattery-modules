@@ -31,13 +31,11 @@ in
         directories = [
           {
             directory = ".steam";
-            method = "symlink";
           }
         ];
         xdg.data.directories = [
           {
             directory = "Steam";
-            method = "symlink";
           }
           "vulkan"
         ];
