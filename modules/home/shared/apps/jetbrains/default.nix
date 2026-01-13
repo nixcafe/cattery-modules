@@ -23,9 +23,9 @@ in
       jetbrains.rust-rover
       jetbrains.ruby-mine
       jetbrains.rider
-      jetbrains.pycharm-professional
+      jetbrains.pycharm
       jetbrains.phpstorm
-      jetbrains.idea-ultimate
+      jetbrains.idea
       jetbrains.goland
       jetbrains.dataspell
       jetbrains.datagrip
