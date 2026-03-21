@@ -32,7 +32,6 @@ let
 
     # general convenience aliases
     please = "sudo";
-    _ = "sudo";
     h = "history";
     dud = "du -d 1";
 
@@ -41,7 +40,6 @@ let
     "...." = "cd ../../..";
     "....." = "cd ../../../..";
     "......" = "cd ../../../../..";
-    "-" = "cd -";
   };
 
   directoriesAliases = {
@@ -114,41 +112,40 @@ in
       };
     };
 
-    programs =
-      {
-        # ls
-        eza.enable = true;
+    programs = {
+      # ls
+      eza.enable = true;
 
-        # better find, why debian uses `fd-find` still bothers me
-        fd.enable = true;
+      # better find, why debian uses `fd-find` still bothers me
+      fd.enable = true;
 
-        # i should learn this
-        jq.enable = true;
+      # i should learn this
+      jq.enable = true;
 
-        # grep
-        ripgrep.enable = true;
+      # grep
+      ripgrep.enable = true;
 
-        # the cat replacement that actually does something
-        bat.enable = true;
+      # the cat replacement that actually does something
+      bat.enable = true;
 
-        # great file fuzzy finder
-        fzf.enable = true;
+      # great file fuzzy finder
+      fzf.enable = true;
 
-        # use zoxide to replace cd
-        zoxide = {
-          enable = true;
-          options = [ "--cmd cd" ];
-        };
+      # use zoxide to replace cd
+      zoxide = {
+        enable = true;
+        options = [ "--cmd cd" ];
+      };
 
-        # completions
-        carapace.enable = true;
-      }
-      // (optionalAttrs cfg.commonAliases {
-        bash.shellAliases = directoriesAliases // baseAliases;
-        zsh.shellAliases = directoriesAliases // baseAliases;
-        fish.shellAliases = directoriesAliases // baseAliases;
-        nushell.shellAliases = nushellDirectoriesAliases // baseAliases;
-      });
+      # completions
+      carapace.enable = true;
+    }
+    // (optionalAttrs cfg.commonAliases {
+      bash.shellAliases = directoriesAliases // baseAliases;
+      zsh.shellAliases = directoriesAliases // baseAliases;
+      fish.shellAliases = directoriesAliases // baseAliases;
+      nushell.shellAliases = nushellDirectoriesAliases // baseAliases;
+    });
 
     ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
       xdg.cache.directories = [ "bat" ];
