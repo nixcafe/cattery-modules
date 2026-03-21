@@ -17,9 +17,6 @@ in
     enable = mkEnableOption "yubikey";
     agent.enable = mkEnableOption "yubikey agent";
     touch-detector.enable = mkEnableOption "yubikey touch detector";
-    piv.enable = mkEnableOption "yubikey piv ssh support" // {
-      default = true;
-    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -44,6 +41,16 @@ in
           disable-ccid = true;
           pcsc-shared = true;
         };
+      };
+
+      home.sessionVariables = {
+        YKCS11_PROVIDER = "${pkgs.yubico-piv-tool}/lib/libykcs11.so";
+      };
+
+      services.ssh-agent = {
+        pkcs11Whitelist = [
+          "${pkgs.yubico-piv-tool}/lib/*"
+        ];
       };
     };
   };
