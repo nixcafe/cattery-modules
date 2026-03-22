@@ -11,6 +11,7 @@ let
     mkOption
     types
     optionals
+    optionalAttrs
     removePrefix
     ;
   inherit (pkgs.stdenv.hostPlatform) isLinux;
@@ -174,36 +175,37 @@ in
     };
   };
 
-  config = lib.mkIf (cfg.enable && isLinux) {
-    home.persistence."/persistent" = {
-      files = xdg.cache.files ++ xdg.config.files ++ xdg.data.files ++ xdg.state.files ++ cfg.files;
-      # all file permissions need to be set in the directory yourself
-      # (if there are existing files, please copy them to the persistent directory intact)
-      directories = map (x: if builtins.isAttrs x then builtins.removeAttrs x [ "mode" ] else x) (
-        [
-          {
-            directory = ".ssh";
-            mode = "0700";
-          }
-          {
-            directory = ".pki";
-            mode = "0700";
-          }
-        ]
-        ++ xdg.userDirs
-        ++ xdg.cache.directories
-        ++ xdg.config.directories
-        ++ xdg.data.directories
-        ++ xdg.state.directories
-        ++ cfg.directories
-      );
+  config = lib.mkIf (cfg.enable && isLinux) (
+    optionalAttrs isLinux {
+      home.persistence."/persistent" = {
+        files = xdg.cache.files ++ xdg.config.files ++ xdg.data.files ++ xdg.state.files ++ cfg.files;
+        # all file permissions need to be set in the directory yourself
+        # (if there are existing files, please copy them to the persistent directory intact)
+        directories = map (x: if builtins.isAttrs x then builtins.removeAttrs x [ "mode" ] else x) (
+          [
+            {
+              directory = ".ssh";
+              mode = "0700";
+            }
+            {
+              directory = ".pki";
+              mode = "0700";
+            }
+          ]
+          ++ xdg.userDirs
+          ++ xdg.cache.directories
+          ++ xdg.config.directories
+          ++ xdg.data.directories
+          ++ xdg.state.directories
+          ++ cfg.directories
+        );
+      }
+      // cfg.extraOptions;
+
+      age.identityPaths = mkDefault [
+        "/persistent${config.home.homeDirectory}/.ssh/id_ed25519"
+        "/persistent${config.home.homeDirectory}/.ssh/id_rsa"
+      ];
     }
-    // cfg.extraOptions;
-
-    age.identityPaths = mkDefault [
-      "/persistent${config.home.homeDirectory}/.ssh/id_ed25519"
-      "/persistent${config.home.homeDirectory}/.ssh/id_rsa"
-    ];
-  };
-
+  );
 }
