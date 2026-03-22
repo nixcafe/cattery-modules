@@ -142,6 +142,9 @@ in
         uid = 501;
         openssh.authorizedKeys = cfg.authorizedKeys;
       };
+      # The user used for options that previously applied to the user running `darwin-rebuild`.
+      # see: https://github.com/nix-darwin/nix-darwin/blob/master/modules/system/primary-user.nix
+      system.primaryUser = cfg.name;
     })
 
     (optionalAttrs isLinux {
