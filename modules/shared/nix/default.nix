@@ -38,6 +38,8 @@ in
         randomizedDelaySec = "45min";
       })
       // (optionalAttrs isDarwin {
+        # use Determinate Nix
+        automatic = false;
         interval = {
           Weekday = 1;
           Hour = 4;
