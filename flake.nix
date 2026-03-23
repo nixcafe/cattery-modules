@@ -1,8 +1,12 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    impermanence.url = "github:nix-community/impermanence";
-    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
+
+    impermanence = {
+      url = "github:nix-community/impermanence";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
 
     darwin = {
       url = "github:nix-darwin/nix-darwin";

@@ -9,7 +9,6 @@ let
     nixos-wsl.nixosModules.default
     nix-gaming.nixosModules.pipewireLowLatency
     catppuccin.nixosModules.catppuccin
-    determinate.nixosModules.default
   ];
 in
 {
