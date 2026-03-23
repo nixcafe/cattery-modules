@@ -3,6 +3,7 @@
   config,
   lib,
   namespace,
+  options,
   ...
 }:
 let
@@ -86,6 +87,7 @@ let
       };
     };
 
+  hasPersistence = lib.hasAttrByPath [ "home" "persistence" ] options;
   cfg = config.${namespace}.system.impermanence;
 in
 {
@@ -176,7 +178,7 @@ in
   };
 
   config = lib.mkIf (cfg.enable && isLinux) (
-    optionalAttrs isLinux {
+    optionalAttrs hasPersistence {
       home.persistence."/persistent" = {
         files = xdg.cache.files ++ xdg.config.files ++ xdg.data.files ++ xdg.state.files ++ cfg.files;
         # all file permissions need to be set in the directory yourself
