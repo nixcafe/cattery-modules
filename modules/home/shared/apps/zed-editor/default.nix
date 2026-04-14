@@ -23,7 +23,7 @@ in
     };
     userKeymaps = mkOption {
       type = jsonType;
-      default = settings.zed-editor.userKeymaps or { };
+      default = settings.zed-editor.userKeymaps or [ ];
     };
     extensions = mkOption {
       type = listOf str;
@@ -58,7 +58,8 @@ in
         extensions
         installRemoteServer
         ;
-    } // cfg.extraOptions;
+    }
+    // cfg.extraOptions;
 
     home.sessionVariables = lib.mkIf cfg.defaultEditor {
       EDITOR = "zeditor --new --wait";
