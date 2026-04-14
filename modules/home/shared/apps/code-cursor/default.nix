@@ -20,7 +20,7 @@ in
   config = lib.mkIf cfg.enable {
     home = {
       packages = with pkgs; [
-        code-cursor
+        code-cursor-fhs
       ];
 
       sessionVariables = lib.mkIf cfg.defaultEditor {
