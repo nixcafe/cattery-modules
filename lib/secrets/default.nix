@@ -166,14 +166,13 @@ in
                 files = mkOption {
                   type = types.attrs;
                   default = concatMapAttrs (_: item: {
-                    "${config.etc.dirPath}/${item.fileName}" =
-                      {
-                        source = item.target;
-                      }
-                      // (optionalAttrs (!config.etc.useSymlink) {
-                        inherit (item) mode group;
-                        user = owner;
-                      });
+                    "${config.etc.dirPath}/${item.fileName}" = {
+                      source = item.target;
+                    }
+                    // (optionalAttrs (!config.etc.useSymlink) {
+                      inherit (item) mode group;
+                      user = owner;
+                    });
                   }) config.files;
                   readOnly = true;
                 };
