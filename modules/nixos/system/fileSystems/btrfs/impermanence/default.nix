@@ -42,7 +42,7 @@ in
     default = { };
   };
 
-  config = {
+  config = lib.mkIf (deviceUnits != [ ]) {
     boot.initrd.systemd = {
       services.impermance-btrfs-rolling = {
         description = "Archiving existing BTRFS subvolume and creating a fresh one";
