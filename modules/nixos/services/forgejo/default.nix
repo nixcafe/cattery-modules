@@ -52,7 +52,8 @@ in
           "sqlite3"
         else
           (if cfg.dbBackend == "postgresql" then "postgres" else cfg.dbBackend);
-    } // cfg.extraOptions;
+    }
+    // cfg.extraOptions;
 
     systemd.services.forgejo = lib.mkIf cfg.useWizard (
       let
