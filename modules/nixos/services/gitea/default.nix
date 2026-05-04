@@ -46,13 +46,14 @@ in
 
   config = lib.mkIf cfg.enable {
     services.gitea = {
-      inherit (cfg) enable useWizard settings;
+      inherit (cfg) enable settings;
       database.type =
         if cfg.dbBackend == "sqlite" then
           "sqlite3"
         else
           (if cfg.dbBackend == "postgresql" then "postgres" else cfg.dbBackend);
-    } // cfg.extraOptions;
+    }
+    // cfg.extraOptions;
 
     systemd.services.gitea = lib.mkIf cfg.useWizard (
       let
