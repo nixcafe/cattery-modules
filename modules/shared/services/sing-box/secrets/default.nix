@@ -23,7 +23,7 @@ in
         fileName = "config.json";
       }
     ];
-    scope = "shared-global";
+    scope = "hosts-global";
     currentInfo = {
       inherit host;
       user = config.${namespace}.user.name;
