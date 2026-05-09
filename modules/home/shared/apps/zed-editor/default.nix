@@ -6,7 +6,7 @@
   ...
 }:
 let
-  inherit (lib) mkOption types;
+  inherit (lib) mkOption types literalExpression;
   inherit (config.${namespace}.user) settings;
 
   jsonFormat = pkgs.formats.json { };
@@ -15,8 +15,15 @@ let
   cfg = config.${namespace}.apps.zed-editor;
 in
 {
-  options.${namespace}.apps.zed-editor = with types; {
+  options.${namespace}.apps.zed-editor = {
     enable = lib.mkEnableOption "zed-editor";
+    package = lib.mkPackageOption pkgs "zed-editor" { nullable = true; };
+    extraPackages = mkOption {
+      type = with types; listOf package;
+      default = [ ];
+      example = literalExpression "[ pkgs.nixd ]";
+      description = "Extra packages available to Zed.";
+    };
     userSettings = mkOption {
       type = jsonType;
       default = settings.zed-editor.userSettings or { };
@@ -25,10 +32,37 @@ in
       type = jsonType;
       default = settings.zed-editor.userKeymaps or [ ];
     };
+    userTasks = mkOption {
+      inherit (jsonFormat) type;
+      default = settings.zed-editor.userTasks or [ ];
+      example = literalExpression ''
+        [
+          {
+            label = "Format Code";
+            command = "nix";
+            args = [ "fmt" "$ZED_WORKTREE_ROOT" ];
+          }
+        ]
+      '';
+      description = ''
+        Configuration written to Zed's {file}`tasks.json`.
+
+        [List of tasks](https://zed.dev/docs/tasks) that can be run from the
+        command palette.
+      '';
+    };
     extensions = mkOption {
-      type = listOf str;
+      type = with types; listOf str;
       default = settings.zed-editor.extensions or [ ];
       description = "https://github.com/zed-industries/extensions/tree/main/extensions";
+    };
+    mutableUserTasks = mkOption {
+      type = types.bool;
+      default = true;
+      example = false;
+      description = ''
+        Whether user tasks (tasks.json) can be updated by zed.
+      '';
     };
     installRemoteServer = lib.mkEnableOption ''
       Whether to symlink the Zed's remote server binary to the expected
@@ -41,7 +75,7 @@ in
     '';
     defaultEditor = lib.mkEnableOption "zed-editor to $EDITOR";
     extraOptions = mkOption {
-      type = attrs;
+      type = with types; attrs;
       default = { };
     };
     persistence = lib.mkEnableOption "add files and directories to impermanence" // {
@@ -55,8 +89,11 @@ in
         enable
         userSettings
         userKeymaps
+        userTasks
         extensions
         installRemoteServer
+        extraPackages
+        mutableUserTasks
         ;
     }
     // cfg.extraOptions;
