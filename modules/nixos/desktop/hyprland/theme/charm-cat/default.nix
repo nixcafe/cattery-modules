@@ -2,6 +2,7 @@
   config,
   lib,
   namespace,
+  pkgs,
   ...
 }:
 let
@@ -16,10 +17,15 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    # sddm for login
-    services.displayManager.sddm = {
+    # greetd for login
+    services.greetd = {
       enable = true;
-      wayland.enable = true;
+      settings = {
+        default_session = {
+          command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --cmd Hyprland";
+          user = "greeter";
+        };
+      };
     };
 
     ${namespace}.desktop.hyprland = {
