@@ -24,7 +24,9 @@ in
       desktop.addons.xdg-portal = mkDefaultEnabled;
 
       home.extraOptions = {
-        home.packages = with pkgs; [ kwalletcli ];
+        home.packages = with pkgs; [
+          kdePackages.kwallet
+        ];
 
         ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
           xdg.data.directories = [ "kwalletd" ];
