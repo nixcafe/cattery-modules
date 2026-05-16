@@ -29,14 +29,10 @@ in
         # ~/.steam/steam/steamapps/compatdata/<AppID>/pfx/drive_c/
         # Example: Portal 2 (AppID 620) https://store.steampowered.com/app/620/Portal_2/
         directories = [
-          {
-            directory = ".steam";
-          }
+          ".steam"
         ];
         xdg.data.directories = [
-          {
-            directory = "Steam";
-          }
+          "Steam"
           "vulkan"
         ];
       };
