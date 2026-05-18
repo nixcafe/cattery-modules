@@ -53,6 +53,7 @@ in
     ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
       directories = [
         ".vscode"
+        ".vscode-shared"
       ];
       xdg.config.directories = [
         "Code"

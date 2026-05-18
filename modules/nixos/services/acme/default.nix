@@ -73,9 +73,11 @@ in
       certs = concatMapAttrs (name: value: {
         ${name} = {
           environmentFile = "/etc/acme/env/${getRootDomain name}.env";
-        } // value;
+        }
+        // value;
       }) cfg.certs;
       acceptTerms = cfg.enable;
-    } // cfg.extraOptions;
+    }
+    // cfg.extraOptions;
   };
 }
