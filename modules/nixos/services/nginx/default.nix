@@ -10,10 +10,10 @@ let
   cfg = config.${namespace}.services.nginx;
 in
 {
-  options.${namespace}.services.nginx = with types; {
+  options.${namespace}.services.nginx = {
     enable = lib.mkEnableOption "nginx";
     httpSubConfigPath = mkOption {
-      type = str;
+      type = types.str;
       default = "/etc/nginx/conf.d/*.conf";
       description = ''
         To make the configuration easier to maintain, we recommend that you split it into a set of 
@@ -22,23 +22,30 @@ in
       '';
     };
     commonHttpConfig = mkOption {
-      type = lines;
+      type = types.lines;
       default = "";
     };
     httpConfig = mkOption {
-      type = lines;
+      type = types.lines;
       default = "";
     };
     appendHttpConfig = mkOption {
-      type = lines;
+      type = types.lines;
       default = "";
     };
     virtualHosts = mkOption {
-      type = attrs;
+      type = types.attrs;
       default = { };
     };
+    preStart = mkOption {
+      type = types.lines;
+      default = "";
+      description = ''
+        Shell commands executed before the service's nginx is started.
+      '';
+    };
     extraOptions = mkOption {
-      type = attrs;
+      type = types.attrs;
       default = { };
     };
   };
@@ -47,6 +54,7 @@ in
     services.nginx = {
       inherit (cfg)
         enable
+        preStart
         httpConfig
         appendHttpConfig
         virtualHosts
