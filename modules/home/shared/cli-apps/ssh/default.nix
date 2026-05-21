@@ -9,11 +9,11 @@ let
     types
     mkOption
     ;
-  cfg = config.${namespace}.apps.ssh;
+  cfg = config.${namespace}.cli-apps.ssh;
   cfgSecrets = cfg.secrets;
 in
 {
-  options.${namespace}.apps.ssh = with types; {
+  options.${namespace}.cli-apps.ssh = with types; {
     enable = lib.mkEnableOption "ssh";
     includeNames = mkOption {
       default = [ ];

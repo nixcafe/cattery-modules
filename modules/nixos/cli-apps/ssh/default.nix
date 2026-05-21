@@ -10,7 +10,7 @@ let
     mkOption
     optionalAttrs
     ;
-  cfg = config.${namespace}.apps.ssh;
+  cfg = config.${namespace}.cli-apps.ssh;
 
   knownHostsFiles = [
     "/etc/ssh/ssh_known_hosts"
@@ -19,7 +19,7 @@ let
   ++ cfg.knownHostsFiles;
 in
 {
-  options.${namespace}.apps.ssh = with types; {
+  options.${namespace}.cli-apps.ssh = with types; {
     knownHostsFileNames = mkOption {
       default = [ ];
       type = listOf str;

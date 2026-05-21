@@ -9,16 +9,16 @@ let
   inherit (lib.${namespace}.secrets) mkHomeAppSecretsOption;
   inherit (config.${namespace}.secrets) files;
 
-  cfgParent = config.${namespace}.apps.ssh;
+  cfgParent = config.${namespace}.cli-apps.ssh;
   cfg = cfgParent.secrets;
 in
 {
-  options.${namespace}.apps.ssh.secrets = mkHomeAppSecretsOption {
+  options.${namespace}.cli-apps.ssh.secrets = mkHomeAppSecretsOption {
     enable = cfgParent.enable && config.${namespace}.secrets.enable;
     appName = "ssh";
-    dirPath = ".ssh";
+    dirPath = "ssh";
     configNames = cfgParent.includeNames;
-    scope = "hosts-user";
+    scope = "shared-user";
     currentInfo = {
       inherit host;
       user = config.${namespace}.user.name;
