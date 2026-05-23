@@ -132,15 +132,6 @@ in
         package = pkgs.gitFull;
         lfs.enable = true;
         settings = mkMerge [
-          {
-            pull.rebase = true;
-            rerere.enabled = true;
-            column.ui = "auto";
-            branch.sort = "-committerdate";
-            init.defaultBranch = "main";
-            diff.algorithm = "histogram";
-          }
-
           (optionalAttrs (cfg.sendEmail != null) { sendemail = cfg.sendEmail; })
 
           (optionalAttrs isLinux {
