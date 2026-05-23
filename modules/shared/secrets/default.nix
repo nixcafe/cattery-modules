@@ -14,6 +14,7 @@ let
     concatMapAttrs
     types
     foldl'
+    optionalAttrs
     ;
   inherit (config.age) secrets;
   inherit (config.users) users;
@@ -141,6 +142,20 @@ in
   options.${namespace}.secrets = with types; {
     enable = mkEnableOption "secrets";
     yubikey.enable = mkEnableOption "yubikey support";
+    secretsDir = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      description = ''
+        Folder where secrets are symlinked to
+      '';
+    };
+    secretsMountPoint = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      description = ''
+        Where secrets are created before they are symlinked to {option}`age.secretsDir`
+      '';
+    };
     secretsPath = mkOption {
       type = path;
       default = "${homeDir}/agenix";
@@ -170,9 +185,17 @@ in
     ];
 
     # secrets
-    age.secrets = concatMapAttrs (name: item: {
-      ${name} = builtins.removeAttrs item [ "path" ];
-    }) cfg.files;
+    age = {
+      secrets = concatMapAttrs (name: item: {
+        ${name} = builtins.removeAttrs item [ "path" ];
+      }) cfg.files;
+    }
+    // optionalAttrs (cfg.secretsDir != null) {
+      inherit (cfg) secretsDir;
+    }
+    // optionalAttrs (cfg.secretsMountPoint != null) {
+      inherit (cfg) secretsMountPoint;
+    };
   };
 
 }
