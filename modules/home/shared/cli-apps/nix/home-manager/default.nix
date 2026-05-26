@@ -22,8 +22,11 @@ in
     };
 
     ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
-      xdg.cache.directories = [ "nix" ];
-      xdg.data.directories = [ "nix" ];
+      xdg = {
+        cache.directories = [ "nix" ];
+        data.directories = [ "nix" ];
+        state.directories = [ "nix" ];
+      };
     };
   };
 
