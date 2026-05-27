@@ -7,7 +7,6 @@
 }:
 let
   inherit (lib) mkDefault;
-  inherit (lib.${namespace}) mkDefaultEnabled;
 
   cfg = config.${namespace}.desktop.hyprland.theme.charm-cat;
 in
@@ -28,21 +27,11 @@ in
       };
     };
 
+    # hyprland and wayland
+    security.pam.services.hyprlock = { };
+
     ${namespace}.desktop.hyprland = {
       enable = mkDefault true;
-      theme.charm-cat = {
-        convention = mkDefaultEnabled;
-        fcitx = mkDefaultEnabled;
-        file-manager = mkDefaultEnabled;
-        launcher = mkDefaultEnabled;
-        lock-screen = mkDefaultEnabled;
-        notification = mkDefaultEnabled;
-        screenshots = mkDefaultEnabled;
-        terminal = mkDefaultEnabled;
-        vscode = mkDefaultEnabled;
-        waybar = mkDefaultEnabled;
-        wlogout = mkDefaultEnabled;
-      };
     };
   };
 }

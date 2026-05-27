@@ -15,18 +15,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-
     ${namespace} = {
       desktop.addons.xdg-portal = mkDefaultEnabled;
-
-      # home manager
-      home.extraOptions = {
-        wayland.windowManager.hyprland = {
-          enable = true;
-          # enable hyprland-session.target on hyprland startup.
-          systemd.enable = true;
-        };
-      };
     };
 
     # hyprland and wayland
