@@ -12,7 +12,10 @@ in
 {
   options.${namespace}.services.openssh = with types; {
     enable = lib.mkEnableOption "openssh";
-    X11Forwarding = lib.mkEnableOption "Whether to allow X11 connections to be forwarded.";
+    settings = mkOption {
+      type = attrs;
+      default = { };
+    };
     extraOptions = mkOption {
       type = attrs;
       default = { };
@@ -21,10 +24,12 @@ in
 
   config = lib.mkIf cfg.enable {
     services.openssh = {
+      inherit (cfg) settings;
+
       # enable openssh
       enable = true;
-      settings.X11Forwarding = cfg.X11Forwarding;
-    } // cfg.extraOptions;
+    }
+    // cfg.extraOptions;
   };
 
 }
