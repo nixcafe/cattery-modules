@@ -14,7 +14,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    home.packages = with pkgs; [ xfce.thunar ];
+    home.packages = with pkgs; [ thunar ];
 
     wayland.windowManager.hyprland = {
       settings = {
