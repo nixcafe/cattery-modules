@@ -17,10 +17,17 @@ in
       enable = true;
     };
 
-    wayland.windowManager.hyprland = {
-      settings = {
-        # vscode
-        bind = [ "SUPER,V,exec,code" ];
+    ${namespace}.desktop.hyprland = {
+      require = [
+        "vscode.code"
+      ];
+    };
+
+    xdg.configFile = {
+      # preventing nix gc
+      "hypr/vscode" = {
+        source = ./lua;
+        recursive = true;
       };
     };
   };

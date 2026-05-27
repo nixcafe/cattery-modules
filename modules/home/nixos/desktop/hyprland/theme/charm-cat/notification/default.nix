@@ -18,9 +18,11 @@ in
       mako # the notification daemon, the same as dunst
     ];
 
-    wayland.windowManager.hyprland = {
-      settings = {
-        exec-once = [ "mako" ];
+    ${namespace}.desktop.hyprland = {
+      on."hyprland.start" = {
+        execs = [
+          "\"mako\""
+        ];
       };
     };
   };

@@ -19,9 +19,11 @@ in
       waybar
     ];
 
-    wayland.windowManager.hyprland = {
-      settings = {
-        exec-once = [ "waybar" ];
+    ${namespace}.desktop.hyprland = {
+      on."hyprland.start" = {
+        execs = [
+          "\"waybar\""
+        ];
       };
     };
 

@@ -18,15 +18,20 @@ in
       wlogout # logout menu
     ];
 
-    wayland.windowManager.hyprland = {
-      settings = {
-        source = [ "${./conf/hypr-wlogout.conf}" ];
-      };
+    ${namespace}.desktop.hyprland = {
+      require = [
+        "wlogout.hypr-wlogout"
+      ];
     };
 
     xdg.configFile = {
       "wlogout" = {
         source = ./conf;
+        recursive = true;
+      };
+
+      "hypr/wlogout" = {
+        source = ./lua;
         recursive = true;
       };
     };

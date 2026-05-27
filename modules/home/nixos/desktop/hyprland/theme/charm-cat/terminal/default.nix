@@ -18,10 +18,17 @@ in
       enable = true;
     };
 
-    wayland.windowManager.hyprland = {
-      settings = {
-        # Terminal Kitty
-        bind = [ "SUPER,Return,exec,kitty" ];
+    ${namespace}.desktop.hyprland = {
+      require = [
+        "terminal.kitty"
+      ];
+    };
+
+    xdg.configFile = {
+      # preventing nix gc
+      "hypr/terminal" = {
+        source = ./lua;
+        recursive = true;
       };
     };
   };

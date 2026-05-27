@@ -13,16 +13,16 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    wayland.windowManager.hyprland = {
-      settings = {
-        source = [ "${./conf/fcitx.conf}" ];
-      };
+    ${namespace}.desktop.hyprland = {
+      require = [
+        "fcitx/fcitx"
+      ];
     };
 
     xdg.configFile = {
       # preventing nix gc
       "hypr/fcitx" = {
-        source = ./conf;
+        source = ./lua;
         recursive = true;
       };
     };

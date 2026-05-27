@@ -18,16 +18,21 @@ in
   config = lib.mkIf cfg.enable {
     ${namespace} = {
       # hyprlock and hypridle
-      desktop.hyprland.addons = {
-        hyprlock = mkDefaultEnabled;
-        hypridle = mkDefaultEnabled;
+      desktop.hyprland = {
+        addons = {
+          hyprlock = mkDefaultEnabled;
+          hypridle = mkDefaultEnabled;
+        };
+        require = [
+          "lock-screen.lock"
+        ];
       };
     };
 
     # hyprlock
     programs.hyprlock = {
       settings = {
-        source = [ "${./conf/hyprlock.conf}" ];
+        source = [ "${./lua/hyprlock.conf}" ];
       };
     };
 
@@ -56,18 +61,10 @@ in
       };
     };
 
-    wayland.windowManager.hyprland = {
-      settings = {
-        bind = [
-          "CTRLALT,L,exec,${lockCmd}" # network-manager-applet
-        ];
-      };
-    };
-
     xdg.configFile = {
       # preventing nix gc
       "hypr/lock-screen" = {
-        source = ./conf;
+        source = ./lua;
         recursive = true;
       };
     };

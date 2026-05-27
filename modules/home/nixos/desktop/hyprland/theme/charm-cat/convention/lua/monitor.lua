@@ -1,0 +1,4 @@
+hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })
+
+-- list all available monitors (active and inactive), use `hyprctl monitors all`
+-- example: monitor=DP-1,1920x1080@144,0x0,1

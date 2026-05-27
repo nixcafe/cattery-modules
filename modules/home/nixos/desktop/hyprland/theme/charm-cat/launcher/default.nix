@@ -16,16 +16,16 @@ in
   config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [ ulauncher ];
 
-    wayland.windowManager.hyprland = {
-      settings = {
-        source = [ "${./conf/ulauncher.conf}" ];
-      };
+    ${namespace}.desktop.hyprland = {
+      require = [
+        "ulauncher.ulauncher"
+      ];
     };
 
     xdg.configFile = {
       # preventing nix gc
       "hypr/ulauncher" = {
-        source = ./conf;
+        source = ./lua;
         recursive = true;
       };
     };

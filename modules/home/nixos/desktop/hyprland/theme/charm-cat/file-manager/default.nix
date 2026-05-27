@@ -16,10 +16,17 @@ in
   config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [ thunar ];
 
-    wayland.windowManager.hyprland = {
-      settings = {
-        # Xfce Thunar
-        bind = [ "SUPER,E,exec,thunar" ];
+    ${namespace}.desktop.hyprland = {
+      require = [
+        "file-manager.thunar"
+      ];
+    };
+
+    xdg.configFile = {
+      # preventing nix gc
+      "hypr/file-manager" = {
+        source = ./lua;
+        recursive = true;
       };
     };
   };

@@ -18,8 +18,13 @@ in
   config = lib.mkIf cfg.enable {
     ${namespace} = {
       # hyprshot
-      desktop.hyprland.addons = {
-        hyprshot = mkDefaultEnabled;
+      desktop.hyprland = {
+        addons = {
+          hyprshot = mkDefaultEnabled;
+        };
+        require = [
+          "screenshots.screenshots"
+        ];
       };
     };
 
@@ -27,16 +32,10 @@ in
       nomacs # image viewer
     ];
 
-    wayland.windowManager.hyprland = {
-      settings = {
-        source = [ "${./conf/screenshots.conf}" ];
-      };
-    };
-
     xdg.configFile = {
       # preventing nix gc
       "hypr/screenshots" = {
-        source = ./conf;
+        source = ./lua;
         recursive = true;
       };
     };

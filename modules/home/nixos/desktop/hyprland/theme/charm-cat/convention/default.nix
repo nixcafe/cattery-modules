@@ -13,22 +13,20 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    wayland.windowManager.hyprland = {
-      settings = {
-        source = [
-          "${./conf/base.conf}"
-          "${./conf/bind-operate.conf}"
-          "${./conf/monitor.conf}"
-          "${./conf/rules.conf}"
-          "${./conf/style.conf}"
-        ];
-      };
+    ${namespace}.desktop.hyprland = {
+      require = [
+        "convention.base"
+        "convention.bind-operate"
+        "convention.monitor"
+        "convention.rules"
+        "convention.style"
+      ];
     };
 
     xdg.configFile = {
       # preventing nix gc
       "hypr/convention" = {
-        source = ./conf;
+        source = ./lua;
         recursive = true;
       };
     };
