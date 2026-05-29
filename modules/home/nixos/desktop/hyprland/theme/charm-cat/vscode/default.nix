@@ -2,9 +2,12 @@
   config,
   lib,
   namespace,
+  pkgs,
   ...
 }:
 let
+  inherit (pkgs.stdenv.hostPlatform) isLinux;
+
   cfg = config.${namespace}.desktop.hyprland.theme.charm-cat.vscode;
 in
 {
@@ -12,7 +15,7 @@ in
     enable = lib.mkEnableOption "charm-cat vscode";
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (cfg.enable && isLinux) {
     programs.vscode = {
       enable = true;
     };

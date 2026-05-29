@@ -1,7 +1,7 @@
 {
   "layer": "top",
   "position": "top",
-  "height": 30,
+  "height": 28,
   "modules-left": [
     "custom/launcher",
     "cpu",
@@ -22,7 +22,7 @@
   ],
   "custom/launcher": {
     "format": "\uf313 ",
-    "on-click": "ulauncher",
+    "on-click": "anyrun",
     "tooltip": false
   },
   "cpu": {
@@ -83,8 +83,7 @@
       ]
     },
     "scroll-step": 5.0,
-    // Commands to execute on events
-    "on-click": "amixer set Master toggle",
+    "on-click": "wpctl set-mute @DEFAULT_SINK@ toggle",
     "on-click-right": "pavucontrol",
     "smooth-scrolling-threshold": 1
   },
@@ -92,14 +91,13 @@
     "interval": 60,
     "align": 0,
     "rotate": 0,
-    "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>",
+    "tooltip-format": "<big>{:%B %Y}</big>\n<tt>{calendar}</tt>",
     "format": " {:%H:%M}"
   },
   "hyprland/workspaces": {
     "format": "{icon}",
-    "on-click": "activate",
     "persistent-workspaces": {
-      "*": 6 // 6 workspaces by default on every monitor
+      "*": 6
     }
   },
   "idle_inhibitor": {

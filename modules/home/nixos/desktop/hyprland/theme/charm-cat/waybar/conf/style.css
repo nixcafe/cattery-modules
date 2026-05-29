@@ -1,22 +1,50 @@
+/* ============================================
+   Charm Cat — Waybar Theme
+   Warm cozy palette with subtle blur
+   ============================================ */
+
 * {
-	font-family: "JetbrainsMono Nerd Font";
-	font-size: 14px;
-	border-radius: 6px;
+    font-family: "JetBrains Mono Nerd Font";
+    font-size: 12px;
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
 }
 
+/* --------------------------------------------
+   Bar
+   -------------------------------------------- */
 #waybar {
-	background-color: transparent;
-	margin: 4px;
+    background: transparent;
+    color: #e6d5c3;
+    font-weight: 500;
+    padding: 4px 8px;
+    min-height: 0;
 }
 
-#waybar.empty #window {
-	background-color: transparent;
-}
-
+#waybar.empty,
 #waybar.hidden {
-	opacity: 0.2;
+    opacity: 0;
 }
 
+/* --------------------------------------------
+   Module containers (pill-shaped)
+   -------------------------------------------- */
+.modules-left,
+.modules-center,
+.modules-right {
+    background: rgba(40, 36, 32, 0.85);
+    border-radius: 14px;
+    padding: 2px 8px;
+    margin: 0 4px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* --------------------------------------------
+   Base module style
+   -------------------------------------------- */
 #custom-launcher,
 #cpu,
 #memory,
@@ -27,59 +55,191 @@
 #idle_inhibitor,
 #tray,
 #battery,
-#backlight,
 #custom-power {
-	padding: 0 10px;
-	background-color: #383838;
-	color: #f1e7ce;
-	margin: 0 4px;
+    padding: 1px 8px;
+    margin: 1px 0;
+    background: transparent;
+    color: #f0e6d8;
+    border-radius: 11px;
+    transition: all 0.2s ease;
 }
 
+/* --------------------------------------------
+   Launcher
+   -------------------------------------------- */
 #custom-launcher {
-	font-size: 20px;
-	color: #7ebae4;
-	margin: 0 4px 0 8px;
+    font-size: 20px;
+    color: #d4a373;
+    margin-right: 6px;
 }
 
+/* --------------------------------------------
+   System modules (cpu, mem, net)
+   -------------------------------------------- */
+#cpu {
+    color: #8ec0f0;
+}
+
+#memory {
+    color: #d8a8f0;
+}
+
+#network {
+    color: #b0e088;
+}
+
+/* --------------------------------------------
+   Backlight & Audio
+   -------------------------------------------- */
+#backlight {
+    color: #f0d870;
+}
+
+#pulseaudio {
+    color: #88e0f0;
+}
+
+/* --------------------------------------------
+   Clock
+   -------------------------------------------- */
 #clock {
-	font-weight: bold;
+    font-weight: 700;
+    font-size: 17px;
+    color: #d4a373;
+    padding: 2px 16px;
 }
 
+/* --------------------------------------------
+   Idle inhibitor
+   -------------------------------------------- */
+#idle_inhibitor {
+    font-size: 15px;
+    color: #a09080;
+}
+
+/* --------------------------------------------
+   Workspaces
+   -------------------------------------------- */
 #workspaces {
-	background-color: #383838;
+    background: transparent;
+    padding: 0;
+    margin: 0;
 }
 
 #workspaces button {
-	padding: 0 5px;
-	background-color: transparent;
-	color: #f1e7ce;
-	border-radius: 0;
-}
-
-#workspaces button:first-child {
-	border-radius: 5px 0 0 5px;
-}
-
-#workspaces button:last-child {
-	border-radius: 0 5px 5px 0;
+    padding: 4px 10px;
+    margin: 2px 2px;
+    background: transparent;
+    color: #988878;
+    border-radius: 11px;
+    min-width: 28px;
+    min-height: 20px;
+    transition: all 0.25s ease;
 }
 
 #workspaces button:hover {
-	color: #d79921;
-	background-color: #6d6d6d;
+    color: #f0e6d8;
+    background: rgba(212, 163, 115, 0.15);
 }
 
 #workspaces button.active {
-	border: 1px solid #d79921;
-	box-shadow: #d79921 0 0 4px;
+    color: #1c1a18;
+    background: #d4a373;
+    font-weight: 700;
+    min-width: 36px;
+    box-shadow: 0 0 8px rgba(212, 163, 115, 0.25);
 }
 
 #workspaces button.urgent {
-	background-color: #030002;
+    background: #e87878;
+    color: #1c1a18;
 }
 
+#workspaces button.empty {
+    color: #585048;
+}
+
+/* --------------------------------------------
+   Tray
+   -------------------------------------------- */
+#tray {
+    padding: 0 6px;
+    margin: 2px 4px;
+}
+
+#tray>.needs-attention {
+    background: #bf616a;
+    border-radius: 11px;
+}
+
+#tray>.active {
+    -gtk-icon-effect: dim;
+}
+
+#tray>.passive {
+    -gtk-icon-effect: dim;
+}
+
+/* --------------------------------------------
+   Battery
+   -------------------------------------------- */
+#battery {
+    color: #b0e088;
+}
+
+#battery.warning {
+    color: #f0d870;
+}
+
+#battery.critical {
+    color: #e87878;
+}
+
+#battery.plugged,
+#battery.charging {
+    color: #d4a373;
+}
+
+/* --------------------------------------------
+   Power
+   -------------------------------------------- */
 #custom-power {
-	margin: 0 8px 0 0;
-	border: 2px solid red;
-	color: red;
+    font-size: 15px;
+    color: #e87878;
+    margin-left: 4px;
+    margin-right: 2px;
+    border-radius: 11px;
+}
+
+#custom-power:hover {
+    background: rgba(191, 97, 106, 0.2);
+}
+
+/* --------------------------------------------
+   Tooltip
+   -------------------------------------------- */
+tooltip {
+    background: rgba(30, 26, 22, 0.96);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 8px 12px;
+    color: #e6d5c3;
+}
+
+tooltip label {
+    font-size: 14px;
+    padding: 2px 0;
+}
+
+/* --------------------------------------------
+   States (warning/critical shared)
+   -------------------------------------------- */
+#cpu.warning,
+#memory.warning {
+    color: #f0d870;
+}
+
+#cpu.critical,
+#memory.critical {
+    color: #e87878;
 }

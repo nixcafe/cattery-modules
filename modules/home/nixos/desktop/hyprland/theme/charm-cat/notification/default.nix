@@ -6,6 +6,8 @@
   ...
 }:
 let
+  inherit (pkgs.stdenv.hostPlatform) isLinux;
+
   cfg = config.${namespace}.desktop.hyprland.theme.charm-cat.notification;
 in
 {
@@ -13,16 +15,26 @@ in
     enable = lib.mkEnableOption "charm-cat notification";
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (cfg.enable && isLinux) {
     home.packages = with pkgs; [
-      mako # the notification daemon, the same as dunst
+      libnotify
     ];
 
+    services.mako = {
+      enable = true;
+      extraConfig = builtins.readFile ./conf/config.ini;
+    };
+
     ${namespace}.desktop.hyprland = {
-      on."hyprland.start" = {
-        execs = [
-          "\"mako\""
-        ];
+      require = [
+        "mako.mako"
+      ];
+    };
+
+    xdg.configFile = {
+      "hypr/mako" = {
+        source = ./lua;
+        recursive = true;
       };
     };
   };

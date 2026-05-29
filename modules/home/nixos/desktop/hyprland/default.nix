@@ -2,6 +2,7 @@
   config,
   lib,
   namespace,
+  pkgs,
   ...
 }:
 let
@@ -10,6 +11,7 @@ let
     types
     concatStringsSep
     ;
+  inherit (pkgs.stdenv.hostPlatform) isLinux;
 
   callbackModule = types.submodule (
     { name, config, ... }:
@@ -66,7 +68,7 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (cfg.enable && isLinux) {
     wayland.windowManager.hyprland = {
       enable = true;
       # enable hyprland-session.target on hyprland startup.

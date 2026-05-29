@@ -1,0 +1,51 @@
+* {
+  all: unset;
+  font-family: "JetBrains Mono Nerd Font";
+  font-size: 13px;
+}
+
+window {
+  background: transparent;
+}
+
+.main {
+  background: rgba(40, 36, 32, 0.92);
+  border-radius: 14px;
+  padding: 4px;
+}
+
+text {
+  min-height: 30px;
+  padding: 5px 10px 5px;
+  border-radius: 5px;
+  color: #f0e6d8;
+}
+
+entry {
+  background: transparent;
+  padding: 6px 14px;
+  margin: 4px 8px 8px 8px;
+  color: #f0e6d8;
+  caret-color: #d4a373;
+}
+
+.match {
+  padding: 3px 12px;
+  border-radius: 11px;
+  margin: 0 8px;
+  color: #e6d5c3;
+}
+
+.match:selected {
+  background: rgba(212, 163, 115, 0.2);
+  color: #d4a373;
+}
+
+.match .title {
+  font-size: 13px;
+}
+
+.match .description {
+  font-size: 11px;
+  color: #988878;
+}

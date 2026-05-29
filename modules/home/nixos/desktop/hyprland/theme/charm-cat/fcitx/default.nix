@@ -2,9 +2,12 @@
   config,
   lib,
   namespace,
+  pkgs,
   ...
 }:
 let
+  inherit (pkgs.stdenv.hostPlatform) isLinux;
+
   cfg = config.${namespace}.desktop.hyprland.theme.charm-cat.fcitx;
 in
 {
@@ -12,7 +15,7 @@ in
     enable = lib.mkEnableOption "charm-cat fcitx";
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (cfg.enable && isLinux) {
     ${namespace}.desktop.hyprland = {
       require = [
         "fcitx/fcitx"

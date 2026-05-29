@@ -2,11 +2,13 @@
   config,
   lib,
   namespace,
+  pkgs,
   ...
 }:
 let
   inherit (lib) mkDefault;
   inherit (lib.${namespace}) mkDefaultEnabled;
+  inherit (pkgs.stdenv.hostPlatform) isLinux;
 
   cfg = config.${namespace}.desktop.hyprland.theme.charm-cat;
 in
@@ -15,10 +17,11 @@ in
     enable = lib.mkEnableOption "charm-cat theme";
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (cfg.enable && isLinux) {
     ${namespace}.desktop.hyprland = {
       enable = mkDefault true;
       theme.charm-cat = {
+        audio = mkDefaultEnabled;
         convention = mkDefaultEnabled;
         fcitx = mkDefaultEnabled;
         file-manager = mkDefaultEnabled;
@@ -28,6 +31,7 @@ in
         screenshots = mkDefaultEnabled;
         terminal = mkDefaultEnabled;
         vscode = mkDefaultEnabled;
+        wallpaper = mkDefaultEnabled;
         waybar = mkDefaultEnabled;
         wlogout = mkDefaultEnabled;
       };

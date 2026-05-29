@@ -6,6 +6,8 @@
   ...
 }:
 let
+  inherit (pkgs.stdenv.hostPlatform) isLinux;
+
   cfg = config.${namespace}.desktop.hyprland.theme.charm-cat.file-manager;
 in
 {
@@ -13,12 +15,12 @@ in
     enable = lib.mkEnableOption "charm-cat file manager";
   };
 
-  config = lib.mkIf cfg.enable {
-    home.packages = with pkgs; [ thunar ];
+  config = lib.mkIf (cfg.enable && isLinux) {
+    home.packages = with pkgs; [ kdePackages.dolphin ];
 
     ${namespace}.desktop.hyprland = {
       require = [
-        "file-manager.thunar"
+        "file-manager.dolphin"
       ];
     };
 

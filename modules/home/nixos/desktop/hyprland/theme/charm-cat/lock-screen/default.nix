@@ -2,10 +2,12 @@
   config,
   lib,
   namespace,
+  pkgs,
   ...
 }:
 let
   inherit (lib.${namespace}) mkDefaultEnabled;
+  inherit (pkgs.stdenv.hostPlatform) isLinux;
 
   cfg = config.${namespace}.desktop.hyprland.theme.charm-cat.lock-screen;
   lockCmd = "pidof hyprlock || hyprlock";
@@ -15,7 +17,7 @@ in
     enable = lib.mkEnableOption "charm-cat lock screen";
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (cfg.enable && isLinux) {
     ${namespace} = {
       # hyprlock and hypridle
       desktop.hyprland = {

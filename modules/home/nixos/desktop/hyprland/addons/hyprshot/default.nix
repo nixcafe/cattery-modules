@@ -6,6 +6,8 @@
   ...
 }:
 let
+  inherit (pkgs.stdenv.hostPlatform) isLinux;
+
   cfg = config.${namespace}.desktop.hyprland.addons.hyprshot;
 in
 {
@@ -13,7 +15,7 @@ in
     enable = lib.mkEnableOption "hyprshot";
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (cfg.enable && isLinux) {
     home.packages = with pkgs; [
       hyprshot # screenshot
       wl-clipboard # for hyprshot

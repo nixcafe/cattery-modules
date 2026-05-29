@@ -37,6 +37,9 @@ hl.bind(mainMod .. " + CTRL + Equal", hl.dsp.layout("splitratio +0.1"), { repeat
 -- Fullscreen window
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen())
 
+-- Lock screen
+hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("loginctl lock-session"), { description = "Session: Lock" })
+
 
 -- Workspaces
 

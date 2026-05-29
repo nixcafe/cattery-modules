@@ -7,6 +7,7 @@
 }:
 let
   inherit (lib.${namespace}) mkDefaultEnabled;
+  inherit (pkgs.stdenv.hostPlatform) isLinux;
 
   cfg = config.${namespace}.desktop.hyprland.theme.charm-cat.screenshots;
 in
@@ -15,7 +16,7 @@ in
     enable = lib.mkEnableOption "charm-cat screenshots";
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (cfg.enable && isLinux) {
     ${namespace} = {
       # hyprshot
       desktop.hyprland = {

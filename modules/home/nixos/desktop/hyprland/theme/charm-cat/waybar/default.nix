@@ -1,11 +1,13 @@
 {
-  pkgs,
   config,
   lib,
   namespace,
+  pkgs,
   ...
 }:
 let
+  inherit (pkgs.stdenv.hostPlatform) isLinux;
+
   cfg = config.${namespace}.desktop.hyprland.theme.charm-cat.waybar;
 in
 {
@@ -13,25 +15,12 @@ in
     enable = lib.mkEnableOption "charm-cat waybar";
   };
 
-  config = lib.mkIf cfg.enable {
-    home.packages = with pkgs; [
-      # status bar
-      waybar
-    ];
-
-    ${namespace}.desktop.hyprland = {
-      on."hyprland.start" = {
-        execs = [
-          "\"waybar\""
-        ];
-      };
-    };
-
-    xdg.configFile = {
-      "waybar" = {
-        source = ./conf;
-        recursive = true;
-      };
+  config = lib.mkIf (cfg.enable && isLinux) {
+    programs.waybar = {
+      enable = true;
+      settings = [ (builtins.fromJSON (builtins.readFile ./conf/config.json)) ];
+      style = builtins.readFile ./conf/style.css;
+      systemd.enable = true;
     };
   };
 }

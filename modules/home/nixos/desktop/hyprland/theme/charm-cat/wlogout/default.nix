@@ -6,6 +6,8 @@
   ...
 }:
 let
+  inherit (pkgs.stdenv.hostPlatform) isLinux;
+
   cfg = config.${namespace}.desktop.hyprland.theme.charm-cat.wlogout;
 in
 {
@@ -13,7 +15,7 @@ in
     enable = lib.mkEnableOption "charm-cat wlogout";
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (cfg.enable && isLinux) {
     home.packages = with pkgs; [
       wlogout # logout menu
     ];
