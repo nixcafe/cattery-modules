@@ -13,6 +13,9 @@ in
 {
   options.${namespace}.desktop.addons.catppuccin = with types; {
     enable = lib.mkEnableOption "catppuccin";
+    autoEnable = lib.mkEnableOption "all Catppuccin integrations by default" // {
+      default = cfg.enable;
+    };
     extraOptions = mkOption {
       type = attrs;
       default = user.settings.catppuccin.home or { };
@@ -21,7 +24,10 @@ in
 
   config = lib.mkIf cfg.enable {
     catppuccin = {
+      inherit (cfg) autoEnable;
+
       enable = true;
-    } // cfg.extraOptions;
+    }
+    // cfg.extraOptions;
   };
 }
