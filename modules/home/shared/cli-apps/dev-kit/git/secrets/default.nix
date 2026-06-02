@@ -18,7 +18,7 @@ in
     appName = "git";
     dirPath = "git";
     configNames = builtins.map (x: if builtins.isString x then x else x.name) cfgParent.includeNames;
-    scope = "shared-user";
+    scope = "hosts-user";
     currentInfo = {
       inherit host;
       user = config.${namespace}.user.name;
