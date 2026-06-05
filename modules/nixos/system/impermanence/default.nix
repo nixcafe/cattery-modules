@@ -31,6 +31,11 @@ in
       type = listOf raw;
       default = [ ];
     };
+    persistencePath = mkOption {
+      type = str;
+      default = "/persistent";
+      description = "the mount point / prefix for the persistent storage";
+    };
     extraOptions = mkOption {
       type = attrs;
       default = { };
@@ -39,7 +44,7 @@ in
 
   config = lib.mkIf cfg.enable {
     # see: https://github.com/nix-community/impermanence?tab=readme-ov-file#system-setup
-    environment.persistence."/persistent" = {
+    environment.persistence.${cfg.persistencePath} = {
       enable = true; # NB: Defaults to true, not needed
       hideMounts = true;
       directories = [
@@ -58,7 +63,7 @@ in
     }
     // cfg.extraOptions;
 
-    age.identityPaths = mkDefault (map (x: "/persistent${x}") identityPaths);
+    age.identityPaths = mkDefault (map (x: "${cfg.persistencePath}${x}") identityPaths);
   };
 
 }

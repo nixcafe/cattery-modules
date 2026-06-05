@@ -171,6 +171,11 @@ in
       type = listOf raw;
       default = [ ];
     };
+    persistencePath = mkOption {
+      type = str;
+      default = "/persistent";
+      description = "the mount point / prefix for the persistent storage";
+    };
     extraOptions = mkOption {
       type = attrs;
       default = { };
@@ -179,7 +184,7 @@ in
 
   config = lib.mkIf (cfg.enable && isLinux) (
     optionalAttrs hasPersistence {
-      home.persistence."/persistent" = {
+      home.persistence.${cfg.persistencePath} = {
         files = xdg.cache.files ++ xdg.config.files ++ xdg.data.files ++ xdg.state.files ++ cfg.files;
         # all file permissions need to be set in the directory yourself
         # (if there are existing files, please copy them to the persistent directory intact)
@@ -205,8 +210,8 @@ in
       // cfg.extraOptions;
 
       age.identityPaths = mkDefault [
-        "/persistent${config.home.homeDirectory}/.ssh/id_ed25519"
-        "/persistent${config.home.homeDirectory}/.ssh/id_rsa"
+        "${cfg.persistencePath}${config.home.homeDirectory}/.ssh/id_ed25519"
+        "${cfg.persistencePath}${config.home.homeDirectory}/.ssh/id_rsa"
       ];
     }
   );
