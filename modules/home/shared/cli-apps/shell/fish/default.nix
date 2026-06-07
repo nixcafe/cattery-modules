@@ -15,6 +15,9 @@ in
     enable = lib.mkEnableOption "fish" // {
       default = defaultUserShell == pkgs.fish;
     };
+    persistence = lib.mkEnableOption "add files and directories to impermanence" // {
+      default = true;
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -22,6 +25,17 @@ in
       enable = true;
 
       generateCompletions = true;
+    };
+
+    ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
+      xdg = {
+        data.directories = [
+          "fish"
+        ];
+        config.directories = [
+          "fish"
+        ];
+      };
     };
   };
 
