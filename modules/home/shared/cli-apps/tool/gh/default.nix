@@ -30,7 +30,8 @@ in
       inherit (cfg) settings;
 
       enable = true;
-    } // cfg.extraOptions;
+    }
+    // cfg.extraOptions;
 
     ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
       xdg.config.files = [

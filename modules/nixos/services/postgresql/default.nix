@@ -49,13 +49,13 @@ in
         type = nullOr (coercedTo (listOf str) (concatStringsSep ", ") str);
         default = null;
         example = literalExpression ''[ "auto_explain" "anon" ]'';
-        description = ''List of libraries to be preloaded. '';
+        description = "List of libraries to be preloaded. ";
       };
       log_line_prefix = mkOption {
         type = str;
         default = "%q%r ";
         example = "%q[%r]%u@%d%a ";
-        description = ''Ref: <https://www.postgresql.org/docs/current/runtime-config-logging.html#GUC-LOG-LINE-PREFIX>.'';
+        description = "Ref: <https://www.postgresql.org/docs/current/runtime-config-logging.html#GUC-LOG-LINE-PREFIX>.";
       };
       port = mkOption {
         type = port;
@@ -80,22 +80,21 @@ in
       allowedTCPPorts = [ cfg.settings.port ];
     };
     # postgresql
-    services.postgresql =
-      {
-        enable = true;
-        # https://www.postgresql.org/docs/current/pgupgrade.html
-        settings = mkForce (
-          {
-            hba_file = cfg.configFile.authenticationPath;
-            ident_file = cfg.configFile.identMapPath;
-            include_if_exists = cfg.configFile.settingsPath;
-          }
-          // cfg.settings
-        );
-      }
-      // (optionalAttrs (cfg.package != null) {
-        inherit (cfg) package;
-      })
-      // cfg.extraOptions;
+    services.postgresql = {
+      enable = true;
+      # https://www.postgresql.org/docs/current/pgupgrade.html
+      settings = mkForce (
+        {
+          hba_file = cfg.configFile.authenticationPath;
+          ident_file = cfg.configFile.identMapPath;
+          include_if_exists = cfg.configFile.settingsPath;
+        }
+        // cfg.settings
+      );
+    }
+    // (optionalAttrs (cfg.package != null) {
+      inherit (cfg) package;
+    })
+    // cfg.extraOptions;
   };
 }

@@ -28,8 +28,10 @@ in
       tunnels = concatMapAttrs (name: tunnel: {
         ${name} = {
           credentialsFile = "/etc/cloudflared/credentials/${name}.json";
-        } // tunnel;
+        }
+        // tunnel;
       }) cfg.tunnels;
-    } // cfg.extraOptions;
+    }
+    // cfg.extraOptions;
   };
 }

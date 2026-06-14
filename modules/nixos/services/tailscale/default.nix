@@ -22,7 +22,8 @@ in
   config = lib.mkIf cfg.enable {
     services.tailscale = {
       enable = true;
-    } // cfg.extraOptions;
+    }
+    // cfg.extraOptions;
 
     ${namespace}.home.extraOptions = {
       home.packages = with pkgs; [

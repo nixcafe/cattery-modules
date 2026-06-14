@@ -21,7 +21,8 @@ in
   config = lib.mkIf cfg.enable {
     programs.helix = {
       enable = true;
-    } // cfg.extraOptions;
+    }
+    // cfg.extraOptions;
   };
 
 }

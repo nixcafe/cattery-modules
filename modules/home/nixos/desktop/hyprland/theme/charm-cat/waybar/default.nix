@@ -20,7 +20,20 @@ in
       enable = true;
       settings = [ (builtins.fromJSON (builtins.readFile ./conf/config.json)) ];
       style = builtins.readFile ./conf/style.css;
-      systemd.enable = true;
+      systemd.enable = false;
+    };
+
+    ${namespace}.desktop.hyprland = {
+      require = [
+        "waybar.startup"
+      ];
+    };
+
+    xdg.configFile = {
+      "hypr/waybar" = {
+        source = ./lua;
+        recursive = true;
+      };
     };
   };
 }

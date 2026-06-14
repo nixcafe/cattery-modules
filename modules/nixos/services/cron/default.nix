@@ -21,6 +21,7 @@ in
   config = lib.mkIf cfg.enable {
     services.cron = {
       enable = true;
-    } // cfg.extraOptions;
+    }
+    // cfg.extraOptions;
   };
 }

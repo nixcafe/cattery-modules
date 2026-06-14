@@ -13,11 +13,16 @@ in
 {
   options.${namespace}.desktop.hyprland.theme.charm-cat = {
     enable = lib.mkEnableOption "charm-cat theme";
+    greetd = {
+      enable = lib.mkEnableOption "greetd for hyprland" // {
+        default = true;
+      };
+    };
   };
 
   config = lib.mkIf cfg.enable {
     # greetd for login
-    services.greetd = {
+    services.greetd = lib.mkIf cfg.greetd.enable {
       enable = true;
       settings = {
         default_session = {

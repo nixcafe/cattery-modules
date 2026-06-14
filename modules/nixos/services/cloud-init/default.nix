@@ -23,6 +23,7 @@ in
     services.cloud-init = {
       enable = true;
       network.enable = cfg.network.enable;
-    } // cfg.extraOptions;
+    }
+    // cfg.extraOptions;
   };
 }

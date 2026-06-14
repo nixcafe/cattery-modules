@@ -24,7 +24,8 @@ in
   config = lib.mkIf cfg.enable {
     services.vscode-server = {
       enable = true;
-    } // cfg.extraOptions;
+    }
+    // cfg.extraOptions;
 
     ${namespace}.home.extraOptions = {
       ${namespace}.system.impermanence = lib.mkIf cfg.persistence {

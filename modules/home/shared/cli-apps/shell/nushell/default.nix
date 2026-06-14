@@ -22,7 +22,7 @@ in
     };
     extraConfig = mkOption {
       type = lines;
-      default = '''';
+      default = "";
     };
     persistence = lib.mkEnableOption "add files and directories to impermanence" // {
       default = true;

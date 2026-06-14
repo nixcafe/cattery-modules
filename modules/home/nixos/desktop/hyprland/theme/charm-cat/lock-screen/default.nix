@@ -19,17 +19,18 @@ in
 
   config = lib.mkIf (cfg.enable && isLinux) {
     ${namespace} = {
-      # hyprlock and hypridle
       desktop.hyprland = {
         addons = {
           hyprlock = mkDefaultEnabled;
-          hypridle = mkDefaultEnabled;
         };
         require = [
           "lock-screen.lock"
+          "lock-screen.idle"
         ];
       };
     };
+
+    home.packages = [ pkgs.hypridle ];
 
     # hyprlock
     programs.hyprlock = {
@@ -38,33 +39,26 @@ in
       };
     };
 
-    # hypridle
-    services.hypridle = {
-      settings = {
-        general = {
-          lock_cmd = lockCmd;
-          before_sleep_cmd = lockCmd;
-        };
+    # hypridle config (started via exec-once in lock-screen/idle.lua, not systemd)
+    xdg.configFile."hypr/hypridle.conf".text = ''
+      general {
+        lock_cmd = ${lockCmd}
+        before_sleep_cmd = ${lockCmd}
+      }
 
-        listener = [
-          # listener conf 1
-          {
-            timeout = 180; # 3mins
-            on-timeout = lockCmd;
-          }
-          # listener conf 2
-          {
-            timeout = 240; # 4mins
-            # sets all monitors’ DPMS status
-            on-timeout = "hyprctl dispatch dpms off";
-            on-resume = "hyprctl dispatch dpms on";
-          }
-        ];
-      };
-    };
+      listener {
+        timeout = 180
+        on-timeout = ${lockCmd}
+      }
+
+      listener {
+        timeout = 240
+        on-timeout = hyprctl dispatch dpms off
+        on-resume = hyprctl dispatch dpms on
+      }
+    '';
 
     xdg.configFile = {
-      # preventing nix gc
       "hypr/lock-screen" = {
         source = ./lua;
         recursive = true;

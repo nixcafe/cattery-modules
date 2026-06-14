@@ -61,7 +61,8 @@ in
         serve-expired-reply-ttl = 3;
         serve-expired-prefetch-time = 21600;
       };
-    } // cfg.extraOptions;
+    }
+    // cfg.extraOptions;
   };
 
 }

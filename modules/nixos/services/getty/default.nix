@@ -25,7 +25,8 @@ in
   config = lib.mkIf cfg.enable {
     services.getty = {
       inherit (cfg) autologinUser;
-    } // cfg.extraOptions;
+    }
+    // cfg.extraOptions;
   };
 
 }

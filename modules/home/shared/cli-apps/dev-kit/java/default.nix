@@ -64,12 +64,11 @@ in
     home.packages = optional cfg.maven.enable (pkgs.maven.override { jdk_headless = cfg.jdk; });
 
     ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
-      directories =
-        [
-          ".java"
-        ]
-        ++ optional cfg.gradle.enable cfg.gradle.home
-        ++ optional cfg.maven.enable ".m2";
+      directories = [
+        ".java"
+      ]
+      ++ optional cfg.gradle.enable cfg.gradle.home
+      ++ optional cfg.maven.enable ".m2";
     };
   };
 

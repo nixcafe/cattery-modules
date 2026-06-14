@@ -21,7 +21,8 @@ in
   config = lib.mkIf cfg.enable {
     programs.vim = {
       enable = true;
-    } // cfg.extraOptions;
+    }
+    // cfg.extraOptions;
   };
 
 }

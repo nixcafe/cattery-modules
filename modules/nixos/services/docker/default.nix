@@ -23,7 +23,8 @@ in
     virtualisation.docker = {
       enable = true;
       storageDriver = if config.boot.isContainer then null else "btrfs";
-    } // cfg.extraOptions;
+    }
+    // cfg.extraOptions;
 
     users.users.${config.${namespace}.user.name} = {
       extraGroups = [ "docker" ];

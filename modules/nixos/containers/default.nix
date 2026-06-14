@@ -328,7 +328,8 @@ in
               lib
               ;
           });
-      } // ctr.extraOptions;
+      }
+      // ctr.extraOptions;
     }) cfg;
   };
 }

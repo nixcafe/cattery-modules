@@ -15,8 +15,8 @@ let
     mapAttrs'
     ;
 
-  # By default, CIFS shares are mounted as root. 
-  # If mounting as user is desirable, `uid`, `gid` 
+  # By default, CIFS shares are mounted as root.
+  # If mounting as user is desirable, `uid`, `gid`
   # and usergroup arguments can be provided as part of the filesystem options:
   inherit (config.${namespace}.user) uid gid;
 
@@ -76,7 +76,8 @@ let
         fsType = "cifs";
         options = [
           "${value2.autoMountOpts},credentials=${value2.secretsPath},uid=${toString value2.uid},gid=${toString value2.gid}"
-        ] ++ value2.extraOptions;
+        ]
+        ++ value2.extraOptions;
       }
     ) value.binds);
 in

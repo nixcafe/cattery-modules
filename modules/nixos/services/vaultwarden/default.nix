@@ -45,7 +45,8 @@ in
       # override default config
       config = mkForce { };
       environmentFile = cfg.configFile.settingsPath;
-    } // cfg.extraOptions;
+    }
+    // cfg.extraOptions;
   };
 
 }

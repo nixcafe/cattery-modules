@@ -21,7 +21,8 @@ in
   config = lib.mkIf cfg.enable {
     programs.neovim = {
       enable = true;
-    } // cfg.extraOptions;
+    }
+    // cfg.extraOptions;
   };
 
 }

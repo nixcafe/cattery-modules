@@ -112,8 +112,10 @@ in
             labels
             settings
             ;
-        } // value.extraOptions;
+        }
+        // value.extraOptions;
       }) cfg.instances;
-    } // cfg.extraOptions;
+    }
+    // cfg.extraOptions;
   };
 }
