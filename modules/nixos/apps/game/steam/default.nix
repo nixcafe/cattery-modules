@@ -2,6 +2,7 @@
   config,
   lib,
   namespace,
+  pkgs,
   ...
 }:
 let
@@ -16,6 +17,10 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    environment.systemPackages = with pkgs; [
+      protonup-qt
+    ];
+
     # the app that maximizes my retention
     programs.steam = {
       enable = true;
