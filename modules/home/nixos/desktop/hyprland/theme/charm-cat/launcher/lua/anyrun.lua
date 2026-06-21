@@ -1,4 +1,4 @@
-hl.bind("SUPER + D", hl.dsp.exec_cmd("anyrun"))
+hl.bind("SUPER + SUPER_L", hl.dsp.exec_cmd("anyrun"), { release = true })
 
 hl.window_rule({ match = { class = ".*(anyrun).*" }, float = true })
 hl.window_rule({ match = { class = ".*(anyrun).*" }, no_shadow = true })

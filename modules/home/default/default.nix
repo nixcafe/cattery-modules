@@ -5,6 +5,7 @@ let
     nix-index-database.homeModules.nix-index
     plasma-manager.homeModules.plasma-manager
     catppuccin.homeModules.catppuccin
+    caelestia-shell.homeManagerModules.default
   ];
 in
 {

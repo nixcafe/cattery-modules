@@ -80,6 +80,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    caelestia-shell = {
+      url = "github:caelestia-dots/shell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     develop-templates = {
       url = "git+https://github.com/nixcafe/develop-templates.git?submodules=1";
       inputs.nixpkgs.follows = "nixpkgs";
