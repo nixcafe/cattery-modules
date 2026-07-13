@@ -129,7 +129,12 @@ in
       bat.enable = true;
 
       # great file fuzzy finder
-      fzf.enable = true;
+      fzf = {
+        enable = true;
+      }
+      // optionalAttrs config.${namespace}.cli-apps.shell.atuin.enable {
+        historyWidget.command = "";
+      };
 
       # use zoxide to replace cd
       zoxide = {
