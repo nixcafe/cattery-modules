@@ -112,6 +112,11 @@
         allowUnfree = true;
         permittedInsecurePackages = [ ];
       };
+      supportedSystems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "aarch64-darwin"
+      ];
       outputs-builder = channels: { formatter = channels.nixpkgs.nixfmt; };
     };
 }
