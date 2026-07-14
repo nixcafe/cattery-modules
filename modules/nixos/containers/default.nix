@@ -260,23 +260,15 @@ in
 
         config =
           let
-            hostModules =
-              with inputs;
-              [
-                # These are fixed values, unfortunately I have to import them manually
-                agenix.nixosModules.default
-                home-manager.nixosModules.home-manager
-                lanzaboote.nixosModules.lanzaboote
-                vscode-server.nixosModules.default
-                nixos-wsl.nixosModules.default
-                nix-gaming.nixosModules.pipewireLowLatency
-                snowfall-lib.nixosModules.user
-              ]
-              ++ (builtins.concatLists (
-                map (
-                  src: builtins.attrValues (lib.snowfall.module.create-modules { inherit src; })
-                ) ctr.hostModules.src
-              ));
+            hostModules = with inputs; [
+              # These are fixed values, unfortunately I have to import them manually
+              agenix.nixosModules.default
+              home-manager.nixosModules.home-manager
+              lanzaboote.nixosModules.lanzaboote
+              vscode-server.nixosModules.default
+              nixos-wsl.nixosModules.default
+              nix-gaming.nixosModules.pipewireLowLatency
+            ];
             userAttrs =
               if ctr.hostModules.enable then
                 { ${namespace}.user.name = ctr.userName; }
