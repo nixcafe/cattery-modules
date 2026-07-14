@@ -1,6 +1,7 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    purr.url = "github:nixcafe/purr";
     vscode-server.url = "github:nix-community/nixos-vscode-server";
 
     impermanence = {
@@ -53,11 +54,6 @@
       inputs.darwin.follows = "darwin";
     };
 
-    snowfall-lib = {
-      url = "github:snowfallorg/lib";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # game
     nix-gaming = {
       url = "github:fufexan/nix-gaming";
@@ -84,39 +80,38 @@
     develop-templates = {
       url = "git+https://github.com/nixcafe/develop-templates.git?submodules=1";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.snowfall-lib.follows = "snowfall-lib";
     };
   };
 
   outputs =
     inputs:
-    let
-      # TODO: write your own module loader with container support.
-      lib = inputs.snowfall-lib.mkLib {
-        # snowfall doc: https://snowfall.org/guides/lib/quickstart/
-        inherit inputs;
-        # root dir
-        src = ./.;
-
-        snowfall = {
-          namespace = "cattery";
-          meta = {
-            name = "meow-flake";
-            title = "Meow' Nix Flakes";
-          };
-        };
+    inputs.purr.lib.mkFlake {
+      inherit inputs;
+      src = ./.;
+      namespace = "cattery";
+      bundleModules = true;
+      extraModules = with inputs; {
+        nixos = [
+          impermanence.nixosModules.impermanence
+          agenix.nixosModules.default
+          home-manager.nixosModules.home-manager
+          catppuccin.nixosModules.catppuccin
+          lanzaboote.nixosModules.lanzaboote
+          vscode-server.nixosModules.default
+          nixos-wsl.nixosModules.default
+        ];
+        darwin = [
+          home-manager.darwinModules.home-manager
+        ];
+        home = [
+          agenix.homeManagerModules.default
+          catppuccin.homeModules.catppuccin
+          plasma-manager.homeModules.plasma-manager
+          nix-index-database.homeModules.nix-index
+        ];
       };
-    in
-    lib.mkFlake {
-      channels-config = {
-        allowUnfree = true;
-        permittedInsecurePackages = [ ];
+      outputsBuilder = { pkgs, ... }: {
+        formatter = pkgs.nixfmt;
       };
-      supportedSystems = [
-        "x86_64-linux"
-        "aarch64-linux"
-        "aarch64-darwin"
-      ];
-      outputs-builder = channels: { formatter = channels.nixpkgs.nixfmt; };
     };
 }
