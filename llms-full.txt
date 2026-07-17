@@ -1,0 +1,258 @@
+# cattery-modules
+
+cattery-modules — quick-start NixOS configurations with room-based module bundles
+
+<!--
+Sitemap:
+- [cattery-modules](/index): Quick-start NixOS configurations — choose a room, get a complete system
+- [Quick Start](/quick-start): Get started with cattery-modules
+- [Rooms](/rooms): Pre-configured module bundles for quick-start setups
+- [Modules](/modules): Individual module reference for cattery-modules
+-->
+
+# cattery-modules
+
+> Quick-start NixOS configurations. Choose a **room**, enable it, and get a complete system — theming, gaming, desktop, server, and more. No boilerplate.
+
+A curated collection of Nix modules for NixOS, nix-darwin, and home-manager. Built with [purr](https://purr.nixcafe.org).
+
+## Quick Start
+
+```nix
+# flake.nix
+{
+  inputs.cattery-modules.url = "https://flakehub.com/f/nixcafe/cattery-modules/*.tar.gz";
+
+  outputs = { self, nixpkgs, cattery-modules, ... }: {
+    nixosConfigurations.myhost = nixpkgs.lib.nixosSystem {
+      modules = [ cattery-modules.nixosModules.default ];
+    };
+  };
+}
+```
+
+```nix
+# configuration.nix
+{ config, ... }: {
+  cattery.room.desktop.dev.enable = true;
+}
+```
+
+One line — full developer desktop with tools, theming, shell, and more.
+
+## Why cattery-modules?
+
+* **Room-based** — pre-configured module bundles; enable one and get dozens
+* **Sensible defaults** — every module comes with good defaults, override what you need
+* **Cross-platform** — NixOS, nix-darwin, home-manager, and NixOS-WSL
+* **Modular** — use rooms for quick-start, or enable individual modules piece by piece
+* **Extensible** — compose rooms with extra modules from other flakes
+
+# Quick Start
+
+## Installation
+
+Add cattery-modules as a flake input:
+
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    cattery-modules.url = "https://flakehub.com/f/nixcafe/cattery-modules/*.tar.gz";
+  };
+}
+```
+
+## Enabling a Room
+
+Rooms are the fastest way to get started. Add the modules to your system config and enable a room:
+
+```nix
+# configuration.nix
+{ cattery-modules, ... }: {
+  imports = [ cattery-modules.nixosModules.default ];
+
+  cattery.room.desktop.dev.enable = true;
+}
+```
+
+That's it. Run `nixos-rebuild switch` and you'll have a fully configured developer desktop.
+
+## Using with Home-Manager
+
+Standalone home-manager (no NixOS):
+
+```nix
+# home.nix
+{ cattery-modules, ... }: {
+  imports = [ cattery-modules.homeModules.default ];
+
+  cattery.room.desktop.dev.enable = true;
+}
+```
+
+## Using with nix-darwin
+
+macOS users:
+
+```nix
+{ cattery-modules, ... }: {
+  imports = [ cattery-modules.darwinModules.default ];
+
+  cattery.room.desktop.dev.enable = true;
+}
+```
+
+## Picking Individual Modules
+
+Don't want a full room? Enable modules one at a time:
+
+```nix
+{
+  cattery = {
+    themes.catppuccin.enable = true;
+    desktop.hyprland.enable = true;
+    services.tailscale.enable = true;
+    cli-apps.dev-kit.git.enable = true;
+  };
+}
+```
+
+# Rooms
+
+Rooms are **pre-configured module bundles**. Enable one room and get dozens of modules with sensible defaults. Each room includes and extends the one below it.
+
+## Room Hierarchy
+
+```
+room.basis
+ └─ room.general
+     ├─ room.server-mini
+     │   └─ room.server
+     ├─ room.container
+     └─ room.desktop.basis
+          └─ room.desktop.general
+               ├─ room.desktop.dev
+               ├─ room.desktop.game
+               └─ room.desktop.wsl
+```
+
+## Available Rooms
+
+### Base Rooms
+
+| Room | Description | Key Modules |
+| --- | --- | --- |
+| `room.basis` | Essential system setup | nix, git, openssh, locale, fonts, network |
+| `room.general` | Everyday additions | shell (fish/zsh), CLI tools, editors, file manager |
+
+### Server Rooms
+
+| Room | Description | Key Modules |
+| --- | --- | --- |
+| `room.server-mini` | Lightweight server | openssh, tailscale, firewall |
+| `room.server` | Full server | docker, nginx, postgresql, forgejo, vaultwarden, qemu-guest |
+| `room.container` | Container host | incus, distrobox |
+
+### Desktop Rooms
+
+| Room | Description | Key Modules |
+| --- | --- | --- |
+| `room.desktop.basis` | Desktop base | display manager, compositor (hyprland/niri/plasma), Catppuccin theming |
+| `room.desktop.general` | Full desktop | audio (pipewire), input, fonts, apps (browser, mail, etc.) |
+| `room.desktop.dev` | Developer desktop | IDEs (vscode/jetbrains), databases, dev-kit, containers |
+| `room.desktop.game` | Gaming desktop | Steam, GPU drivers (AMD/NVIDIA), Wine, RetroArch |
+| `room.desktop.wsl` | WSL desktop | WSL-optimized desktop with GPU integration |
+
+## Customizing Rooms
+
+Rooms use `lib.mkDefault` for sub-module enables, so you can opt out of any individual module:
+
+```nix
+cattery.room.desktop.game.enable = true;
+# Still get everything except JetBrains
+cattery.cli-apps.editor.jetbrains.enable = false;
+```
+
+# Modules
+
+Every module lives under the `cattery` namespace. Enable them individually or let rooms compose them for you.
+
+## Module Categories
+
+### Theming
+
+| Module | Description |
+| --- | --- |
+| `themes.catppuccin` | Catppuccin color scheme for GTK, Qt, Hyprland, Plasma |
+
+### Desktop
+
+| Module | Description |
+| --- | --- |
+| `desktop.hyprland` | Hyprland Wayland compositor |
+| `desktop.niri` | Niri scrollable-tiling compositor |
+| `desktop.plasma` | KDE Plasma desktop |
+| `desktop.gnome` | GNOME desktop |
+| `desktop.addons.catppuccin` | Catppuccin for desktop addons |
+| `desktop.addons.xdg-portal` | XDG Desktop Portal setup |
+
+### Gaming
+
+| Module | Description |
+| --- | --- |
+| `gaming.steam` | Steam client with dependencies |
+| `system.gpu.amd` | AMD GPU drivers & configuration |
+| `system.gpu.nvidia` | NVIDIA GPU drivers & configuration |
+
+### Security
+
+| Module | Description |
+| --- | --- |
+| `secrets.agenix` | Encrypted secrets via agenix |
+| `system.impermanence` | Ephemeral root with persistent directories |
+| `desktop.hyprland.theme.caelestia` | Hyprland Catppuccin theme |
+
+### Services
+
+| Module | Description |
+| --- | --- |
+| `services.tailscale` | Tailscale mesh VPN |
+| `services.nginx` | Nginx web server |
+| `services.postgresql` | PostgreSQL database |
+| `services.forgejo` | Forgejo git forge |
+| `services.docker` | Docker container runtime |
+| `services.vaultwarden` | Vaultwarden password manager |
+| `services.openssh` | OpenSSH server |
+| `services.cloudflared` | Cloudflare Tunnel |
+| `services.smartdns` | SmartDNS proxy |
+
+### Dev Tools
+
+| Module | Description |
+| --- | --- |
+| `cli-apps.dev-kit.git` | Git configuration |
+| `cli-apps.dev-kit.nix` | Nix configuration & aliases |
+| `cli-apps.editor.vscode` | VS Code |
+| `cli-apps.editor.jetbrains` | JetBrains IDEs |
+| `cli-apps.nix.home-manager` | home-manager integration |
+| `services.vscode-server` | VS Code remote server |
+
+### Shell & CLI
+
+| Module | Description |
+| --- | --- |
+| `cli-apps.shell.fish` | Fish shell |
+| `cli-apps.shell.zsh` | Zsh shell |
+| `cli-apps.tool.gh` | GitHub CLI |
+| `cli-apps.file-manager.yazi` | Yazi terminal file manager |
+
+### Platform
+
+| Module | Description |
+| --- | --- |
+| `system.wsl` | NixOS-WSL integration |
+| `system.proxmox.lxc` | Proxmox LXC container support |
+| `system.boot.lanzaboote` | Secure Boot with lanzaboote |
+
+> Module list is incomplete — more modules are being added. See the [repository](https://github.com/nixcafe/cattery-modules/tree/main/modules) for the full list.

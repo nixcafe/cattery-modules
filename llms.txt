@@ -1,0 +1,8 @@
+# cattery-modules
+
+cattery-modules — quick-start NixOS configurations with room-based module bundles
+
+- [cattery-modules](/index): Quick-start NixOS configurations — choose a room, get a complete system
+- [Quick Start](/quick-start): Get started with cattery-modules
+- [Rooms](/rooms): Pre-configured module bundles for quick-start setups
+- [Modules](/modules): Individual module reference for cattery-modules
