@@ -2,7 +2,7 @@
 
 ## Installation
 
-Add cattery-modules as a flake input:
+Add cattery as a flake input:
 
 ```nix
 {

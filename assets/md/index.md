@@ -1,4 +1,4 @@
-# cattery-modules
+# cattery
 
 > Quick-start NixOS configurations. Choose a **room**, enable it, and get a complete system — theming, gaming, desktop, server, and more. No boilerplate.
 
@@ -28,7 +28,7 @@ A curated collection of Nix modules for NixOS, nix-darwin, and home-manager. Bui
 
 One line — full developer desktop with tools, theming, shell, and more.
 
-## Why cattery-modules?
+## Why cattery?
 
 * **Room-based** — pre-configured module bundles; enable one and get dozens
 * **Sensible defaults** — every module comes with good defaults, override what you need
