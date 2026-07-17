@@ -78,7 +78,7 @@
     };
 
     develop-templates = {
-      url = "github:nixcafe/develop-templates/dev";
+      url = "github:nixcafe/develop-templates";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
