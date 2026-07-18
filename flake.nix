@@ -99,6 +99,7 @@
           lanzaboote.nixosModules.lanzaboote
           vscode-server.nixosModules.default
           nixos-wsl.nixosModules.default
+          nix-gaming.nixosModules.pipewireLowLatency
         ];
         darwin = [
           home-manager.darwinModules.home-manager

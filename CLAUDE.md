@@ -84,7 +84,7 @@ To install hooks: `nix develop` (direnv auto-loads via `.envrc`)
 | `lanzaboote`       | Secure Boot                              |
 | `catppuccin`       | Catppuccin theming                       |
 | `plasma-manager`   | KDE Plasma configuration                 |
-| `nix-gaming`       | Gaming-related packages                  |
+| `nix-gaming`       | PipeWire low-latency & gaming packages     |
 | `rust-overlay`     | Rust toolchains                          |
 | `pre-commit-hooks` | Dev shell pre-commit hooks               |
 | `vscode-server`    | VS Code remote server                    |
