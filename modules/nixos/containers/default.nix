@@ -2,12 +2,7 @@
   lib,
   inputs,
   namespace,
-  system,
-  target,
-  format,
-  virtual,
-  systems,
-  host,
+  purr ? { },
   config,
   ...
 }:
@@ -311,13 +306,7 @@ in
             inherit
               namespace
               inputs
-              system
-              target
-              format
-              virtual
-              systems
-              host
-              lib
+              purr
               ;
           });
       }

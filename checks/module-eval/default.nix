@@ -33,12 +33,12 @@ let
     config = { };
     options = { };
     modulesPath = pkgs.path + "/nixos/modules";
-    target = system;
-    format = "unknown";
-    virtual = false;
-    systems = [ system ];
-    host = "test";
-    user = "tester";
+    purr = {
+      name = "test";
+      host = "test";
+      user = "tester";
+      format = "unknown";
+    };
   };
 
   checkFile =

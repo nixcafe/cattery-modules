@@ -2,10 +2,11 @@
   config,
   lib,
   namespace,
-  host,
+  purr ? { },
   ...
 }:
 let
+  host = purr.host or purr.name or "localhost";
   inherit (lib) optionalString unique foldl';
   inherit (lib.${namespace}.utils) getRootDomain;
   inherit (lib.${namespace}.secrets) mkAppSecretsOption;

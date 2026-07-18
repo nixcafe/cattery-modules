@@ -2,10 +2,11 @@
   config,
   lib,
   namespace,
-  host,
+  purr ? { },
   ...
 }:
 let
+  host = purr.host or purr.name or "localhost";
   inherit (lib.${namespace}.secrets) mkHomeAppSecretsOption;
   inherit (config.${namespace}.secrets) files;
 
