@@ -638,11 +638,11 @@
         "nixpkgs-lib": "nixpkgs-lib_3"
       },
       "locked": {
-        "lastModified": 1784355775,
-        "narHash": "sha256-EYWkeWfSA1sbamKkMzN5frPUkKpQ9F1xiFaojdlO1sM=",
+        "lastModified": 1784358174,
+        "narHash": "sha256-WaeVprDrsfr5Q/TBvVVjLPmQSxqhoFV23FZpuCahvGQ=",
         "owner": "nixcafe",
         "repo": "purr",
-        "rev": "06b35d201aae8c714326479fc92aa8889088e04c",
+        "rev": "b62e61bd50d606135589c4b96d32bd079d0ae4da",
         "type": "github"
       },
       "original": {
