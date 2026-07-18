@@ -7,7 +7,7 @@
 }:
 let
   inherit (lib) mkOption types;
-  inherit (lib.${namespace}) escapeSystemdPath;
+  inherit (lib.${namespace}.utils) escapeSystemdPath;
 
   cfg = config.${namespace}.system.fileSystems.btrfs.impermanence;
 

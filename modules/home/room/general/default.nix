@@ -6,7 +6,7 @@
 }:
 let
   inherit (lib) mkDefault;
-  inherit (lib.${namespace}) mkDefaultEnabled;
+  inherit (lib.${namespace}.module) mkDefaultEnabled;
 
   cfg = config.${namespace}.room.general;
 in
