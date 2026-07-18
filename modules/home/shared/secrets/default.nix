@@ -1,6 +1,6 @@
 {
   inputs,
-  host,
+  purr ? { },
   system,
   config,
   lib,
@@ -8,6 +8,7 @@
   ...
 }:
 let
+  host = purr.host or purr.name or "localhost";
   inherit (lib)
     mkOption
     mkEnableOption
