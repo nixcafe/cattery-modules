@@ -6,7 +6,7 @@
   ...
 }:
 let
-  inherit (lib.${namespace}) mkDefaultEnabled;
+  inherit (lib.${namespace}.module) mkDefaultEnabled;
   inherit (pkgs.stdenv.hostPlatform) isLinux;
 
   cfg = config.${namespace}.desktop.hyprland.theme.charm-cat.screenshots;

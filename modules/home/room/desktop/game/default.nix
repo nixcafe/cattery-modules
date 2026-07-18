@@ -5,7 +5,7 @@
   ...
 }:
 let
-  inherit (lib.${namespace}) mkDefaultEnabled;
+  inherit (lib.${namespace}.module) mkDefaultEnabled;
 
   cfg = config.${namespace}.room.desktop.game;
 in

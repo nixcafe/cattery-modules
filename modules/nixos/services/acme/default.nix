@@ -11,7 +11,7 @@ let
     concatMapAttrs
     optional
     ;
-  inherit (lib.${namespace}) getRootDomain;
+  inherit (lib.${namespace}.utils) getRootDomain;
   inherit (config.${namespace}) user;
   inherit (config.${namespace}.services) nginx;
 

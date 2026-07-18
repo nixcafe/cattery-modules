@@ -7,7 +7,7 @@
 }:
 let
   inherit (lib) optionalString unique foldl';
-  inherit (lib.${namespace}) getRootDomain;
+  inherit (lib.${namespace}.utils) getRootDomain;
   inherit (lib.${namespace}.secrets) mkAppSecretsOption;
   inherit (config.${namespace}.secrets) files;
 
