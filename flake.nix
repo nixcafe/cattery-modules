@@ -109,6 +109,7 @@
           catppuccin.homeModules.catppuccin
           plasma-manager.homeModules.plasma-manager
           nix-index-database.homeModules.nix-index
+          caelestia-shell.homeManagerModules.default
         ];
       };
       outputsBuilder = { pkgs, ... }: {
