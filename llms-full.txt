@@ -5,25 +5,23 @@ cattery — quick-start NixOS configurations with room-based module bundles
 <!--
 Sitemap:
 - [cattery](/index): Quick-start NixOS configurations — choose a room, get a complete system
-- [Quick Start](/quick-start): Get started with cattery
-- [Rooms](/rooms): Pre-configured module bundles for quick-start setups
-- [Modules](/modules): Individual module reference for cattery
+- [Quick Start](/quick-start): Get started with cattery — NixOS, home-manager, nix-darwin, WSL
+- [Rooms](/rooms): Pre-configured module bundles — enable one room, get a complete system
+- [Modules](/modules): Complete module reference for cattery — all 244+ modules with options
+- [Secrets & agenix](/secrets): Encrypted secret management with agenix — host-specific, shared, and user-scoped secrets
+- [Contributing](/contributing): How to contribute to cattery-modules
 -->
 
 # cattery
 
-> Quick-start NixOS configurations. Choose a **room**, enable it, and get a complete system — theming, gaming, desktop, server, and more. No boilerplate.
-
-A curated collection of Nix modules for NixOS, nix-darwin, and home-manager. Built with [purr](https://purr.nixcafe.org).
-
-## Quick Start
+cattery is a curated collection of **244+ Nix modules** for NixOS, nix-darwin, and home-manager. Choose a **room** — a pre-configured module bundle — enable it, and get a complete system with theming, desktop, gaming, server, dev tools, and more. No boilerplate.
 
 ```nix
 # flake.nix
 {
   inputs.cattery-modules.url = "https://flakehub.com/f/nixcafe/cattery-modules/*.tar.gz";
 
-  outputs = { self, nixpkgs, cattery-modules, ... }: {
+  outputs = { nixpkgs, cattery-modules, ... }: {
     nixosConfigurations.myhost = nixpkgs.lib.nixosSystem {
       modules = [ cattery-modules.nixosModules.default ];
     };
@@ -38,15 +36,90 @@ A curated collection of Nix modules for NixOS, nix-darwin, and home-manager. Bui
 }
 ```
 
-One line — full developer desktop with tools, theming, shell, and more.
+One line — full developer desktop with Hyprland, Catppuccin theming, VS Code, JetBrains, Docker, databases, git, shell tools, and more.
+
+***
+
+## What is a Room?
+
+A **room** is a pre-configured bundle of modules with sensible defaults. Enable one room and you get dozens of modules enabled automatically. Each room extends the one below it — enable `desktop.dev` and you get the full chain:
+
+```
+room.basis
+ ├─ room.general
+ ├─ room.server-mini → room.server
+ ├─ room.container
+ └─ room.desktop.basis
+      └─ room.desktop.general
+           ├─ room.desktop.dev
+           ├─ room.desktop.game
+           └─ room.desktop.wsl
+
+room.game  (standalone, not in desktop chain)
+```
+
+Rooms use `lib.mkDefault` for all sub-module enables, so you can **override any individual module**:
+
+```nix
+cattery.room.desktop.dev.enable = true;
+cattery.apps.jetbrains.enable = false;  # I prefer neovim
+```
+
+***
 
 ## Why cattery?
 
-* **Room-based** — pre-configured module bundles; enable one and get dozens
-* **Sensible defaults** — every module comes with good defaults, override what you need
-* **Cross-platform** — NixOS, nix-darwin, home-manager, and NixOS-WSL
-* **Modular** — use rooms for quick-start, or enable individual modules piece by piece
-* **Extensible** — compose rooms with extra modules from other flakes
+| Feature | Description |
+|---|---|
+| **Room-based** | One enable gives you dozens of pre-configured modules |
+| **244+ modules** | Covers theming, desktop, gaming, servers, dev, security, secrets |
+| **Sensible defaults** | Every module ships with good defaults — override what you need |
+| **Cross-platform** | NixOS, nix-darwin, home-manager, NixOS-WSL |
+| **agenix secrets** | Built-in encrypted secret management with YubiKey support |
+| **Impermanence** | Ephemeral root support with persistent state directories |
+| **Extensible** | Compose rooms with `extraModules` from other flakes |
+
+## Module Categories
+
+| Category | Modules | Highlights |
+|---|---|---|
+| **Theming** | Catppuccin (GTK, Qt, Plasma, Hyprland) | System-wide color scheme |
+| **Desktop** | Hyprland, Niri, GNOME, KDE Plasma | Wayland compositors + addons |
+| **Gaming** | Steam, GPU (AMD/NVIDIA), launchers | Full gaming setup |
+| **Security** | agenix secrets, impermanence, Secure Boot, GPG, YubiKey | Defense in depth |
+| **Services** | nginx, PostgreSQL, Forgejo, Tailscale, Vaultwarden, Docker, cloudflared, smartdns | Production-ready |
+| **Dev Tools** | VS Code, JetBrains, Git, Rust, Go, Java, JS, Nix, Ollama | Polyglot dev kits |
+| **Shell & CLI** | fish, zsh, nushell, direnv, starship, atuin, yazi, neovim, helix | Modern terminal |
+| **Platform** | NixOS-WSL, Proxmox LXC, nix-darwin | Everywhere |
+
+## Integration Modes
+
+cattery works everywhere:
+
+```nix
+# NixOS (full system)
+imports = [ cattery-modules.nixosModules.default ];
+
+# home-manager (user-level)
+imports = [ cattery-modules.homeModules.default ];
+
+# nix-darwin (macOS)
+imports = [ cattery-modules.darwinModules.default ];
+```
+
+## Documentation
+
+| Page | Description |
+|---|---|
+| [Quick Start](/quick-start) | Full setup guide for NixOS, home-manager, darwin |
+| [Rooms](/rooms) | Complete room hierarchy with module listings |
+| [Modules](/modules) | Full catalog of all 244+ modules |
+| [Secrets & agenix](/secrets) | Encrypted secret management |
+| [Contributing](/contributing) | Development guide |
+
+## License
+
+CC0 1.0 Universal
 
 # Quick Start
 
@@ -55,6 +128,7 @@ One line — full developer desktop with tools, theming, shell, and more.
 Add cattery as a flake input:
 
 ```nix
+# flake.nix
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -63,43 +137,128 @@ Add cattery as a flake input:
 }
 ```
 
-## Enabling a Room
+## NixOS (Full System)
 
-Rooms are the fastest way to get started. Add the modules to your system config and enable a room:
+The most common setup — full NixOS system with all modules available:
+
+```nix
+# flake.nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    cattery-modules.url = "https://flakehub.com/f/nixcafe/cattery-modules/*.tar.gz";
+  };
+
+  outputs = { nixpkgs, cattery-modules, ... }: {
+    nixosConfigurations.myhost = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        cattery-modules.nixosModules.default
+        ./configuration.nix
+      ];
+    };
+  };
+}
+```
 
 ```nix
 # configuration.nix
-{ cattery-modules, ... }: {
-  imports = [ cattery-modules.nixosModules.default ];
-
-  cattery.room.desktop.dev.enable = true;
+{ ... }: {
+  cattery = {
+    room.desktop.dev.enable = true;
+    user.name = "alice";
+  };
 }
 ```
 
-That's it. Run `nixos-rebuild switch` and you'll have a fully configured developer desktop.
+Run `nixos-rebuild switch` and you're done.
 
-## Using with Home-Manager
+## home-manager (User-Level)
 
-Standalone home-manager (no NixOS):
+Standalone home-manager (Linux/macOS, no root access needed):
 
 ```nix
-# home.nix
-{ cattery-modules, ... }: {
-  imports = [ cattery-modules.homeModules.default ];
+# flake.nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    home-manager.url = "github:nix-community/home-manager";
+    cattery-modules.url = "https://flakehub.com/f/nixcafe/cattery-modules/*.tar.gz";
+  };
 
-  cattery.room.desktop.dev.enable = true;
+  outputs = { nixpkgs, home-manager, cattery-modules, ... }: {
+    homeConfigurations.alice = home-manager.lib.homeManagerConfiguration {
+      pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      modules = [
+        cattery-modules.homeModules.default
+        {
+          cattery = {
+            room.desktop.dev.enable = true;
+            user.name = "alice";
+          };
+        }
+      ];
+    };
+  };
 }
 ```
 
-## Using with nix-darwin
+```bash
+home-manager switch --flake .#alice
+```
 
-macOS users:
+## nix-darwin (macOS)
 
 ```nix
-{ cattery-modules, ... }: {
-  imports = [ cattery-modules.darwinModules.default ];
+# flake.nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    darwin.url = "github:nix-darwin/nix-darwin";
+    cattery-modules.url = "https://flakehub.com/f/nixcafe/cattery-modules/*.tar.gz";
+  };
 
-  cattery.room.desktop.dev.enable = true;
+  outputs = { darwin, cattery-modules, ... }: {
+    darwinConfigurations.macbook = darwin.lib.darwinSystem {
+      system = "aarch64-darwin";
+      modules = [
+        cattery-modules.darwinModules.default
+        {
+          cattery = {
+            room.basis.enable = true;
+            user.name = "alice";
+          };
+        }
+      ];
+    };
+  };
+}
+```
+
+```bash
+darwin-rebuild switch --flake .#macbook
+```
+
+## NixOS-WSL
+
+```nix
+{
+  cattery = {
+    room.desktop.wsl.enable = true;
+    user.name = "alice";
+  };
+}
+```
+
+## Proxmox LXC Container
+
+```nix
+{
+  cattery = {
+    room.container.enable = true;
+    system.proxmox.lxc.manageNetwork = true;
+    user.name = "alice";
+  };
 }
 ```
 
@@ -110,149 +269,1109 @@ Don't want a full room? Enable modules one at a time:
 ```nix
 {
   cattery = {
-    themes.catppuccin.enable = true;
     desktop.hyprland.enable = true;
+    themes.catppuccin.enable = true;
     services.tailscale.enable = true;
     cli-apps.dev-kit.git.enable = true;
+    cli-apps.dev-kit.rust.enable = true;
+    cli-apps.shell.fish.enable = true;
+    user.name = "alice";
   };
 }
 ```
 
+## Customizing Rooms
+
+Rooms use `lib.mkDefault` for sub-module enables — you can opt out of anything:
+
+```nix
+{
+  cattery = {
+    room.desktop.dev.enable = true;
+    # Override room defaults:
+    cli-apps.dev-kit.javascript.enable = false;  # I use bun standalone
+    desktop.hyprland.enable = false;              # I prefer Niri
+    desktop.niri.enable = true;
+  };
+}
+```
+
+## Setting User Info
+
+Many modules use `cattery.user` for defaults (git identity, email, GPG, shell):
+
+```nix
+{
+  cattery.user = {
+    name = "alice";
+    email = {
+      address = "alice@example.com";
+      userName = "Alice";
+    };
+    defaultUserShell = "fish";  # auto-enables fish module
+    gpg.signKey = "ABCD1234";
+  };
+}
+```
+
+## Next Steps
+
+* **[Rooms](/rooms)** — see what each room includes
+* **[Modules](/modules)** — browse all 244+ modules
+* **[Secrets & agenix](/secrets)** — set up encrypted secrets
+
 # Rooms
 
-Rooms are **pre-configured module bundles**. Enable one room and get dozens of modules with sensible defaults. Each room includes and extends the one below it.
-
-## Room Hierarchy
+Rooms are **pre-configured module bundles**. Enable one room and dozens of modules activate with sensible defaults. Each room includes the one below it — rooms form a **dependency chain**.
 
 ```
 room.basis
- └─ room.general
-     ├─ room.server-mini
-     │   └─ room.server
-     ├─ room.container
-     └─ room.desktop.basis
-          └─ room.desktop.general
-               ├─ room.desktop.dev
-               ├─ room.desktop.game
-               └─ room.desktop.wsl
+ ├─ room.general
+ ├─ room.server-mini → room.server
+ ├─ room.container
+ └─ room.desktop.basis
+      └─ room.desktop.general
+           ├─ room.desktop.dev
+           ├─ room.desktop.game
+           └─ room.desktop.wsl
 ```
 
-## Available Rooms
+## How Rooms Work
 
-### Base Rooms
+Rooms are available for NixOS, home-manager, and nix-darwin. Each room auto-enables its dependency chain — enable `desktop.dev` and you get all of `basis → general → desktop.basis → desktop.general → desktop.dev`.
 
-| Room | Description | Key Modules |
-| --- | --- | --- |
-| `room.basis` | Essential system setup | nix, git, openssh, locale, fonts, network |
-| `room.general` | Everyday additions | shell (fish/zsh), CLI tools, editors, file manager |
+All sub-module enables use `lib.mkDefault`, so you can **override any individual module**:
 
-### Server Rooms
+```nix
+cattery.room.desktop.dev.enable = true;
+# Still get everything except the stuff you opt out of:
+cattery.apps.jetbrains.enable = false;
+cattery.desktop.plasma.enable = false;
+```
 
-| Room | Description | Key Modules |
-| --- | --- | --- |
-| `room.server-mini` | Lightweight server | openssh, tailscale, firewall |
-| `room.server` | Full server | docker, nginx, postgresql, forgejo, vaultwarden, qemu-guest |
-| `room.container` | Container host | incus, distrobox |
+## NixOS Rooms
 
-### Desktop Rooms
+### `room.basis` — Essential System
 
-| Room | Description | Key Modules |
-| --- | --- | --- |
-| `room.desktop.basis` | Desktop base | display manager, compositor (hyprland/niri/plasma), Catppuccin theming |
-| `room.desktop.general` | Full desktop | audio (pipewire), input, fonts, apps (browser, mail, etc.) |
-| `room.desktop.dev` | Developer desktop | IDEs (vscode/jetbrains), databases, dev-kit, containers |
-| `room.desktop.game` | Gaming desktop | Steam, GPU drivers (AMD/NVIDIA), Wine, RetroArch |
-| `room.desktop.wsl` | WSL desktop | WSL-optimized desktop with GPU integration |
+The foundation. Every other room builds on this.
 
-## Customizing Rooms
+**Enables:** mtr, nix-ld, cron, openssh, locale, network, time, kernel, nix, cli-apps.openssh, ulimit
 
-Rooms use `lib.mkDefault` for sub-module enables, so you can opt out of any individual module:
+```nix
+cattery.room.basis.enable = true;
+```
+
+### `room.general` — Everyday System
+
+Basis + boot setup.
+
+**Enables:** basis + boot.efi
+
+```nix
+cattery.room.general.enable = true;
+```
+
+### `room.server-mini` — Lightweight Server
+
+Basis + cloud-friendly additions.
+
+**Enables:** basis + cloud-init, qemu-guest, acme
+
+```nix
+cattery.room.server-mini.enable = true;
+cattery.room.server-mini.qemu-guest.enable = true;   # optional
+cattery.room.server-mini.cloud-init.enable = true;   # optional
+```
+
+### `room.server` — Full Server
+
+Basis + server-mini with passthrough options.
+
+**Enables:** basis + server-mini (inherits qemu-guest/cloud-init passthrough)
+
+```nix
+cattery.room.server = {
+  enable = true;
+  qemu-guest.enable = true;
+  cloud-init.enable = true;
+};
+```
+
+### `room.container` — Container Host
+
+Basis optimized for containers.
+
+**Enables:** basis + acme, `boot.isContainer = true`
+
+```nix
+cattery.room.container.enable = true;
+```
+
+### `room.desktop.basis` — Desktop Base
+
+Basis + display foundation.
+
+**Enables:** basis + automount, fcitx5, wireless, peripherals, chromium-support, fido2, fonts
+
+```nix
+cattery.room.desktop.basis.enable = true;
+```
+
+### `room.desktop.general` — Full Desktop
+
+Desktop basis + boot.
+
+**Enables:** desktop.basis + boot.efi
+
+```nix
+cattery.room.desktop.general.enable = true;
+```
+
+### `room.desktop.dev` — Developer Desktop
+
+Full desktop + dev tools. The most common room for developers.
+
+**Enables:** desktop.general + yubikey, docker, vscode-server, binfmt (aarch64 emulation)
+
+Also sets `security.sudo.wheelNeedsPassword = false` (passwordless sudo).
+
+```nix
+cattery.room.desktop.dev.enable = true;
+```
+
+### `room.desktop.game` — Gaming Desktop
+
+Full desktop + gaming.
+
+**Enables:** desktop.general + steam
+
+Also sets `security.sudo.wheelNeedsPassword = false`.
 
 ```nix
 cattery.room.desktop.game.enable = true;
-# Still get everything except JetBrains
-cattery.cli-apps.editor.jetbrains.enable = false;
 ```
+
+### `room.desktop.wsl` — WSL Desktop
+
+Desktop basis + WSL integration.
+
+**Enables:** desktop.basis + wsl
+
+Also sets `security.sudo.wheelNeedsPassword = false`.
+
+```nix
+cattery.room.desktop.wsl.enable = true;
+```
+
+## Home-Manager Rooms
+
+### `room.basis`
+
+Essential CLI tools.
+
+**Enables:** git, nix (dev-kit), gh, home-manager, nix-index
+
+```nix
+cattery.room.basis.enable = true;
+```
+
+### `room.general`
+
+Basis + everyday shell tools.
+
+**Enables:** basis + atuin, direnv, starship, powershell, http-utils, monitoring, network, compressor, useful (aliases), tldr, misc, yazi, disk, misc(linux)
+
+```nix
+cattery.room.general.enable = true;
+```
+
+### `room.game`
+
+Basis + gaming-oriented apps. Standalone (not in the desktop chain).
+
+**Enables:** basis + vscode, zed-editor, instant-messengers, video (visual + youtube), apps.game (Linux), iina (Darwin)
+
+```nix
+cattery.room.game.enable = true;
+```
+
+### `room.server-mini`
+
+Basis + prompt.
+
+**Enables:** basis + starship
+
+### `room.server`
+
+General + server-mini + acme-sh.
+
+### `room.container`
+
+Basis + starship + acme-sh.
+
+### `room.desktop.basis`
+
+General + GUI apps.
+
+**Enables:** general + apps.graphics, apps.useful, desktop.xdg
+
+### `room.desktop.general`
+
+Desktop basis + editors + browser.
+
+**Enables:** desktop.basis + wezterm, vscode, zed-editor, browser
+
+### `room.desktop.dev`
+
+Full developer setup — IDEs, databases, all dev kits, cloud tools.
+
+| Option | Description |
+|---|---|
+| `allDevKit` | Enable all dev-kit sub-modules (cpp, go, java, javascript, lua, rust, wasm) |
+
+**Enables:** desktop.general + instant-messengers, jetbrains, code-cursor, sqlite, dev-kits (optional via `allDevKit`), cloud, kubernetes, gnupg, ollama, thunderbird(linux), science(linux), video(linux), cloudflared(linux), warp(linux), iina(darwin), android(darwin)
+
+```nix
+cattery.room.desktop.dev = {
+  enable = true;
+  allDevKit = true;   # enable all dev-kits
+};
+```
+
+### `room.desktop.game`
+
+Desktop general + gaming.
+
+**Enables:** desktop.general + instant-messengers, game
+
+### `room.desktop.wsl`
+
+Desktop basis only.
+
+## Darwin Rooms
+
+### `room.basis`
+
+macOS essentials.
+
+**Enables:** brew, system.sudoTouch, system.useful, nix, cli-apps.openssh, system.fonts, system.ulimit (openFilesLimit=4096)
+
+### `room.desktop.dev`
+
+Basis + fido2.
+
+**Enables:** basis + cli-apps.security.fido2
+
+## Customizing Rooms
+
+All rooms use `lib.mkDefault` for sub-module enables. Your explicit config always wins:
+
+```nix
+cattery.room.desktop.dev.enable = true;
+
+# Disable individual modules from the room:
+cattery.desktop.hyprland.enable = false;
+cattery.desktop.niri.enable = true;           # prefer niri
+cattery.apps.jetbrains.enable = false;         # prefer neovim
+cattery.cli-apps.shell.fish.enable = false;    # prefer zsh
+cattery.cli-apps.shell.zsh.enable = true;
+```
+
+## Composing Multiple Rooms
+
+You can enable multiple rooms simultaneously (later rooms override defaults from earlier ones):
+
+```nix
+cattery = {
+  room.desktop.dev.enable = true;    # gets developer tools
+  room.desktop.game.enable = true;   # adds steam + gaming
+};
+```
+
+## Room vs Individual Modules
+
+| Approach | When to use |
+|---|---|
+| **Room** | Quick start, new machines, want sensible defaults for an entire category |
+| **Individual modules** | Fine-grained control, building from scratch, specific needs |
+
+You can mix both — start with a room, then disable or add individual modules as needed.
 
 # Modules
 
-Every module lives under the `cattery` namespace. Enable them individually or let rooms compose them for you.
+cattery provides **244+ modules** under the `cattery` namespace. Enable them individually or let rooms compose them for you.
 
-## Module Categories
+## Theming
 
-### Theming
+### `cattery.themes.catppuccin`
 
-| Module | Description |
-| --- | --- |
-| `themes.catppuccin` | Catppuccin color scheme for GTK, Qt, Hyprland, Plasma |
+Catppuccin color scheme system-wide. Applies to GTK, Qt, Hyprland, Plasma, and SDDM.
 
-### Desktop
+```nix
+cattery.themes.catppuccin.enable = true;
+```
 
-| Module | Description |
-| --- | --- |
-| `desktop.hyprland` | Hyprland Wayland compositor |
-| `desktop.niri` | Niri scrollable-tiling compositor |
-| `desktop.plasma` | KDE Plasma desktop |
-| `desktop.gnome` | GNOME desktop |
-| `desktop.addons.catppuccin` | Catppuccin for desktop addons |
-| `desktop.addons.xdg-portal` | XDG Desktop Portal setup |
+## Desktop
 
-### Gaming
+### Compositors
 
-| Module | Description |
-| --- | --- |
-| `gaming.steam` | Steam client with dependencies |
-| `system.gpu.amd` | AMD GPU drivers & configuration |
-| `system.gpu.nvidia` | NVIDIA GPU drivers & configuration |
+| Module | Description | Options |
+|---|---|---|
+| `cattery.desktop.hyprland` | Hyprland Wayland compositor with XWayland | `enable` |
+| `cattery.desktop.niri` | Niri scrollable-tiling compositor | `enable`, `configText`, `include`, `spawnAtStartup`, `binds` |
+| `cattery.desktop.plasma` | KDE Plasma 6 with SDDM | `enable`, `useConnect`, `persistence` |
+| `cattery.desktop.gnome` | GNOME desktop with GDM | `enable` |
 
-### Security
+### Hyprland Themes
 
-| Module | Description |
-| --- | --- |
-| `secrets.agenix` | Encrypted secrets via agenix |
-| `system.impermanence` | Ephemeral root with persistent directories |
-| `desktop.hyprland.theme.caelestia` | Hyprland Catppuccin theme |
+| Module | Description | Options |
+|---|---|---|
+| `cattery.desktop.hyprland.theme.charm-cat` | Full Hyprland rice — waybar, kitty, anyrun, hyprlock, mako, wlogout, awww wallpaper | `enable`, `greetd.enable` |
+| `cattery.desktop.hyprland.theme.caelestia` | Caelestia dots with SDDM — kitty, thunar, hyprshot, hypridle | `enable`, `settings` |
 
-### Services
+### Charm-Cat Theme Sub-modules
 
 | Module | Description |
-| --- | --- |
-| `services.tailscale` | Tailscale mesh VPN |
-| `services.nginx` | Nginx web server |
-| `services.postgresql` | PostgreSQL database |
-| `services.forgejo` | Forgejo git forge |
-| `services.docker` | Docker container runtime |
-| `services.vaultwarden` | Vaultwarden password manager |
-| `services.openssh` | OpenSSH server |
-| `services.cloudflared` | Cloudflare Tunnel |
-| `services.smartdns` | SmartDNS proxy |
+|---|---|
+| `cattery.desktop.hyprland.theme.charm-cat.audio` | pipewire, wireplumber, pavucontrol, brightnessctl |
+| `cattery.desktop.hyprland.theme.charm-cat.convention` | Workspace conventions, keybinds, monitor rules |
+| `cattery.desktop.hyprland.theme.charm-cat.fcitx` | Fcitx5 input method integration |
+| `cattery.desktop.hyprland.theme.charm-cat.file-manager` | Dolphin file manager |
+| `cattery.desktop.hyprland.theme.charm-cat.launcher` | Anyrun with plugins (applications, symbols, shell, rink, kidex, websearch) |
+| `cattery.desktop.hyprland.theme.charm-cat.lock-screen` | Hyprlock + hypridle screen lock |
+| `cattery.desktop.hyprland.theme.charm-cat.notification` | Mako notification daemon |
+| `cattery.desktop.hyprland.theme.charm-cat.screenshots` | Hyprshot + grim + slurp + wl-clipboard |
+| `cattery.desktop.hyprland.theme.charm-cat.terminal` | Kitty with JetBrains Mono Nerd Font + extensive keybinds |
+| `cattery.desktop.hyprland.theme.charm-cat.vscode` | VS Code workspace integration |
+| `cattery.desktop.hyprland.theme.charm-cat.wallpaper` | Awww wallpaper rotation |
+| `cattery.desktop.hyprland.theme.charm-cat.waybar` | Waybar with JSON config |
+| `cattery.desktop.hyprland.theme.charm-cat.wlogout` | Wlogout power menu |
+
+### Caelestia Theme Sub-modules
+
+| Module | Description |
+|---|---|
+| `cattery.desktop.hyprland.theme.caelestia.convention` | Rich settings, wsaction script, workspace switching |
+| `cattery.desktop.hyprland.theme.caelestia.audio` | pipewire, wireplumber, pavucontrol, brightnessctl |
+| `cattery.desktop.hyprland.theme.caelestia.fcitx` | Fcitx5 integration |
+| `cattery.desktop.hyprland.theme.caelestia.file-manager` | Thunar with archive & volume plugins |
+| `cattery.desktop.hyprland.theme.caelestia.idle` | Hypridle + caelestia shell lock |
+| `cattery.desktop.hyprland.theme.caelestia.screenshots` | Hyprshot screenshot tool |
+| `cattery.desktop.hyprland.theme.caelestia.terminal` | Kitty with JetBrains Mono Nerd Font |
+
+### Desktop Addons
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.desktop.addons.catppuccin` | Catppuccin for desktop environment | `enable`, `autoEnable`, `extraOptions` |
+| `cattery.desktop.addons.xdg-portal` | XDG Desktop Portal with wlr | `enable` |
+| `cattery.desktop.addons.chromium-support` | Wayland Chromium/Electron (NIXOS\_OZONE\_WL=1) | `enable` |
+| `cattery.desktop.xdg` | MIME default apps (browser, editor, audio, video, mail, calendar) | `app.browser`, `app.editor`, `app.audio`, `app.video`, `app.mailto`, `app.calendar` |
+
+### Hyprland Addons
+
+| Module | Description |
+|---|---|
+| `cattery.desktop.hyprland.addons.hyprshot` | Screenshot tool (hyprshot + grim + slurp) |
+| `cattery.desktop.hyprland.addons.hyprlock` | Screen locker |
+| `cattery.desktop.hyprland.addons.hypridle` | Idle management daemon |
+
+### Display Managers
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.desktop.lightdm` | LightDM with X server | `enable` |
+
+## Gaming
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.apps.game.steam` | Steam with protonup-qt, remote play, hardware support | `enable`, `persistence` |
+| `cattery.apps.game.gale` | Gale game launcher | `enable`, `persistence` |
+| `cattery.apps.game` | Heroic Games Launcher (Epic/GOG), r2modman | `enable` |
+| `cattery.apps.hmcl` | HMCL Minecraft launcher | `enable`, `persistence` |
+| `cattery.system.gpu.amd` | AMD GPU drivers (amdgpu kernel module) | `enable` |
+
+## Security
+
+### Secrets (agenix)
+
+See the [Secrets & agenix](/secrets) page for full documentation.
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.secrets` | agenix encrypted secrets — host-specific, shared, and user scope | `enable`, `yubikey.enable`, `secretsDir`, `secretsMountPoint`, `hosts`, `shared`, `files` |
+| `cattery.nix.secrets` | Encrypted nix config via agenix | `enable`, encrypted `!include` path |
+
+### Impermanence
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.system.impermanence` | Ephemeral root with persistent state (NixOS) | `enable`, `directories`, `files`, `persistencePath` |
+| `cattery.system.impermanence` (home) | Ephemeral root (home-manager) | `enable`, `directories`, `files`, `xdg.userDirs`, `xdg.cache`, `xdg.config`, `xdg.data`, `xdg.state` |
+| `cattery.system.fileSystems.btrfs.impermanence` | BTRFS subvolume rolling for impermanence | `device`, `tempDir`, `oldSubvolDir`, `subvol` per filesystem |
+
+### Secure Boot
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.system.boot.lanzaboote` | Secure Boot with lanzaboote | `enable`, `pkiBundle`, `extraOptions` |
+
+### Other Security
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.security.pam` | PAM configuration passthrough | Attrs passthrough |
+| `cattery.apps.yubikey` | YubiKey with yubikey-agent, touch-detector, pcscd | `enable`, `agent.enable`, `touch-detector.enable` |
+| `cattery.apps.safety` | Bitwarden desktop | `enable` |
+
+## Services
+
+### Web & Reverse Proxy
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.services.nginx` | Nginx with conf.d includes | `enable`, `httpSubConfigPath`, `commonHttpConfig`, `httpConfig`, `appendHttpConfig`, `virtualHosts`, `preStart`, `extraOptions` |
+| `cattery.services.nginx.secrets` | Encrypted nginx conf.d via agenix | Auto-enabled with secrets |
+| `cattery.services.acme` | Let's Encrypt SSL certificates | `enable`, `useRoot`, `email`, `group`, `dnsProvider`, `postRun`, `reloadServices`, `certs`, `extraOptions` |
+| `cattery.services.acme.secrets` | Encrypted ACME DNS provider credentials | Auto-enabled with secrets |
+
+### Git Forges
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.services.forgejo` | Forgejo (Gitea fork) | `enable`, `dbBackend` (sqlite/mysql/postgresql), `useWizard`, `configFile.settingsPath`, `settings`, `extraOptions` |
+| `cattery.services.forgejo.secrets` | Encrypted forgejo app.ini | Auto-enabled with secrets |
+| `cattery.services.gitea` | Gitea | `enable`, `dbBackend`, `useWizard`, `configFile.settingsPath`, `settings`, `extraOptions` |
+| `cattery.services.gitea.secrets` | Encrypted gitea app.ini | Auto-enabled with secrets |
+| `cattery.services.gitea-actions-runner` | Gitea Actions CI runner | `enable`, `package`, `url`, `instances` (sub-modules with enable, name, url, tokenFile, labels, settings, extraOptions) |
+| `cattery.services.gitea-actions-runner.secrets` | Encrypted runner token files | Auto-enabled with secrets |
+
+### Databases
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.services.postgresql` | PostgreSQL with external config files | `enable`, `package`, `openFirewall`, `configFile.settingsPath`, `configFile.identMapPath`, `configFile.authenticationPath`, `settings`, `extraOptions` |
+| `cattery.services.postgresql.secrets` | Encrypted postgresql/pg\_hba/pg\_ident configs | Auto-enabled with secrets |
+
+### Password Manager
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.services.vaultwarden` | Vaultwarden (Bitwarden-compatible) | `enable`, `dbBackend`, `configFile.settingsPath`, `extraOptions` |
+| `cattery.services.vaultwarden.secrets` | Encrypted vaultwarden env | Auto-enabled with secrets |
+
+### VPN & Networking
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.services.tailscale` | Tailscale mesh VPN | `enable`, `extraOptions` |
+| `cattery.services.cloudflared` | Cloudflare Tunnel | `enable`, `tunnels`, `extraOptions` |
+| `cattery.services.cloudflared.secrets` | Encrypted tunnel credentials | Auto-enabled with secrets |
+| `cattery.services.wg-quick` | WireGuard wg-quick (cross-platform) | `enable`, `configPrefix`, `configNames` |
+| `cattery.services.wg-quick.secrets` | Encrypted WireGuard configs | Auto-enabled with secrets |
+| `cattery.services.sing-box` | Sing-box universal proxy | `enable`, `settings` (freeform JSON) |
+| `cattery.services.sing-box.secrets` | Encrypted sing-box config.json | Auto-enabled with secrets |
+| `cattery.services.smartdns` | SmartDNS with DNS/TLS/HTTPS | `enable`, `openFirewall`, `extraOptions` |
+
+### Container & VM
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.services.docker` | Docker with BTRFS storage | `enable`, `extraOptions` |
+| `cattery.containers` | Declarative NixOS containers with auto IP | `enable`, per-container `services`, `sharedServices`, `extraOptions` |
+| `cattery.services.qemu-guest` | QEMU guest agent | `enable` |
+| `cattery.services.cloud-init` | cloud-init for cloud VMs | `enable`, `network.enable`, `extraOptions` |
 
 ### Dev Tools
 
-| Module | Description |
-| --- | --- |
-| `cli-apps.dev-kit.git` | Git configuration |
-| `cli-apps.dev-kit.nix` | Nix configuration & aliases |
-| `cli-apps.editor.vscode` | VS Code |
-| `cli-apps.editor.jetbrains` | JetBrains IDEs |
-| `cli-apps.nix.home-manager` | home-manager integration |
-| `services.vscode-server` | VS Code remote server |
+| Module | Description | Options |
+|---|---|---|
+| `cattery.services.vscode-server` | VS Code remote server | `enable`, `extraOptions`, `persistence` |
+| `cattery.services.openssh` | OpenSSH server | `enable`, `settings`, `extraOptions` |
 
-### Shell & CLI
+### System Services
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.services.cron` | Cron daemon | `enable`, `extraOptions` |
+| `cattery.services.getty` | TTY autologin | `enable`, `autologinUser`, `extraOptions` |
+| `cattery.cli-apps.cloudflared` | cloudflared CLI | `enable`, `persistence` |
+| `cattery.services.awww` | Awww wallpaper rotation | `enable`, `mode`, `wallpaperDir`, `interval`, `resizeType`, `filter`, `transition`, `monitors` |
+| `cattery.services.gpg-agent` | GPG agent with SSH support | `enable`, `enableSshSupport`, `enableExtraSocket`, `verbose`, `sshKeys`, `extraConfig`, `pinentry.package` |
+
+## CLI Apps
+
+### Development Kits
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.cli-apps.dev-kit.git` | Git with GPG signing (openpgp/ssh/x509), delta, LFS, multi-credential | `enable`, `signing.format`, `signing.key`, `extraOptions`, `persistence` |
+| `cattery.cli-apps.dev-kit.git.secrets` | Encrypted git include configs | Auto-enabled with secrets |
+| `cattery.cli-apps.dev-kit.nix` | alejandra, nixfmt, nil, nix-tree | `enable` |
+| `cattery.cli-apps.dev-kit.rust` | rustup, sccache | `enable`, `persistence` |
+| `cattery.cli-apps.dev-kit.go` | Go toolchain | `enable` |
+| `cattery.cli-apps.dev-kit.java` | JDK (GraalVM), Maven, Gradle | `enable` |
+| `cattery.cli-apps.dev-kit.javascript` | Node.js, corepack, bun, pnpm, yarn | `enable`, `needs`, `persistence` |
+| `cattery.cli-apps.dev-kit.cpp` | GCC, CMake, autoconf, automake | `enable` |
+| `cattery.cli-apps.dev-kit.lua` | LuaJIT | `enable` |
+| `cattery.cli-apps.dev-kit.wasm` | Binaryen, Emscripten | `enable` |
+| `cattery.cli-apps.dev-kit.dive` | Docker image analyzer | `enable` |
+| `cattery.cli-apps.dev-kit.jujutsu` | Jujutsu VCS with GPG signing | `enable` |
+
+### Shells
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.cli-apps.shell.fish` | Fish shell (auto-enables if defaultUserShell) | `enable`, `persistence` |
+| `cattery.cli-apps.shell.zsh` | Zsh with autosuggestion + syntax highlighting | `enable` |
+| `cattery.cli-apps.shell.nushell` | Nushell | `enable`, `settings`, `extraConfig`, `persistence` |
+| `cattery.cli-apps.shell.atuin` | Shell history sync | `enable`, `persistence` |
+| `cattery.cli-apps.shell.direnv` | direnv + nix-direnv | `enable`, `persistence` |
+| `cattery.cli-apps.shell.starship` | Starship prompt | `enable`, `settings` |
+| `cattery.cli-apps.shell.powershell` | PowerShell (Darwin-only) | `enable` |
+
+### Editors
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.cli-apps.editor.vim` | Vim | `enable`, `extraOptions` |
+| `cattery.cli-apps.editor.neovim` | Neovim | `enable`, `extraOptions` |
+| `cattery.cli-apps.editor.helix` | Helix | `enable`, `extraOptions` |
+
+### File Management
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.cli-apps.file-manager.yazi` | Yazi terminal file manager | `enable` |
+| `cattery.cli-apps.disk` | ifuse, mtools, nfs-utils | `enable` |
+
+### Security CLI
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.cli-apps.security.gnupg` | GNUPG agent | `enable`, `agent.enable`, `agent.enableSSHSupport`, `agent.extraOptions` |
+| `cattery.cli-apps.security.gnupg.secrets` | Encrypted gnupg files | Auto-enabled with secrets |
+| `cattery.cli-apps.security.yubihsm` | YubiHSM tools (shell, connector) | `enable` |
+| `cattery.cli-apps.security.fido2` | libfido2 for FIDO2 keys | `enable` |
+| `cattery.cli-apps.openssh` | OpenSSH client | `enable` |
+
+### SSH
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.cli-apps.ssh` | SSH known\_hosts management | `knownHostsFileNames`, `knownHostsFiles` |
+| `cattery.cli-apps.ssh.secrets` | Encrypted SSH known\_hosts | Auto-enabled with secrets |
+| `cattery.cli-apps.mtr` | MTR network diagnostic | `enable` |
+
+### Nix Tools
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.cli-apps.nix.home-manager` | home-manager self-management | `enable`, `persistence` |
+| `cattery.cli-apps.nix.nix-index` | nix-index + comma | `enable` |
+| `cattery.cli-apps.nix.nix-ld` | nix-ld for non-NixOS binary compatibility | `enable` |
+
+### Operations
 
 | Module | Description |
-| --- | --- |
-| `cli-apps.shell.fish` | Fish shell |
-| `cli-apps.shell.zsh` | Zsh shell |
-| `cli-apps.tool.gh` | GitHub CLI |
-| `cli-apps.file-manager.yazi` | Yazi terminal file manager |
+|---|---|
+| `cattery.cli-apps.operations.cloud` | turso-cli, awscli2 |
+| `cattery.cli-apps.operations.kubernetes` | kubectl, helm, argocd |
+
+### Tools
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.cli-apps.tool.useful` | Shell aliases (git, convenience), optional nix aliases | `enable` |
+| `cattery.cli-apps.tool.gh` | GitHub CLI | `enable`, `settings`, `persistence` |
+| `cattery.cli-apps.tool.fastfetch` | System info fetcher | `enable`, `settings` |
+| `cattery.cli-apps.tool.hyfetch` | Pride-themed fastfetch fork | `enable`, `settings` |
+| `cattery.cli-apps.tool.http-utils` | wget, curl, aria2, wrk, oha | `enable` |
+| `cattery.cli-apps.tool.compressor` | p7zip, gzip, zip, unzip, xz, zstd | `enable` |
+| `cattery.cli-apps.tool.monitoring` | glances, inxi, iftop, btop, htop | `enable` |
+| `cattery.cli-apps.tool.network` | inetutils (telnet, ping) | `enable` |
+| `cattery.cli-apps.tool.installer` | disko, colmena, nixos-anywhere, deploy-rs | `enable` |
+| `cattery.cli-apps.tool.tldr` | tlrc with periodic update service | `enable`, `persistence` |
+| `cattery.cli-apps.tool.speedtest` | speedtest-cli, speedtest-go | `enable` |
+| `cattery.cli-apps.tool.thefuck` | Auto-correct shell commands | `enable` |
+| `cattery.cli-apps.tool.claude-code` | Claude Code with persistence | `enable`, `persistence` |
+| `cattery.cli-apps.tool.opencode` | opencode with web UI | `enable`, `persistence` |
+| `cattery.cli-apps.tool.ollama` | Ollama LLM runner | `enable` |
+| `cattery.cli-apps.tool.misc` | Pre-commit cache persistence | `enable` |
+| `cattery.cli-apps.tool.ventoy` | Ventoy bootable USB tool | `enable` |
+| `cattery.cli-apps.tool.acme-sh` | acme.sh ACME client | `enable` |
+| `cattery.cli-apps.misc` | psmisc (killall), usbutils (lsusb) | `enable` |
+| `cattery.cli-apps.warp` | Cloudflare WARP | `enable` |
+
+### Database CLI
+
+| Module | Description |
+|---|---|
+| `cattery.cli-apps.database.sqlite` | SQLite |
+
+### Video Tools
+
+| Module | Description |
+|---|---|
+| `cattery.cli-apps.video.visual` | brotli, ffmpeg-full, imagemagick, flac, libheif, libwebp, optipng |
+| `cattery.cli-apps.video.youtube` | yt-dlp |
+
+## Apps (GUI)
+
+### Development
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.apps.vscode` | VS Code with wayland, profiles | `enable`, `profiles`, `commandLineArgs`, `defaultEditor`, `extraOptions`, `persistence` |
+| `cattery.apps.code-cursor` | Cursor editor | `enable`, `defaultEditor`, `persistence` |
+| `cattery.apps.jetbrains` (home) | All JetBrains IDEs | `enable`, `persistence` |
+| `cattery.apps.jetbrains` (NixOS) | jetbrains-toolbox, Android Studio | `enable`, `persistence` |
+| `cattery.apps.zed-editor` | Zed editor | `enable`, `package`, `extraPackages`, `userSettings`, `userKeymaps`, `userTasks`, `extensions`, `persistence` |
+
+### Terminals
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.apps.ghostty` | Ghostty terminal | `enable`, `settings` |
+| `cattery.apps.wezterm` | WezTerm | `enable`, `extraConfig` |
+| `cattery.apps.foot` | Foot terminal | `enable`, `settings` |
+
+### Communication
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.apps.instant-messengers` | Telegram, Vesktop (Discord), Signal, Element, Feishu | `enable`, `persistence` |
+| `cattery.apps.slack` | Slack | `enable`, `persistence` |
+| `cattery.apps.zoom-us` | Zoom | `enable` |
+
+### Browser
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.apps.browser` | Firefox/Chromium/Chrome with Wayland flags | `enable`, `needs`, `persistence` |
+| `cattery.apps.thunderbird` | Thunderbird mail with GPG | `enable`, `persistence` |
+
+### Productivity
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.apps.useful` | FileZilla, GParted, Obsidian, Kleopatra, LibreOffice | `enable`, `persistence` |
+| `cattery.apps.science` | GeoGebra | `enable`, `persistence` |
+| `cattery.apps.safety` | Bitwarden desktop | `enable` |
+
+### Graphics
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.apps.graphics` | GIMP, Inkscape, nomacs, imv, Krita | `enable`, `persistence` |
+
+### Remote Access
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.apps.remote` | RustDesk, KRDC, Remmina | `enable`, `needs` |
+
+### Video & Media
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.apps.video` | Syncplay, VLC, mpv, OBS Studio | `enable`, `persistence` |
+| `cattery.apps.iina` | IINA player (Darwin-only) | `enable` |
+
+### Gaming Launchers
+
+| Module | Description |
+|---|---|
+| `cattery.apps.game` | Heroic Games Launcher, r2modman |
+| `cattery.apps.hmcl` | HMCL Minecraft launcher |
+
+### Virtualization
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.apps.vmware` | VMware guest + host | `enable`, `persistence` |
+| `cattery.apps.winbox` | MikroTik Winbox (Linux) | `enable`, `package`, `openFirewall`, `persistence` |
+
+### Darwin-specific Apps
+
+| Module | Description |
+|---|---|
+| `cattery.cli-apps.android` | android-tools (Darwin-only) |
+
+## System
+
+### Core System
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.nix` | Nix config (flakes, auto-optimise, GC, registry) | `enable` |
+| `cattery.system.locale` | System locale | `enable`, `defaultLocale` |
+| `cattery.system.time` | Timezone | `enable`, `timeZone` |
+| `cattery.system.network` | NetworkManager | `enable` |
+| `cattery.system.network.wireless` | iwd + NetworkManager WiFi | `enable` |
+| `cattery.system.network.bridges` | Network bridges | Per-bridge: `interfaces`, `rstp`, `ipv4`, `ipv6`, `useDHCP` |
+| `cattery.system.network.nat` | NAT with IPv6 | `enable`, `enableIPv6`, `internalInterfaces`, `externalInterface` |
+| `cattery.system.peripherals` | CUPS, PipeWire, bluetooth, GPU 32-bit, geoclue | `enable` |
+| `cattery.system.automount` | devmon, gvfs, udisks2 | `enable` |
+| `cattery.system.fcitx5` | Fcitx5 with rime, GTK, Chinese addons | `enable`, `persistence` |
+| `cattery.system.fonts` | Open Sans, Noto, Source Han, DejaVu, Fira Code, Monaspace, Nerd Fonts | `enable`, `persistence` |
+| `cattery.system.ulimit` | Open files limit | `enable`, `openFilesLimit` |
+
+### Boot
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.system.boot.efi` | systemd-boot UEFI | `enable`, `configurationLimit` |
+| `cattery.system.boot.grub` | GRUB with nixos-grub2-theme | `enable`, `device`, `configurationLimit` |
+| `cattery.system.boot.kernel` | Kernel selection (latest/LTS/ZFS) | `enable`, `version`, `sysctl`, `useIpForward` |
+| `cattery.system.boot.binfmt` | QEMU binfmt (aarch64 emulation) | `enable` |
+| `cattery.system.boot.lanzaboote` | Secure Boot | `enable`, `pkiBundle`, `extraOptions` |
+
+### File Systems
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.system.fileSystems.samba` | CIFS/Samba auto-mounts with credentials | `hostUrl`, `binds` (uid, gid, autoMountOpts, secretsPath) |
+| `cattery.system.fileSystems.samba.secrets` | Encrypted samba credential files | Auto-enabled with secrets |
+| `cattery.system.fileSystems.btrfs.impermanence` | BTRFS subvolume rolling initrd service | Per-fs: `device`, `tempDir`, `oldSubvolDir`, `subvol` |
 
 ### Platform
 
-| Module | Description |
-| --- | --- |
-| `system.wsl` | NixOS-WSL integration |
-| `system.proxmox.lxc` | Proxmox LXC container support |
-| `system.boot.lanzaboote` | Secure Boot with lanzaboote |
+| Module | Description | Options |
+|---|---|---|
+| `cattery.system.wsl` | NixOS-WSL with interop | `enable` |
+| `cattery.system.proxmox.lxc` | Proxmox LXC container | `enable`, `manageNetwork`, `manageHostName` |
+| `cattery.system.sudoTouch` | macOS Touch ID for sudo | `enable` |
+| `cattery.system.useful` | macOS defaults (no quarantine, show extensions, hide desktop drives) | `enable` |
+| `cattery.brew` | Homebrew with casks/brews (Darwin) | `enable`, `brews`, `casks` |
 
-> Module list is incomplete — more modules are being added. See the [repository](https://github.com/nixcafe/cattery-modules/tree/main/modules) for the full list.
+## User
+
+### `cattery.user`
+
+Core user configuration. Used as defaults by many modules.
+
+| Option | Type | Description |
+|---|---|---|
+| `name` | str | Username |
+| `realName` | str | Full name |
+| `email.address` | str | Email address |
+| `email.userName` | str | Git user name (defaults to realName) |
+| `email.imap.host` | str | IMAP server host |
+| `email.imap.port` | int | IMAP port |
+| `email.smtp.host` | str | SMTP server host |
+| `email.smtp.port` | int | SMTP port |
+| `defaultUserShell` | str | Default shell (auto-enables fish/zsh based on value) |
+| `gpg.signKey` | str | GPG signing key |
+| `gpg.encryptKey` | str | GPG encryption key |
+| `initialHashedPassword` | str | Initial user password hash |
+| `useSecretPasswordFile` | bool | Use agenix for password |
+| `authorizedKeys.keys` | list of str | SSH authorized keys |
+| `authorizedKeys.keyFiles` | list of path | SSH authorized key files |
+| `settings` | attrs | User settings dict (consumed by theme/desktop modules) |
+| `home` | path | Read-only home directory |
+| `uid` | int | Read-only UID |
+| `gid` | int | Read-only GID |
+
+### `cattery.home`
+
+home-manager bridge for NixOS. Passes `extraOptions` to `home-manager.users.<name>`.
+
+| Option | Type | Description |
+|---|---|---|
+| `extraOptions` | attrs | Extra home-manager options |
+
+## Darwin-specific
+
+| Module | Description | Options |
+|---|---|---|
+| `cattery.services.openssh` | OpenSSH on macOS | `enable`, `extraConfig`, `extraOptions` |
+| `cattery.home` | Home-manager bridge on darwin | `extraOptions` |
+
+***
+
+> Every module accepts an `extraOptions` attrs merged via `//` for extensibility without patching.
+> Home-manager modules with state use a `persistence` option (default `true`) to register with `cattery.system.impermanence`.
+
+# Secrets & agenix
+
+cattery integrates [agenix](https://github.com/ryantm/agenix) for encrypted secret management. Every service module that needs secrets has a companion `*.secrets` sub-module that auto-wires encrypted config files.
+
+## Architecture
+
+```
+secrets/
+├── hosts/<host>/global/       # host-specific, root-owned (e.g., nginx conf.d)
+├── hosts/<host>/users/<user>/ # host-specific, user-owned (e.g., git config)
+├── shared/global/              # shared across all hosts, root-owned
+└── shared/users/<user>/       # shared across all hosts, user-owned
+```
+
+Secrets are encrypted with age and can be decrypted with SSH keys or YubiKeys.
+
+## Enabling Secrets
+
+```nix
+{
+  cattery.secrets.enable = true;
+
+  # Optional: YubiKey support
+  cattery.secrets.yubikey.enable = true;
+}
+```
+
+## Service Secrets
+
+Every service that supports secrets has a `secrets` sub-module. It auto-enables when both the parent service and `cattery.secrets` are enabled:
+
+```nix
+cattery = {
+  secrets.enable = true;
+
+  # This auto-wires encrypted config files:
+  services.nginx.enable = true;     # → encrypted nginx conf.d
+  services.forgejo.enable = true;   # → encrypted forgejo app.ini
+  services.postgresql.enable = true;# → encrypted postgresql.conf
+  services.wg-quick.enable = true;  # → encrypted wireguard configs
+  services.cloudflared.enable = true; # → encrypted tunnel credentials
+};
+```
+
+## Available Secret Modules
+
+| Module | Secret Files |
+|---|---|
+| `cattery.secrets` | Master secrets config (hosts, shared, files) |
+| `cattery.nix.secrets` | Encrypted nix config (`!include` in nix.extraOptions) |
+| `cattery.services.nginx.secrets` | nginx conf.d files |
+| `cattery.services.acme.secrets` | ACME DNS provider env files |
+| `cattery.services.forgejo.secrets` | forgejo app.ini |
+| `cattery.services.gitea.secrets` | gitea app.ini |
+| `cattery.services.gitea-actions-runner.secrets` | Runner token env files |
+| `cattery.services.postgresql.secrets` | postgresql.conf, pg\_hba.conf, pg\_ident.conf |
+| `cattery.services.vaultwarden.secrets` | vaultwarden env file |
+| `cattery.services.wg-quick.secrets` | WireGuard config files |
+| `cattery.services.cloudflared.secrets` | Tunnel credential files |
+| `cattery.services.sing-box.secrets` | sing-box config.json |
+| `cattery.system.fileSystems.samba.secrets` | Samba credential files |
+| `cattery.cli-apps.ssh.secrets` | SSH known\_hosts files |
+| `cattery.cli-apps.security.gnupg.secrets` | GPG keyring files |
+| `cattery.cli-apps.dev-kit.git.secrets` | Git include configs |
+
+## Secret Scopes
+
+Each secret is categorized by scope:
+
+| Scope | Path pattern | Owner | Use case |
+|---|---|---|---|
+| `hosts-global` | `hosts/<host>/global/` | root | System-level configs (nginx, postgresql, forgejo) |
+| `hosts-user` | `hosts/<host>/users/<user>/` | user | Per-user configs on specific hosts (git, GPG, SSH) |
+| `shared-global` | `shared/global/` | root | System configs shared across all hosts |
+| `shared-user` | `shared/users/<user>/` | user | User configs shared across all hosts |
+
+## Example: Setting Up Secrets
+
+1. Create your age key (once per host/user):
+
+```bash
+mkdir -p ~/.config/sops/age
+nix run github:ryantm/agenix -- -e ~/.config/sops/age/keys.txt
+```
+
+2. Create a `.age` file with public keys:
+
+```
+# secrets.nix
+{
+  "hosts/server/global/nginx.conf.age".publicKeys = [ alice server ];
+}
+```
+
+3. Encrypt your secret:
+
+```bash
+nix run github:ryantm/agenix -- -e secrets/hosts/server/global/nginx.conf.age
+```
+
+4. Enable the service — the secret is auto-mounted:
+
+```nix
+cattery = {
+  secrets.enable = true;
+  services.nginx.enable = true;
+};
+```
+
+The encrypted file is decrypted at boot and mounted at its target path (e.g., `/etc/nginx/conf.d/nginx.conf`).
+
+## YubiKey Support
+
+Enable YubiKey-based decryption:
+
+```nix
+cattery.secrets.yubikey.enable = true;
+```
+
+This configures agenix to use YubiKey identities. Requires a YubiKey with an age-compatible PIV key.
+
+## Impermanence + Secrets
+
+When using impermanence (ephemeral root), secrets are automatically persisted. agenix decrypts at boot and the decrypted files are stored on the persistent volume.
+
+```nix
+cattery = {
+  secrets.enable = true;
+  system.impermanence.enable = true;
+};
+```
+
+# Contributing
+
+cattery-modules follows [GitHub Flow](https://docs.github.com/en/get-started/using-github/github-flow) with `main` as the trunk branch.
+
+## Development Environment
+
+```bash
+git clone https://github.com/nixcafe/cattery-modules.git
+cd cattery-modules
+nix develop     # enters dev shell (or direnv allow)
+```
+
+The dev shell provides:
+
+| Tool | Purpose |
+|---|---|
+| `nixfmt` | Nix code formatter |
+| `deadnix` | Remove dead/unused Nix code |
+| `statix` | Lint Nix files (`repeated_keys` disabled) |
+
+Pre-commit hooks install automatically on `nix develop`.
+
+## Project Architecture
+
+```
+cattery-modules/
+├── flake.nix                  # Flake entrypoint using purr.lib.mkFlake
+├── modules/
+│   ├── nixos/                 # NixOS-specific modules
+│   │   ├── room/              # Room profiles (composite module bundles)
+│   │   ├── services/          # System services (nginx, postgresql, ...)
+│   │   ├── desktop/           # Desktop environments & themes
+│   │   ├── apps/              # GUI applications
+│   │   ├── cli-apps/          # CLI tools & dev kits
+│   │   ├── system/            # Boot, GPU, network, locale, ...
+│   │   ├── security/          # PAM, firewall
+│   │   └── containers/        # Declarative NixOS containers
+│   ├── home/                  # home-manager modules
+│   │   ├── shared/            # Cross-platform home modules
+│   │   ├── nixos/             # NixOS-specific home modules
+│   │   └── darwin/            # Darwin-specific home modules
+│   ├── darwin/                # nix-darwin modules
+│   └── shared/                # Shared between NixOS and darwin
+├── lib/
+│   ├── module/                # mkDefaultEnabled, mkDefaultDisabled
+│   ├── secrets/               # agenix helper utilities
+│   └── utils/                 # General utilities
+├── shells/                    # Dev shell definition
+└── checks/                    # git-hooks + module-eval checks
+```
+
+## Module Conventions
+
+Every module follows the same pattern:
+
+```nix
+{
+  config,
+  lib,
+  namespace,
+  pkgs,
+  ...
+}:
+let
+  cfg = config.${namespace}.my-module;
+in
+{
+  options.${namespace}.my-module = {
+    enable = lib.mkEnableOption "my module";
+    # ... other options
+  };
+
+  config = lib.mkIf cfg.enable {
+    # ... implementation
+  };
+}
+```
+
+### Key Conventions
+
+* **Namespace**: Always use `${namespace}` — maps to `cattery`
+* **Enable pattern**: Every module has an `enable` option
+* **extraOptions**: Every module exposes `extraOptions = mkOption { type = attrs; default = {}; }` for extensibility
+* **persistence**: Home-manager modules with state use a `persistence` option (default `true`)
+* **Platform gating**: Use `config.purr.isLinux` / `config.purr.isDarwin` for platform-specific logic
+* **Rooms**: Use `mkDefaultEnabled` from `lib.cattery.module` for sub-module enables in room profiles
+
+## Branch Naming
+
+| Prefix | Purpose |
+|---|---|
+| `feat/` | New features or modules |
+| `fix/` | Bug fixes |
+| `chore/` | Maintenance, dependency updates |
+| `docs/` | Documentation |
+
+## Workflow
+
+1. Create a feature branch from `main`
+2. Make changes
+3. Test locally:
+   ```bash
+   nix flake check     # lint + eval all 244+ modules
+   nix fmt             # format all files
+   ```
+4. Optionally test on a real machine:
+   ```bash
+   nixos-rebuild test --flake .#myhost
+   home-manager switch --flake .#alice
+   ```
+5. Push and open a PR against `main`
+6. **Require at least one review approval** before merge
+7. On merge to `main`, FlakeHub auto-publishes a new rolling release
+
+## CI/CD
+
+### Pull Requests
+
+`nix flake check --accept-flake-config` runs on every PR. This includes:
+
+* **nixfmt** — format check
+* **deadnix** — dead code check
+* **statix** — lint check
+* **module-eval** — import & call check for all 244+ modules
+
+### Push to Main
+
+FlakeHub automatically publishes a new rolling release at `nixcafe/cattery-modules`.
+
+## Adding a New Module
+
+1. Create the module file under the appropriate directory:
+   * NixOS-only: `modules/nixos/<category>/<name>/default.nix`
+   * cross-platform home: `modules/home/shared/<category>/<name>/default.nix`
+   * NixOS-specific home: `modules/home/nixos/<category>/<name>/default.nix`
+
+2. Follow the standard pattern with `enable`, `extraOptions`, and `persistence` (for stateful home modules)
+
+3. If the module needs secrets, add a companion `secrets/default.nix` using `mkAppSecretsOption` / `mkHomeAppSecretsOption` from `lib.cattery.secrets`
+
+4. Add to a room if appropriate — use `mkDefaultEnabled` for sub-module enables
+
+5. Run `nix flake check` and `nix fmt`
+
+## Branch Protection
+
+* Pull request reviews are required (at least 1 approval)
+* Status checks must pass before merging
+* Stale reviews are dismissed when new commits are pushed

@@ -3,6 +3,8 @@
 cattery — quick-start NixOS configurations with room-based module bundles
 
 - [cattery](/index): Quick-start NixOS configurations — choose a room, get a complete system
-- [Quick Start](/quick-start): Get started with cattery
-- [Rooms](/rooms): Pre-configured module bundles for quick-start setups
-- [Modules](/modules): Individual module reference for cattery
+- [Quick Start](/quick-start): Get started with cattery — NixOS, home-manager, nix-darwin, WSL
+- [Rooms](/rooms): Pre-configured module bundles — enable one room, get a complete system
+- [Modules](/modules): Complete module reference for cattery — all 244+ modules with options
+- [Secrets & agenix](/secrets): Encrypted secret management with agenix — host-specific, shared, and user-scoped secrets
+- [Contributing](/contributing): How to contribute to cattery-modules
