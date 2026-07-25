@@ -30,7 +30,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    pre-commit-hooks = {
+    git-hooks = {
       url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -80,6 +80,7 @@
     develop-templates = {
       url = "github:nixcafe/develop-templates";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.purr.follows = "purr";
     };
   };
 

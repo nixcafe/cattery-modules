@@ -22,11 +22,9 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
+  config = {
     catppuccin = {
-      inherit (cfg) autoEnable;
-
-      enable = true;
+      inherit (cfg) autoEnable enable;
     }
     // cfg.extraOptions;
   };

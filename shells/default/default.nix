@@ -12,6 +12,6 @@ pkgs.mkShell {
     statix
   ];
 
-  inherit (inputs.self.checks.${system}.pre-commit-check) shellHook;
-  buildInputs = inputs.self.checks.${system}.pre-commit-check.enabledPackages;
+  inherit (inputs.self.checks.${system}.git-hooks) shellHook;
+  buildInputs = inputs.self.checks.${system}.git-hooks.enabledPackages;
 }
