@@ -66,6 +66,7 @@ in
     signing = mkOption {
       type = nullOr signModule;
       default = if ((user.gpg.signKey or null) != null) then { } else null;
+      description = "Git commit and tag signing configuration.";
     };
     sendEmail = mkOption {
       type = nullOr (submodule {
@@ -73,18 +74,22 @@ in
           smtpserver = mkOption {
             type = nullOr str;
             default = user.email.smtp.host or null;
+            description = "SMTP server hostname for sending patches via git send-email.";
           };
           smtpserverport = mkOption {
             type = nullOr port;
             default = user.email.smtp.port or 587;
+            description = "SMTP server port for sending patches.";
           };
           smtpencryption = mkOption {
             type = nullOr str;
             default = "tls";
+            description = "SMTP encryption method (e.g. tls, ssl).";
           };
           smtpuser = mkOption {
             type = nullOr str;
             default = user.email.userName or null;
+            description = "SMTP username for authentication.";
           };
           confirm = mkOption {
             type = enum [
@@ -95,6 +100,7 @@ in
               "auto" # is equivalent to cc + compose
             ];
             default = "auto";
+            description = "Confirmation behavior for git send-email.";
           };
         };
       });
@@ -151,10 +157,12 @@ in
     settings = mkOption {
       type = attrs;
       default = { };
+      description = "Additional git configuration settings merged into programs.git.settings.";
     };
     extraOptions = mkOption {
       type = attrs;
       default = { };
+      description = "Extra home-manager programs.git options merged at top level.";
     };
   };
 

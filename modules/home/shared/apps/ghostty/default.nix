@@ -16,6 +16,9 @@ in
     settings = mkOption {
       type = attrs;
       default = settings.ghostty.settings or { };
+      description = ''
+        Ghostty terminal settings.
+      '';
     };
   };
 

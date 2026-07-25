@@ -15,6 +15,9 @@ in
     openFilesLimit = mkOption {
       type = types.int;
       default = 2048;
+      description = ''
+        Maximum number of open file descriptors.
+      '';
     };
   };
 

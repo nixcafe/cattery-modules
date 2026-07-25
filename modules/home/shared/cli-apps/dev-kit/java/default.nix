@@ -28,14 +28,17 @@ in
       home = mkOption {
         type = str;
         default = ".gradle";
+        description = "Gradle user home directory relative to the user's home.";
       };
       initScripts = mkOption {
         type = attrs;
         default = { };
+        description = "Gradle init scripts to include in the build environment.";
       };
       settings = mkOption {
         type = attrs;
         default = { };
+        description = "Additional Gradle configuration settings.";
       };
     };
     persistence = lib.mkEnableOption "add files and directories to impermanence" // {

@@ -16,12 +16,14 @@ in
     version = mkOption {
       type = str;
       default = "latest";
+      description = "Linux kernel version to use (e.g. 'latest', '6.12', '6.6').";
     };
     sysctl = mkOption {
       type = attrs;
       default = { };
+      description = "Kernel sysctl parameters to set (e.g. 'net.ipv4.ip_forward').";
     };
-    useIpForward = lib.mkEnableOption "just like: `net.ipv4.ip_forward=1`, overwritten if sysctl ip_forward is set.";
+    useIpForward = lib.mkEnableOption "IP forwarding";
   };
 
   config = lib.mkIf cfg.enable {

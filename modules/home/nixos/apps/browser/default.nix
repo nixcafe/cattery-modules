@@ -26,6 +26,7 @@ in
         "chrome"
       ]);
       default = [ "firefox" ];
+      description = "Web browsers to enable and configure.";
     };
     persistence = lib.mkEnableOption "add files and directories to impermanence" // {
       default = true;

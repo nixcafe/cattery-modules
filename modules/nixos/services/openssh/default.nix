@@ -15,10 +15,12 @@ in
     settings = mkOption {
       type = attrs;
       default = { };
+      description = "OpenSSH service configuration settings.";
     };
     extraOptions = mkOption {
       type = attrs;
       default = { };
+      description = "Extra services.openssh NixOS options merged at top level.";
     };
   };
 

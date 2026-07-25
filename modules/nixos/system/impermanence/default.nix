@@ -26,10 +26,12 @@ in
     directories = mkOption {
       type = listOf raw;
       default = [ ];
+      description = "Additional directories to persist across reboots.";
     };
     files = mkOption {
       type = listOf raw;
       default = [ ];
+      description = "Additional files to persist across reboots.";
     };
     persistencePath = mkOption {
       type = str;
@@ -39,6 +41,7 @@ in
     extraOptions = mkOption {
       type = attrs;
       default = { };
+      description = "Extra attributes to merge into the persistence configuration.";
     };
   };
 

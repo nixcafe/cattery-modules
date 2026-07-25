@@ -37,10 +37,17 @@ in
     settings = mkOption {
       type = attrs;
       default = { };
+      description = ''
+        Gitea settings passed directly to the service configuration.
+        See <https://docs.gitea.com/administration/config-cheat-sheet>.
+      '';
     };
     extraOptions = mkOption {
       type = attrs;
       default = { };
+      description = ''
+        Extra options merged into the Gitea service configuration.
+      '';
     };
   };
 

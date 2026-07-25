@@ -35,6 +35,7 @@ in
     extraOptions = mkOption {
       type = attrs;
       default = { };
+      description = "Extra services.vaultwarden NixOS options merged at top level.";
     };
   };
 

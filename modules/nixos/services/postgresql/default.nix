@@ -20,6 +20,10 @@ in
     package = mkOption {
       type = nullOr package;
       default = null;
+      description = ''
+        The PostgreSQL package to use. Defaults to the system-wide PostgreSQL package
+        when set to null.
+      '';
     };
     openFirewall = lib.mkEnableOption "postgresql open firewall";
     configFile = {
@@ -38,10 +42,16 @@ in
       identMapPath = mkOption {
         type = path;
         default = "/etc/postgresql/pg_ident.conf";
+        description = ''
+          Path to the PostgreSQL ident map configuration file.
+        '';
       };
       authenticationPath = mkOption {
         type = path;
         default = "/etc/postgresql/pg_hba.conf";
+        description = ''
+          Path to the PostgreSQL host-based authentication (pg_hba) configuration file.
+        '';
       };
     };
     settings = {
@@ -60,6 +70,9 @@ in
       port = mkOption {
         type = port;
         default = 5432;
+        description = ''
+          Port on which PostgreSQL listens for connections.
+        '';
       };
       jit = mkOption {
         type = enum [
@@ -67,11 +80,17 @@ in
           "off"
         ];
         default = "off";
+        description = ''
+          Whether to enable JIT compilation for PostgreSQL.
+        '';
       };
     };
     extraOptions = mkOption {
       type = attrs;
       default = { };
+      description = ''
+        Extra options merged into the PostgreSQL service configuration.
+      '';
     };
   };
 

@@ -29,6 +29,9 @@ in
       type = str;
       default = prefix;
       readOnly = true;
+      description = ''
+        The directory prefix where WireGuard configuration files are stored.
+      '';
     };
     configNames = mkOption {
       type = listOf str;

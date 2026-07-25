@@ -15,10 +15,12 @@ in
     settings = mkOption {
       type = attrs;
       default = { };
+      description = "GitHub CLI configuration settings.";
     };
     extraOptions = mkOption {
       type = attrs;
       default = { };
+      description = "Extra home-manager programs.gh options merged at top level.";
     };
     persistence = lib.mkEnableOption "add files and directories to impermanence" // {
       default = true;

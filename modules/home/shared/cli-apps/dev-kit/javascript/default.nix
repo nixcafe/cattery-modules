@@ -45,6 +45,7 @@ in
         "pnpm"
         "bun"
       ];
+      description = "JavaScript package managers to enable and configure.";
     };
     persistence = lib.mkEnableOption "add files and directories to impermanence" // {
       default = true;

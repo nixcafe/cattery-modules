@@ -15,6 +15,7 @@ in
     settings = mkOption {
       type = attrs;
       default = { };
+      description = "Hyfetch configuration settings.";
     };
   };
 

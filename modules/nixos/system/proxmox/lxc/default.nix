@@ -21,10 +21,16 @@ in
     manageNetwork = mkOption {
       type = types.bool;
       default = true;
+      description = ''
+        Whether to let Proxmox manage the network configuration.
+      '';
     };
     manageHostName = mkOption {
       type = types.bool;
       default = true;
+      description = ''
+        Whether to let Proxmox manage the hostname.
+      '';
     };
   };
 

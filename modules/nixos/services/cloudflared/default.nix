@@ -15,10 +15,18 @@ in
     tunnels = mkOption {
       type = attrs;
       default = { };
+      description = ''
+        Cloudflare tunnel configurations keyed by tunnel name.
+        Each tunnel is automatically assigned a credentials file at
+        /etc/cloudflared/credentials/<name>.json.
+      '';
     };
     extraOptions = mkOption {
       type = attrs;
       default = { };
+      description = ''
+        Extra options merged into the cloudflared service configuration.
+      '';
     };
   };
 

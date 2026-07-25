@@ -16,6 +16,7 @@ in
     extraOptions = mkOption {
       type = attrs;
       default = { };
+      description = "Extra services.tailscale NixOS options merged at top level.";
     };
   };
 

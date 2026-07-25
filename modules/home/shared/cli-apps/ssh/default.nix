@@ -18,6 +18,9 @@ in
     includeNames = mkOption {
       default = [ ];
       type = listOf str;
+      description = ''
+        List of secret file names to include via the Include directive.
+      '';
     };
     includes = mkOption {
       default = [ ];
@@ -36,7 +39,11 @@ in
   config = lib.mkIf cfg.enable {
     programs.ssh =
       let
-        includeFiles = map (name: cfgSecrets.files.${name}.target) (builtins.attrNames cfgSecrets.files);
+        includeFiles = map (name: cfgSecrets.files.${name}.target) (
+          builtins.filter (n: cfg.includeNames == [ ] || builtins.elem n cfg.includeNames) (
+            builtins.attrNames cfgSecrets.files
+          )
+        );
         includes = includeFiles ++ cfg.includes;
       in
       {

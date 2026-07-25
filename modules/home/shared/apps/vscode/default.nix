@@ -17,15 +17,24 @@ in
     profiles = mkOption {
       type = attrs;
       default = settings.vscode.profiles or { };
+      description = ''
+        VSCode profiles configuration.
+      '';
     };
     commandLineArgs = mkOption {
       default = [ ];
       type = listOf str;
+      description = ''
+        Additional command-line arguments passed to VSCode.
+      '';
     };
     defaultEditor = lib.mkEnableOption "vscode to $EDITOR";
     extraOptions = mkOption {
       type = attrs;
       default = { };
+      description = ''
+        Extra options to pass to the vscode home-manager module.
+      '';
     };
     persistence = lib.mkEnableOption "add files and directories to impermanence" // {
       default = true;

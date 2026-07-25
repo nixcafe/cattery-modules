@@ -15,6 +15,7 @@ in
     extraOptions = mkOption {
       type = attrs;
       default = { };
+      description = "Extra services.cron NixOS options merged at top level.";
     };
   };
 

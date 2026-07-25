@@ -43,23 +43,38 @@ let
           name = mkOption {
             type = str;
             default = name;
+            description = ''
+              Name of the secret used as a local identifier.
+            '';
           };
           secretName = mkOption {
             type = str;
             default = "${secretPrefixName}/${config.name}";
+            description = ''
+              Full qualified name used as the key in {option}`age.secrets`.
+            '';
           };
           file = mkOption {
             type = path;
             default = "${hosts-secrets}/${filePrefixPath}/${config.name}.age";
+            description = ''
+              Path to the age-encrypted secret file.
+            '';
           };
           mode = mkOption {
             type = str;
-            default = "0400"; # Read-only
+            default = "0400";
+            description = ''
+              File permission mode of the decrypted secret.
+            '';
           };
           path = mkOption {
             type = str;
             default = secrets.${config.secretName}.path;
             readOnly = true;
+            description = ''
+              Path where the decrypted secret will be placed.
+            '';
           };
           symlink = mkEnableOption "symlinking secrets to their destination" // {
             default = true;
@@ -67,10 +82,16 @@ let
           owner = mkOption {
             type = str;
             default = owner;
+            description = ''
+              User that owns the decrypted secret file.
+            '';
           };
           group = mkOption {
             type = str;
             default = users.${config.owner}.group or "0";
+            description = ''
+              Group that owns the decrypted secret file.
+            '';
           };
         };
       }
@@ -96,6 +117,9 @@ let
                   secretPrefixName = "${prefixName}users/${name}";
                 });
                 default = { };
+                description = ''
+                  Attribute set of user-specific secrets.
+                '';
               };
             }
           )
@@ -109,6 +133,9 @@ let
           secretPrefixName = "${prefixName}global";
         });
         default = { };
+        description = ''
+          Attribute set of global secrets shared across all users.
+        '';
       };
     };
 
@@ -160,6 +187,9 @@ in
     secretsPath = mkOption {
       type = path;
       default = "${homeDir}/agenix";
+      description = ''
+        Directory path containing the age-encrypted secret files.
+      '';
     };
     # hosts private config
     hosts = secretSet {
@@ -173,6 +203,9 @@ in
       type = attrs;
       default = (toAgeSecrets cfg.shared) // (toAgeSecrets cfg.hosts);
       readOnly = true;
+      description = ''
+        Merged attribute set of all agenix secrets from hosts and shared configurations.
+      '';
     };
   };
 

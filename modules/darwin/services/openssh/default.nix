@@ -21,6 +21,7 @@ in
     extraOptions = lib.mkOption {
       type = lib.types.attrs;
       default = { };
+      description = "Extra services.openssh nix-darwin options merged at top level.";
     };
   };
 

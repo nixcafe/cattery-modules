@@ -20,6 +20,7 @@ let
         name = mkOption {
           type = types.str;
           default = name;
+          description = "Name of the Hyprland event this callback responds to.";
         };
         execs = mkOption {
           type = types.listOf types.str;
@@ -38,10 +39,12 @@ let
         callbacks = mkOption {
           type = types.listOf types.str;
           default = [ ];
+          description = "Lua callback expressions to execute on this event.";
         };
         execFunc = mkOption {
           readOnly = true;
           type = types.str;
+          description = "Generated Lua function wrapping hl.exec_cmd calls for this event.";
           default = ''
             function(...)
               local arg = {...}
@@ -61,10 +64,12 @@ in
     require = mkOption {
       default = [ ];
       type = types.listOf types.str;
+      description = "List of Hyprland config module paths to require.";
     };
     on = mkOption {
       default = { };
       type = types.attrsOf callbackModule;
+      description = "Hyprland event callbacks keyed by event name.";
     };
   };
 

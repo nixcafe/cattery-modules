@@ -19,6 +19,9 @@ in
     extraOptions = mkOption {
       type = attrs;
       default = user.settings.catppuccin.global or { };
+      description = ''
+        Extra options to pass to the catppuccin NixOS module.
+      '';
     };
   };
 

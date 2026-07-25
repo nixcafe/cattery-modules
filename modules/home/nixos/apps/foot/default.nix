@@ -16,6 +16,7 @@ in
     settings = mkOption {
       type = attrs;
       default = settings.foot.settings or { };
+      description = "Foot terminal emulator configuration settings.";
     };
   };
 

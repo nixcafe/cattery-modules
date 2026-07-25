@@ -21,10 +21,12 @@ in
     openFirewall = mkOption {
       type = types.bool;
       default = true;
+      description = "Whether to open firewall ports for DNS (53, 853, 443).";
     };
     extraOptions = mkOption {
       type = attrs;
       default = { };
+      description = "Extra services.smartdns NixOS options merged at top level.";
     };
   };
 

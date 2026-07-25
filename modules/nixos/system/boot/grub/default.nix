@@ -17,10 +17,7 @@ in
       type = types.str;
       description = ''
         The device on which the GRUB boot loader will be installed.
-        The special value `nodev` means that a GRUB
-        boot menu will be generated, but GRUB itself will not
-        actually be installed.  To install GRUB on multiple devices,
-        use `boot.loader.grub.devices`.
+        Set to 'nodev' for EFI boot.
       '';
       default = "";
       example = "/dev/disk/by-id/wwn-0x500001234567890a";
@@ -28,6 +25,9 @@ in
     configurationLimit = mkOption {
       type = int;
       default = 100;
+      description = ''
+        Maximum number of configurations in the GRUB menu.
+      '';
     };
   };
 

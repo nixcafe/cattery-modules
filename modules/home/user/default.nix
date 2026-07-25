@@ -25,15 +25,24 @@ in
     name = mkOption {
       type = str;
       default = cfg.settings.name or "nixos";
+      description = ''
+        The name of the user account.
+      '';
     };
     realName = mkOption {
       type = nullOr str;
       default = cfg.settings.realName or cfg.name or null;
+      description = ''
+        The real (full) name of the user.
+      '';
     };
     email = {
       address = mkOption {
         type = nullOr str;
         default = cfg.settings.email.address or null;
+        description = ''
+          The email address of the user.
+        '';
       };
       userName = mkOption {
         type = nullOr str;
@@ -56,6 +65,9 @@ in
             port = mkOption {
               type = nullOr port;
               default = 993;
+              description = ''
+                The port of the IMAP server.
+              '';
             };
           };
         });
@@ -74,6 +86,9 @@ in
             port = mkOption {
               type = nullOr port;
               default = 587;
+              description = ''
+                The port of the SMTP server.
+              '';
             };
           };
         });
@@ -84,15 +99,24 @@ in
       type = nullOr str;
       default = config.home.homeDirectory;
       readOnly = true;
+      description = ''
+        The path to the user's home directory.
+      '';
     };
     gpg = {
       signKey = mkOption {
         type = nullOr str;
         default = cfg.settings.gpg.signKey or null;
+        description = ''
+          The GPG key used for signing.
+        '';
       };
       encryptKey = mkOption {
         type = nullOr str;
         default = cfg.settings.gpg.encryptKey or null;
+        description = ''
+          The GPG key used for encryption.
+        '';
       };
     };
     defaultUserShell = lib.mkOption {
@@ -102,10 +126,16 @@ in
           pkgs.${cfg.settings.defaultUserShell}
         else
           null;
+      description = ''
+        The default login shell for the user.
+      '';
     };
     settings = mkOption {
       type = attrs;
       default = { };
+      description = ''
+        Extra settings passed through from the flake configuration.
+      '';
     };
   };
 

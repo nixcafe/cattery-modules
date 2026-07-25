@@ -15,6 +15,7 @@ in
     configurationLimit = mkOption {
       type = int;
       default = 100;
+      description = "Maximum number of generations to keep in the systemd-boot menu.";
     };
   };
 

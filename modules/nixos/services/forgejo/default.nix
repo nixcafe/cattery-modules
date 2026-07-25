@@ -37,10 +37,17 @@ in
     settings = mkOption {
       type = attrs;
       default = { };
+      description = ''
+        Forgejo settings passed directly to the service configuration.
+        See <https://forgejo.org/docs/latest/admin/config-cheat-sheet>.
+      '';
     };
     extraOptions = mkOption {
       type = attrs;
       default = { };
+      description = ''
+        Extra options merged into the Forgejo service configuration.
+      '';
     };
   };
 

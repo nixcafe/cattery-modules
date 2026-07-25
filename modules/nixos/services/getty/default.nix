@@ -15,10 +15,12 @@ in
     autologinUser = mkOption {
       type = types.nullOr types.str;
       default = config.${namespace}.user.name;
+      description = "Username to automatically log in on the console.";
     };
     extraOptions = mkOption {
       type = attrs;
       default = { };
+      description = "Extra services.getty NixOS options merged at top level.";
     };
   };
 

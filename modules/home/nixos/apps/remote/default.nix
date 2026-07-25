@@ -28,6 +28,7 @@ in
     needs = mkOption {
       type = listOf (enum apps);
       default = apps;
+      description = "Remote desktop clients to enable (rustdesk, krdc, remmina).";
     };
     persistence = lib.mkEnableOption "add files and directories to impermanence" // {
       default = true;

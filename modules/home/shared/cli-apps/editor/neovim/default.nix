@@ -15,6 +15,9 @@ in
     extraOptions = mkOption {
       type = attrs;
       default = { };
+      description = ''
+        Extra options to pass to the neovim home-manager module.
+      '';
     };
   };
 

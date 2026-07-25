@@ -37,7 +37,7 @@ let
         default = "gpg";
         description = ''
           The signing method to use when signing commits and tags.
-          Valid values are `openpgp` (OpenPGP/GnuPG), `ssh` (SSH), and `x509` (X.509 certificates).
+          Valid values are `gpg` (OpenPGP/GnuPG), `gpgsm` (GPG S/MIME), and `ssh` (SSH keys).
         '';
       };
       behavior = mkOption {
@@ -73,6 +73,7 @@ let
             "${pkgs.gnupg}/bin/gpgsm"
           else
             "${pkgs.openssh}/bin/ssh-keygen";
+        description = "Path to the signing backend binary.";
       };
     };
   };
@@ -85,6 +86,7 @@ in
     signing = mkOption {
       type = nullOr signModule;
       default = if ((user.gpg.signKey or null) != null) then { } else null;
+      description = "Jujutsu commit signing configuration.";
     };
     ignores = mkOption {
       type = listOf str;
@@ -98,10 +100,12 @@ in
     settings = mkOption {
       type = attrs;
       default = { };
+      description = "Additional jujutsu configuration settings merged into programs.jujutsu.settings.";
     };
     extraOptions = mkOption {
       type = attrs;
       default = { };
+      description = "Extra home-manager programs.jujutsu options merged at top level.";
     };
     persistence = lib.mkEnableOption "add files and directories to impermanence" // {
       default = true;
