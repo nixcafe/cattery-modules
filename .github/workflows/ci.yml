@@ -1,20 +1,17 @@
-name: CI
-
+name: "Check Nix flake on pull requests"
 on:
   pull_request:
-    branches: [main]
-  push:
-    branches: [main]
-
+    branches:
+      - "main"
 jobs:
   flake-check:
-    runs-on: ubuntu-latest
-
+    runs-on: "ubuntu-latest"
+    permissions:
+      contents: "read"
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: DeterminateSystems/nix-installer-action@main
-
-      - uses: DeterminateSystems/magic-nix-cache-action@main
-
-      - run: nix flake check --accept-flake-config
+      - uses: "actions/checkout@v4"
+      - uses: "DeterminateSystems/nix-installer-action@main"
+        with:
+          determinate: true
+      - uses: "DeterminateSystems/magic-nix-cache-action@main"
+      - run: "nix flake check"

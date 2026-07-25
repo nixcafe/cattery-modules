@@ -12,6 +12,8 @@ jobs:
     steps:
       - uses: "actions/checkout@v4"
       - uses: "DeterminateSystems/nix-installer-action@main"
+        with:
+          determinate: true
       - uses: "DeterminateSystems/flakehub-push@main"
         with:
           name: "nixcafe/cattery-modules"

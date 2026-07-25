@@ -1,10 +1,10 @@
 {
   pkgs,
   inputs,
+  system,
   ...
 }:
 let
-  inherit (pkgs) system;
   pkgsLib = pkgs.lib;
   namespace = "cattery";
   src = ../../.;
