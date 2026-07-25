@@ -15,10 +15,12 @@ in
     brews = mkOption {
       type = listOf str;
       default = [ ];
+      description = "List of Homebrew formula packages to install.";
     };
     casks = mkOption {
       type = listOf str;
       default = [ ];
+      description = "List of Homebrew cask packages to install.";
     };
   };
 

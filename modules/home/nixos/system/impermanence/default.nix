@@ -114,10 +114,12 @@ in
         directories = mkOption {
           type = listOf raw;
           default = [ ];
+          description = "Additional XDG cache directories to persist.";
         };
         files = mkOption {
           type = listOf raw;
           default = [ ];
+          description = "Additional XDG cache files to persist.";
         };
       };
       config = {
@@ -128,10 +130,12 @@ in
         directories = mkOption {
           type = listOf raw;
           default = [ ];
+          description = "Additional XDG config directories to persist.";
         };
         files = mkOption {
           type = listOf raw;
           default = [ ];
+          description = "Additional XDG config files to persist.";
         };
       };
       data = {
@@ -142,10 +146,12 @@ in
         directories = mkOption {
           type = listOf raw;
           default = [ ];
+          description = "Additional XDG data directories to persist.";
         };
         files = mkOption {
           type = listOf raw;
           default = [ ];
+          description = "Additional XDG data files to persist.";
         };
       };
       state = {
@@ -156,20 +162,24 @@ in
         directories = mkOption {
           type = listOf raw;
           default = [ ];
+          description = "Additional XDG state directories to persist.";
         };
         files = mkOption {
           type = listOf raw;
           default = [ ];
+          description = "Additional XDG state files to persist.";
         };
       };
     };
     directories = mkOption {
       type = listOf raw;
       default = [ ];
+      description = "Additional directories to persist across reboots.";
     };
     files = mkOption {
       type = listOf raw;
       default = [ ];
+      description = "Additional files to persist across reboots.";
     };
     persistencePath = mkOption {
       type = str;
@@ -179,6 +189,7 @@ in
     extraOptions = mkOption {
       type = attrs;
       default = { };
+      description = "Extra attributes to merge into the home persistence configuration.";
     };
   };
 

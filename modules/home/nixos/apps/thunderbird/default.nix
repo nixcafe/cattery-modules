@@ -16,19 +16,22 @@ in
   options.${namespace}.apps.thunderbird = with types; {
     enable = lib.mkEnableOption "thunderbird";
     search = {
-      enable = lib.mkEnableOption "thunderbird";
+      enable = lib.mkEnableOption "search engine customization for thunderbird";
       default = mkOption {
         type = str;
         default = "nix-packages";
+        description = "Default search engine for Thunderbird.";
       };
       privateDefault = mkOption {
         type = str;
         default = "google";
+        description = "Default search engine for private mode in Thunderbird.";
       };
     };
     settings = mkOption {
       type = attrs;
       default = { };
+      description = "Thunderbird profile settings.";
     };
     persistence = lib.mkEnableOption "add files and directories to impermanence" // {
       default = true;

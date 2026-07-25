@@ -16,6 +16,9 @@ in
     extraConfig = mkOption {
       type = lines;
       default = settings.wezterm.extraConfig or "return {}";
+      description = ''
+        Extra Lua configuration for WezTerm.
+      '';
     };
   };
 

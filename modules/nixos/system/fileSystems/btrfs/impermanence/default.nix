@@ -22,23 +22,28 @@ in
           options = with types; {
             device = mkOption {
               type = str;
+              description = "Block device path for the BTRFS filesystem (e.g. /dev/sda1).";
             };
             tempDir = mkOption {
               type = str;
-              default = "/btrfs_${config.subvol}_tmp";
+              default = "/btrfs_''${config.subvol}_tmp";
+              description = "Temporary mount directory used during the BTRFS rollback process.";
             };
             oldSubvolDir = mkOption {
               type = str;
-              default = "old_${config.subvol}";
+              default = "old_''${config.subvol}";
+              description = "Directory name where old snapshot subvolumes are archived.";
             };
             subvol = mkOption {
               type = str;
               default = name;
+              description = "Name of the BTRFS subvolume to manage.";
             };
           };
         }
       )
     );
+    description = "Per-filesystem BTRFS subvolume rollback configuration for impermanence. Creates an initrd systemd service that rolls back snapshots on boot.";
     default = { };
   };
 

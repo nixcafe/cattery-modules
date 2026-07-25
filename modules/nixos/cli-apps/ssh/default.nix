@@ -23,6 +23,9 @@ in
     knownHostsFileNames = mkOption {
       default = [ ];
       type = listOf str;
+      description = ''
+        List of filenames in /etc/ssh/ to include as global known hosts.
+      '';
     };
     knownHostsFiles = mkOption {
       default = [ ];

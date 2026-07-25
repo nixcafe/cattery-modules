@@ -24,18 +24,30 @@ in
     commonHttpConfig = mkOption {
       type = types.lines;
       default = "";
+      description = ''
+        Lines to prepend to the main nginx http block configuration.
+      '';
     };
     httpConfig = mkOption {
       type = types.lines;
       default = "";
+      description = ''
+        Lines appended to the main nginx http block configuration.
+      '';
     };
     appendHttpConfig = mkOption {
       type = types.lines;
       default = "";
+      description = ''
+        Lines appended to the end of the main nginx http block configuration.
+      '';
     };
     virtualHosts = mkOption {
       type = types.attrs;
       default = { };
+      description = ''
+        Declarative specification of nginx virtual hosts.
+      '';
     };
     preStart = mkOption {
       type = types.lines;
@@ -47,6 +59,9 @@ in
     extraOptions = mkOption {
       type = types.attrs;
       default = { };
+      description = ''
+        Extra options merged into the nginx service configuration.
+      '';
     };
   };
 

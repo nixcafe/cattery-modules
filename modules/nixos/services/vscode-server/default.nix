@@ -15,6 +15,7 @@ in
     extraOptions = mkOption {
       type = attrs;
       default = { };
+      description = "Extra services.vscode-server NixOS options merged at top level.";
     };
     persistence = lib.mkEnableOption "add files and directories to impermanence" // {
       default = true;

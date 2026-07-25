@@ -68,10 +68,12 @@ let
         modules = mkOption {
           type = listOf raw;
           default = [ ];
+          description = "Extra NixOS modules to import into the container's configuration.";
         };
         userName = mkOption {
           type = str;
           default = "root";
+          description = "The primary user to configure inside the container.";
         };
         networkMode = mkOption {
           type = enum [
@@ -114,21 +116,25 @@ let
           type = nullOr str;
           default = if config.autoGenerateStaticIp then generateIps.${name}.hostAddress else null;
           example = "10.231.136.1";
+          description = "IPv4 address of the host-side of the veth pair.";
         };
         hostAddress6 = mkOption {
           type = nullOr str;
           default = if config.autoGenerateStaticIp then generateIps.${name}.hostAddress6 else null;
           example = "fc00::1";
+          description = "IPv6 address of the host-side of the veth pair.";
         };
         localAddress = mkOption {
           type = nullOr str;
           default = if config.autoGenerateStaticIp then generateIps.${name}.localAddress else null;
           example = "10.231.136.2";
+          description = "IPv4 address of the container-side of the veth pair.";
         };
         localAddress6 = mkOption {
           type = nullOr str;
           default = if config.autoGenerateStaticIp then generateIps.${name}.localAddress6 else null;
           example = "fc00::2";
+          description = "IPv6 address of the container-side of the veth pair.";
         };
         autoGenerateStaticIp = lib.mkEnableOption "generate container static ip" // {
           default = config.networkMode == "none";
@@ -142,7 +148,7 @@ let
             }
           '';
           description = ''
-            An extra list of directories that is bound to the container.
+            An extra attribute set of directories that is bound to the container.
           '';
         };
         hostModules = {
@@ -165,10 +171,12 @@ let
             services = mkOption {
               type = listOf (enum servicesEnum);
               default = intersectLists [ "${name}" ] servicesEnum;
+              description = "Host services to automatically enable and start in the container.";
             };
             shared.services = mkOption {
               type = listOf (enum sharedServicesEnum);
               default = intersectLists [ "${name}" ] sharedServicesEnum;
+              description = "Shared services to automatically enable and start in the container.";
             };
             bindSecretsEtc = lib.mkEnableOption ''
               Binding host decryption secrets etc.
@@ -188,10 +196,12 @@ let
         config = mkOption {
           type = attrs;
           default = { };
+          description = "NixOS configuration attributes to merge into the container's configuration.";
         };
         extraOptions = mkOption {
           type = attrs;
           default = { };
+          description = "Extra attributes to merge at the top level of the container's NixOS configuration.";
         };
       };
     }

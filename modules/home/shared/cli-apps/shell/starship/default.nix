@@ -16,6 +16,7 @@ in
     settings = mkOption {
       type = attrs;
       default = settings.starship.settings or { };
+      description = "Starship prompt configuration settings.";
     };
   };
 

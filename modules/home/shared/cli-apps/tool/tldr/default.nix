@@ -19,6 +19,7 @@ in
     period = mkOption {
       type = str;
       default = "weekly";
+      description = "How often to update the tldr cache (e.g. hourly, daily, weekly).";
     };
     persistence = lib.mkEnableOption "add files and directories to impermanence" // {
       default = true;

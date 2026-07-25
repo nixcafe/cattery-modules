@@ -20,6 +20,7 @@ in
         default = [
           "mpv.desktop"
         ];
+        description = "Default applications for audio MIME types.";
       };
       browser = mkOption {
         type = listOf str;
@@ -27,6 +28,7 @@ in
           "chromium.desktop"
           "google-chrome.desktop"
         ];
+        description = "Default applications for browser/web MIME types.";
       };
       editor = mkOption {
         type = listOf str;
@@ -36,6 +38,7 @@ in
           "code-insiders.desktop"
           "code.desktop"
         ];
+        description = "Default applications for text/code MIME types.";
       };
       image = mkOption {
         type = listOf str;
@@ -43,24 +46,28 @@ in
           "org.nomacs.ImageLounge.desktop"
           "imv-dir.desktop"
         ];
+        description = "Default applications for image MIME types.";
       };
       video = mkOption {
         type = listOf str;
         default = [
           "mpv.desktop"
         ];
+        description = "Default applications for video MIME types.";
       };
       mailto = mkOption {
         type = listOf str;
         default = [
           "thunderbird.desktop"
         ];
+        description = "Default applications for email/mailto MIME types.";
       };
       calendar = mkOption {
         type = listOf str;
         default = [
           "thunderbird.desktop"
         ];
+        description = "Default applications for calendar MIME types.";
       };
     };
   };

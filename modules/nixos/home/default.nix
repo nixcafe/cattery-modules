@@ -13,6 +13,7 @@ in
     extraOptions = mkOption {
       type = attrs;
       default = { };
+      description = "Extra home-manager configuration options forwarded to the user.";
     };
   };
 

@@ -19,6 +19,9 @@ in
     extraOptions = mkOption {
       type = attrs;
       default = user.settings.catppuccin.home or { };
+      description = ''
+        Extra options to pass to the catppuccin home-manager module.
+      '';
     };
   };
 

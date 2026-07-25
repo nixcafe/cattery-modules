@@ -44,10 +44,16 @@ in
               name = mkOption {
                 type = str;
                 default = name;
+                description = ''
+                  Name of this runner instance, used for registration and identification.
+                '';
               };
               url = mkOption {
                 type = str;
                 default = cfg.url;
+                description = ''
+                  Base URL of the Gitea/Forgejo instance this runner connects to.
+                '';
               };
               tokenFile = mkOption {
                 type = nullOr (either str path);
@@ -84,6 +90,9 @@ in
               extraOptions = mkOption {
                 type = attrs;
                 default = { };
+                description = ''
+                  Extra options merged into this runner instance's configuration.
+                '';
               };
             };
           }
@@ -96,6 +105,9 @@ in
     extraOptions = mkOption {
       type = attrs;
       default = { };
+      description = ''
+        Extra options merged into the gitea-actions-runner service configuration.
+      '';
     };
   };
 

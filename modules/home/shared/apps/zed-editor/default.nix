@@ -27,10 +27,16 @@ in
     userSettings = mkOption {
       type = jsonType;
       default = settings.zed-editor.userSettings or { };
+      description = ''
+        Zed editor user settings in JSON format.
+      '';
     };
     userKeymaps = mkOption {
       type = jsonType;
       default = settings.zed-editor.userKeymaps or [ ];
+      description = ''
+        Zed editor user keybindings in JSON format.
+      '';
     };
     userTasks = mkOption {
       inherit (jsonFormat) type;
@@ -54,7 +60,7 @@ in
     extensions = mkOption {
       type = with types; listOf str;
       default = settings.zed-editor.extensions or [ ];
-      description = "https://github.com/zed-industries/extensions/tree/main/extensions";
+      description = "List of Zed editor extension IDs to install. See https://github.com/zed-industries/extensions/tree/main/extensions for available extensions.";
     };
     mutableUserTasks = mkOption {
       type = types.bool;
@@ -77,6 +83,9 @@ in
     extraOptions = mkOption {
       type = with types; attrs;
       default = { };
+      description = ''
+        Extra options to pass to the zed-editor home-manager module.
+      '';
     };
     persistence = lib.mkEnableOption "add files and directories to impermanence" // {
       default = true;

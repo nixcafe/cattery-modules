@@ -17,6 +17,7 @@ in
     settings = mkOption {
       type = types.attrs;
       default = { };
+      description = "Wallpaper daemon (awww) configuration settings.";
     };
   };
 

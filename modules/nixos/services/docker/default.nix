@@ -15,6 +15,7 @@ in
     extraOptions = mkOption {
       type = attrs;
       default = { };
+      description = "Extra virtualisation.docker NixOS options merged at top level.";
     };
   };
 

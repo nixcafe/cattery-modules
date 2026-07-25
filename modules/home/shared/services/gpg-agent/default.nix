@@ -80,6 +80,9 @@ in
     extraOptions = mkOption {
       type = types.attrs;
       default = { };
+      description = ''
+        Extra options to pass to the gpg-agent home-manager module.
+      '';
     };
   };
 

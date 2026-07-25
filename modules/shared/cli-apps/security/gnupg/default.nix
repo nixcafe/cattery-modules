@@ -20,6 +20,9 @@ in
       extraOptions = mkOption {
         type = types.attrs;
         default = { };
+        description = ''
+          Extra options to pass to the GnuPG agent configuration.
+        '';
       };
     };
   };

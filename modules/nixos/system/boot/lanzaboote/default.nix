@@ -19,6 +19,9 @@ in
     extraOptions = lib.mkOption {
       type = lib.types.attrs;
       default = { };
+      description = ''
+        Extra options to pass to the lanzaboote NixOS module.
+      '';
     };
   };
 

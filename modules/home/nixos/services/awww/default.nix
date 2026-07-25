@@ -147,6 +147,7 @@ in
     extraOptions = mkOption {
       type = types.attrs;
       default = { };
+      description = "Extra services.awww home-manager options merged at top level.";
     };
   };
 

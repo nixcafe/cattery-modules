@@ -30,10 +30,12 @@ let
         hostUrl = mkOption {
           type = str;
           default = "";
+          description = "Host URL or IP address of the Samba server.";
         };
         binds = mkOption {
           type = attrsOf (bindType name);
           default = { };
+          description = "Samba share bindings mapping share names to their mount configuration.";
         };
       };
     }
@@ -45,23 +47,28 @@ let
         uid = mkOption {
           type = int;
           default = uid;
+          description = "User ID to own the mounted files.";
         };
         gid = mkOption {
           type = int;
           default = gid;
+          description = "Group ID to own the mounted files.";
         };
         autoMountOpts = mkOption {
           type = str;
+          description = "Systemd automount options to prevent hanging on network split.";
           # this line prevents hanging on network split
           default = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
         };
         secretsPath = mkOption {
           type = path;
-          default = "/etc/samba/secrets/${sambaName}.conf";
+          default = "/etc/samba/secrets/''${sambaName}.conf";
+          description = "Path to the credentials file for this Samba share.";
         };
         extraOptions = mkOption {
           type = listOf str;
           default = [ ];
+          description = "Extra CIFS mount options for this share.";
         };
       };
     };
@@ -87,6 +94,7 @@ in
     client = mkOption {
       type = attrsOf sambaType;
       default = { };
+      description = "Samba client server configurations keyed by server name.";
     };
   };
 

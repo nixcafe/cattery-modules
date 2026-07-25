@@ -19,10 +19,12 @@ in
     settings = mkOption {
       type = attrs;
       default = settings.nushell.settings or { };
+      description = "Nushell configuration settings.";
     };
     extraConfig = mkOption {
       type = lines;
       default = "";
+      description = "Extra Nushell configuration lines appended to config.nu.";
     };
     persistence = lib.mkEnableOption "add files and directories to impermanence" // {
       default = true;

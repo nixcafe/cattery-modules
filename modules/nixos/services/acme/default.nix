@@ -30,10 +30,16 @@ in
     email = mkOption {
       type = nullOr str;
       default = user.email.address or null;
+      description = ''
+        Email address for ACME account registration and certificate expiration notices.
+      '';
     };
     group = mkOption {
       type = str;
       default = if nginx.enable then "nginx" else "acme";
+      description = ''
+        Group owner of the ACME certificate directories.
+      '';
     };
     dnsProvider = mkOption {
       type = nullOr str;
@@ -45,18 +51,30 @@ in
     postRun = mkOption {
       type = lines;
       default = "";
+      description = ''
+        Shell commands executed after a certificate is issued or renewed.
+      '';
     };
     reloadServices = mkOption {
       type = listOf str;
       default = optional nginx.enable "nginx.service";
+      description = ''
+        Systemd services to reload after a certificate is issued or renewed.
+      '';
     };
     certs = mkOption {
       type = attrs;
       default = { };
+      description = ''
+        ACME certificate configurations keyed by domain name.
+      '';
     };
     extraOptions = mkOption {
       type = attrs;
       default = { };
+      description = ''
+        Extra options merged into the ACME service configuration.
+      '';
     };
   };
 
@@ -68,6 +86,8 @@ in
           email
           group
           dnsProvider
+          postRun
+          reloadServices
           ;
       };
       certs = concatMapAttrs (name: value: {
