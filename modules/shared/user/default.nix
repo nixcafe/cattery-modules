@@ -3,10 +3,11 @@
   lib,
   namespace,
   config,
+  purr,
   ...
 }:
 let
-  inherit (pkgs.stdenv.hostPlatform) isLinux isDarwin;
+  inherit (purr) isLinux isDarwin;
   inherit (lib)
     mkDefault
     mkOption

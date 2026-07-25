@@ -3,10 +3,11 @@
   config,
   lib,
   namespace,
+  purr,
   ...
 }:
 let
-  inherit (pkgs.stdenv.hostPlatform) isLinux;
+  inherit (purr) isLinux;
 
   cfg = config.${namespace}.services.sing-box;
   settingsFormat = pkgs.formats.json { };

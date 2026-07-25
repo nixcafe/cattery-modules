@@ -38,6 +38,8 @@ let
       host = "test";
       user = "tester";
       format = "unknown";
+      isLinux = pkgsLib.hasSuffix "linux" system;
+      isDarwin = pkgsLib.hasSuffix "darwin" system;
     };
   };
 

@@ -3,11 +3,12 @@
   lib,
   namespace,
   pkgs,
+  purr,
   ...
 }:
 let
+  inherit (purr) isLinux;
   inherit (lib) optionalAttrs;
-  inherit (pkgs.stdenv.hostPlatform) isLinux;
 
   cfg = config.${namespace}.apps.winbox;
 in
