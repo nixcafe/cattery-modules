@@ -1,14 +1,13 @@
 {
-  pkgs,
   config,
   lib,
   namespace,
   inputs,
+  purr,
   ...
 }:
 let
-  inherit (pkgs.stdenv.hostPlatform) isLinux isDarwin;
-  inherit (lib) optionalAttrs;
+  inherit (purr) isLinux isDarwin;
 
   cfg = config.${namespace}.nix;
 in
@@ -32,12 +31,12 @@ in
         automatic = true;
         options = "--delete-older-than 30d";
       }
-      // (optionalAttrs isLinux {
+      // (lib.optionalAttrs isLinux {
         persistent = true;
         dates = "monthly";
         randomizedDelaySec = "45min";
       })
-      // (optionalAttrs isDarwin {
+      // (lib.optionalAttrs isDarwin {
         interval = {
           Weekday = 1;
           Hour = 4;
