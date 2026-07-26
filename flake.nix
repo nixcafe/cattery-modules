@@ -46,7 +46,6 @@
       inputs.rust-overlay.follows = "rust-overlay";
     };
 
-    # fix multiple agenix, home-manager, darwin
     agenix = {
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -103,6 +102,7 @@
           nix-gaming.nixosModules.pipewireLowLatency
         ];
         darwin = [
+          agenix.darwinModules.default
           home-manager.darwinModules.home-manager
         ];
         home = [
