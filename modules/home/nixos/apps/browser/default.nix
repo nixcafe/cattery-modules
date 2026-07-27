@@ -38,7 +38,7 @@ in
     programs = {
       firefox = {
         enable = any (x: x == "firefox") cfg.needs;
-        package = pkgs.firefox-devedition-bin;
+        package = pkgs.firefox-devedition;
       };
 
       chromium = {
