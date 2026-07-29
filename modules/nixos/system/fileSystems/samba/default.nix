@@ -62,7 +62,7 @@ let
         };
         secretsPath = mkOption {
           type = path;
-          default = "/etc/samba/secrets/''${sambaName}.conf";
+          default = "/etc/samba/secrets/${sambaName}.conf";
           description = "Path to the credentials file for this Samba share.";
         };
         extraOptions = mkOption {
