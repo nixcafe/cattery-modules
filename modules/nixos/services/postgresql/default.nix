@@ -60,37 +60,30 @@ in
         '';
       };
     };
-    settings = {
-      shared_preload_libraries = mkOption {
-        type = nullOr (coercedTo (listOf str) (concatStringsSep ", ") str);
-        default = null;
-        example = literalExpression ''[ "auto_explain" "anon" ]'';
-        description = "List of libraries to be preloaded. ";
+    settings = mkOption {
+      type = types.submodule {
+        freeformType = attrsOf (oneOf [
+          bool
+          float
+          int
+          str
+        ]);
+        options = {
+          port = mkOption {
+            type = port;
+            default = 5432;
+            description = ''
+              Port on which PostgreSQL listens for connections.
+            '';
+          };
+        };
       };
-      log_line_prefix = mkOption {
-        type = str;
-        default = "%q%r ";
-        example = "%q[%r]%u@%d%a ";
-        description = "Ref: <https://www.postgresql.org/docs/current/runtime-config-logging.html#GUC-LOG-LINE-PREFIX>.";
-      };
-      port = mkOption {
-        type = port;
-        default = 5432;
-        description = ''
-          Port on which PostgreSQL listens for connections.
-        '';
-      };
-      jit = mkOption {
-        type = enum [
-          "on"
-          "off"
-        ];
-        default = "off";
-        description = ''
-          Whether to enable JIT compilation for PostgreSQL.
-        '';
-      };
+      default = { };
+      description = ''
+        PostgreSQL configuration.
+      '';
     };
+    enableJIT = lib.mkEnableOption "JIT support";
     extraOptions = mkOption {
       type = attrs;
       default = { };
@@ -135,6 +128,7 @@ in
     services.postgresql = {
       enable = true;
       inherit (cfg)
+        enableJIT
         ensureDatabases
         ensureUsers
         enableTCPIP
