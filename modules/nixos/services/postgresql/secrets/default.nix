@@ -7,6 +7,7 @@
 }:
 let
   host = purr.host or purr.name or "localhost";
+  inherit (lib) optional;
   inherit (lib.${namespace}.secrets) mkAppSecretsOption;
   inherit (config.${namespace}.secrets) files;
 
@@ -18,20 +19,10 @@ in
     enable = cfgParent.enable && config.${namespace}.secrets.enable;
     appName = "postgresql";
     dirPath = "postgresql";
-    fixedConfig = [
-      {
-        name = "settingsPath";
-        fileName = "postgresql.conf";
-      }
-      {
-        name = "identMapPath";
-        fileName = "pg_ident.conf";
-      }
-      {
-        name = "authenticationPath";
-        fileName = "pg_hba.conf";
-      }
-    ];
+    fixedConfig = optional cfgParent.useWizard {
+      name = "settingsPath";
+      fileName = "postgresql.conf";
+    };
     scope = "hosts-global";
     currentInfo = {
       inherit host;

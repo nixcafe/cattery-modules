@@ -8,7 +8,6 @@ let
   inherit (lib)
     mkOption
     types
-    mkForce
     optionalAttrs
     ;
 
@@ -25,32 +24,39 @@ in
         when set to null.
       '';
     };
+    dataDir = mkOption {
+      type = nullOr path;
+      default = null;
+      example = "/data/postgresql";
+      description = ''
+        The data directory for PostgreSQL.  When left as `null`, uses the
+        nixpkgs default (`/var/lib/postgresql/<version>`).  When set, the
+        sysadmin is responsible for ensuring the directory exists with
+        appropriate ownership (`postgres:postgres`) — `initdb` will set
+        the correct permissions (0700) automatically.
+
+        When `useWizard` is enabled, make sure your agenix `postgresql.conf`
+        does **not** set `data_directory` — let PGDATA handle it.
+      '';
+    };
     openFirewall = lib.mkEnableOption "postgresql open firewall";
+    enableTCPIP = lib.mkEnableOption "postgresql listen on all interfaces";
+    useWizard = lib.mkEnableOption "postgresql use host config via agenix";
     configFile = {
       settingsPath = mkOption {
         type = path;
         default = "/etc/postgresql/postgresql.conf";
         description = ''
-          except for options defined here: 
-          <https://search.nixos.org/options?query=services.postgresql.settings>
+          When `useWizard` is enabled, this file (decrypted by agenix)
+          is appended as an `include` at the end of `postgresql.conf`,
+          giving it the final word on all settings — nixpkgs handles
+          infrastructure (`hba_file`, `ident_file`, etc.) and the
+          agenix file overrides runtime tuning.
 
-          which cannot be overwritten, all others are subject to the file.
+          When `useWizard` is disabled, PostgreSQL uses the nixpkgs
+          native configuration and this option has no effect.
 
-          options that cannot be overwritten have been moved to `${namespace}.services.postgresql.settings`.
-        '';
-      };
-      identMapPath = mkOption {
-        type = path;
-        default = "/etc/postgresql/pg_ident.conf";
-        description = ''
-          Path to the PostgreSQL ident map configuration file.
-        '';
-      };
-      authenticationPath = mkOption {
-        type = path;
-        default = "/etc/postgresql/pg_hba.conf";
-        description = ''
-          Path to the PostgreSQL host-based authentication (pg_hba) configuration file.
+          <https://www.postgresql.org/docs/current/runtime-config.html>
         '';
       };
     };
@@ -92,28 +98,67 @@ in
         Extra options merged into the PostgreSQL service configuration.
       '';
     };
+    ensureDatabases = mkOption {
+      type = listOf str;
+      default = [ ];
+      example = [
+        "hydra"
+        "nextcloud"
+      ];
+      description = ''
+        Ensures that the specified databases exist.
+        This option will never delete existing databases.
+      '';
+    };
+    ensureUsers = mkOption {
+      type = listOf attrs;
+      default = [ ];
+      example = literalExpression ''
+        [
+          {
+            name = "hydra";
+            ensureDBOwnership = true;
+          }
+        ]
+      '';
+      description = ''
+        Ensures that the specified users exist.
+        Passed directly to {option}`services.postgresql.ensureUsers`.
+      '';
+    };
   };
 
   config = lib.mkIf cfg.enable {
     networking.firewall = lib.mkIf cfg.openFirewall {
       allowedTCPPorts = [ cfg.settings.port ];
     };
-    # postgresql
     services.postgresql = {
       enable = true;
-      # https://www.postgresql.org/docs/current/pgupgrade.html
-      settings = mkForce (
-        {
-          hba_file = cfg.configFile.authenticationPath;
-          ident_file = cfg.configFile.identMapPath;
-          include_if_exists = cfg.configFile.settingsPath;
-        }
-        // cfg.settings
-      );
+      inherit (cfg)
+        ensureDatabases
+        ensureUsers
+        enableTCPIP
+        ;
+    }
+    // optionalAttrs (cfg.dataDir != null) {
+      inherit (cfg) dataDir;
+    }
+    // optionalAttrs (!cfg.useWizard) {
+      inherit (cfg) settings;
     }
     // (optionalAttrs (cfg.package != null) {
       inherit (cfg) package;
     })
     // cfg.extraOptions;
+
+    systemd.services.postgresql.preStart = lib.mkIf cfg.useWizard (
+      lib.mkAfter ''
+        p="${config.services.postgresql.dataDir}/postgresql.conf"
+        cat "$p" > "$p.tmp"
+        echo >> "$p.tmp"
+        echo "include = '${cfg.configFile.settingsPath}'" >> "$p.tmp"
+        mv "$p.tmp" "$p"
+      ''
+    );
   };
 }
