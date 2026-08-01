@@ -202,6 +202,9 @@ in
       users.users.${cfg.name} = {
         # Just to ensure that it is not null when accessing, the default value on Mac is 501
         uid = 501;
+        # macOS root lives outside /Users; everyone else under /Users/<name>.
+        # home-manager reads `users.users.<name>.home` for `home.homeDirectory`.
+        home = if cfg.name == "root" then "/var/root" else "/Users/${cfg.name}";
         openssh.authorizedKeys = cfg.authorizedKeys;
         shell = cfg.defaultUserShell;
       };

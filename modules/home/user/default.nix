@@ -9,6 +9,8 @@ let
   inherit (pkgs.stdenv.hostPlatform) isLinux;
   inherit (lib)
     mkDefault
+    mkIf
+    mkMerge
     mkOption
     types
     optionalAttrs
@@ -22,6 +24,16 @@ in
 {
   options.${namespace}.user = with types; {
     addToAccounts = lib.mkEnableOption "add user to home accounts";
+    injectHomeUser = mkOption {
+      type = bool;
+      default = cfg.settings.injectHomeUser or true;
+      description = ''
+        Whether to inject the user into home-manager by setting
+        `home.username` and `home.homeDirectory`. Disable this when the
+        surrounding flake framework (e.g. purr) already injects the user.
+        Can also be controlled via `settings.injectHomeUser`.
+      '';
+    };
     name = mkOption {
       type = str;
       default = cfg.settings.name or "nixos";
@@ -139,35 +151,38 @@ in
     };
   };
 
-  config = {
-    home = {
-      username = mkDefault name;
-      homeDirectory = mkDefault home;
-    };
+  config = mkMerge [
+    (mkIf cfg.injectHomeUser {
+      home = {
+        username = mkDefault name;
+        homeDirectory = mkDefault home;
+      };
+    })
 
-    # add user to home accounts
-    accounts.email.accounts = lib.mkIf cfg.addToAccounts {
-      ${name} = {
-        inherit (cfg) realName;
-        inherit (cfg.email) address userName imap;
-        primary = mkDefault true;
-        smtp =
-          if cfg.email.smtp != null then
-            {
-              inherit (cfg.email.smtp) host port;
-              tls = optionalAttrs (cfg.email.smtp.port == 587) {
-                enable = true;
-                useStartTls = true;
-              };
-            }
-          else
-            null;
-        gpg = optionalAttrs (cfg.gpg.encryptKey != null) {
-          key = cfg.gpg.encryptKey;
-          signByDefault = true;
+    {
+      # add user to home accounts
+      accounts.email.accounts = lib.mkIf cfg.addToAccounts {
+        ${name} = {
+          inherit (cfg) realName;
+          inherit (cfg.email) address userName imap;
+          primary = mkDefault true;
+          smtp =
+            if cfg.email.smtp != null then
+              {
+                inherit (cfg.email.smtp) host port;
+                tls = optionalAttrs (cfg.email.smtp.port == 587) {
+                  enable = true;
+                  useStartTls = true;
+                };
+              }
+            else
+              null;
+          gpg = optionalAttrs (cfg.gpg.encryptKey != null) {
+            key = cfg.gpg.encryptKey;
+            signByDefault = true;
+          };
         };
       };
-    };
-
-  };
+    }
+  ];
 }
