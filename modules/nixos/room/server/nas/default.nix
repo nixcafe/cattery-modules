@@ -41,6 +41,13 @@ in
     sanoid = {
       enable = mkServiceOption "sanoid zfs snapshot";
     };
+    syncoid = {
+      enable = mkOption {
+        type = types.bool;
+        default = false;
+        description = "syncoid zfs replication";
+      };
+    };
     beszel = {
       enable = mkServiceOption "beszel monitoring";
       hub.enable = mkOption {
@@ -84,6 +91,7 @@ in
           openFirewall = mkDefault true;
         };
         sanoid = lib.mkIf cfg.sanoid.enable mkDefaultEnabled;
+        syncoid = lib.mkIf cfg.syncoid.enable mkDefaultEnabled;
         beszel = lib.mkIf cfg.beszel.enable {
           enable = mkDefault true;
           openFirewall = mkDefault true;
