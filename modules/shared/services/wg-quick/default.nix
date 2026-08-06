@@ -7,7 +7,7 @@
   ...
 }:
 let
-  inherit (purr) isLinux isDarwin;
+  inherit (purr.meta) isLinux isDarwin;
   inherit (lib)
     mkOption
     types
