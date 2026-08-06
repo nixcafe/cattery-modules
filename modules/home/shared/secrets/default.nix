@@ -8,7 +8,7 @@
   ...
 }:
 let
-  host = purr.host or purr.name or "localhost";
+  host = purr.meta.host or "localhost";
   inherit (lib)
     mkOption
     mkEnableOption

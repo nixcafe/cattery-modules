@@ -7,7 +7,7 @@
   ...
 }:
 let
-  inherit (purr) isLinux isDarwin;
+  inherit (purr.meta) isLinux isDarwin;
 
   cfg = config.${namespace}.nix;
 in

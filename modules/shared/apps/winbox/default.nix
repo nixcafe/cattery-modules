@@ -7,7 +7,7 @@
   ...
 }:
 let
-  inherit (purr) isLinux;
+  inherit (purr.meta) isLinux;
   inherit (lib) optionalAttrs;
 
   cfg = config.${namespace}.apps.winbox;

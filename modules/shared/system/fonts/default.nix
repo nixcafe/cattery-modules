@@ -7,7 +7,7 @@
   ...
 }:
 let
-  inherit (purr) isLinux;
+  inherit (purr.meta) isLinux;
 
   cfg = config.${namespace}.system.fonts;
 in
