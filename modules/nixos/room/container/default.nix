@@ -24,5 +24,10 @@ in
     };
 
     boot.isContainer = true;
+
+    # Containers have no wireless hardware. NetworkManager force-enables
+    # wpa_supplicant as its wifi backend, which fails to start without
+    # /dev/rfkill in a container, so stop it.
+    systemd.services.wpa_supplicant.enable = lib.mkForce false;
   };
 }
