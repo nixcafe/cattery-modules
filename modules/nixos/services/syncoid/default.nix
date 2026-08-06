@@ -5,15 +5,13 @@
   ...
 }:
 let
-  inherit (lib) mkOption types optionalAttrs;
+  inherit (lib) mkOption types;
 
   cfg = config.${namespace}.services.syncoid;
 in
 {
   options.${namespace}.services.syncoid = with types; {
     enable = lib.mkEnableOption "syncoid zfs replication";
-
-    useWizard = lib.mkEnableOption "syncoid use host config";
 
     interval = mkOption {
       type = either str (listOf str);
@@ -53,10 +51,6 @@ in
       description = "SSH private key file used to log in to remote systems.";
     };
 
-    persistence = lib.mkEnableOption "add files and directories to impermanence" // {
-      default = true;
-    };
-
     extraOptions = mkOption {
       type = attrs;
       default = { };
@@ -67,17 +61,13 @@ in
   config = lib.mkIf cfg.enable {
     services.syncoid = {
       enable = true;
-      inherit (cfg) interval;
-    }
-    // optionalAttrs (!cfg.useWizard) {
-      inherit (cfg) commands commonArgs sshKey;
+      inherit (cfg)
+        interval
+        commands
+        commonArgs
+        sshKey
+        ;
     }
     // cfg.extraOptions;
-
-    ${namespace}.system.impermanence = lib.mkIf (!cfg.useWizard && cfg.persistence) {
-      directories = [
-        "/var/lib/syncoid"
-      ];
-    };
   };
 }
