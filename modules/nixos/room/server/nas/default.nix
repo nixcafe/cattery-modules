@@ -64,6 +64,9 @@ in
         description = "netdata monitoring. Heavy, conflicts with beszel.";
       };
     };
+    nfs = {
+      enable = mkServiceOption "nfs server";
+    };
     target = {
       enable = mkServiceOption "target iscsi";
     };
@@ -95,6 +98,10 @@ in
           agent.enable = mkDefault cfg.beszel.agent.enable;
         };
         netdata = lib.mkIf cfg.netdata.enable mkDefaultEnabled;
+        nfs = lib.mkIf cfg.nfs.enable {
+          enable = mkDefault true;
+          openFirewall = mkDefault true;
+        };
         target = lib.mkIf cfg.target.enable {
           enable = mkDefault true;
           openFirewall = mkDefault true;
