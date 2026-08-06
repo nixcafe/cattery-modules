@@ -9,6 +9,13 @@ let
   inherit (lib) mkOption types;
 
   cfg = config.${namespace}.services.adguardhome;
+
+  # whole config via agenix secret, takes precedence over declarative settings
+  secretConfigScript = pkgs.writeShellScript "adguardhome-secret-config" ''
+    if [ -f "/etc/adguardhome/AdGuardHome.yaml" ]; then
+      install -m 600 /etc/adguardhome/AdGuardHome.yaml "$STATE_DIRECTORY/AdGuardHome.yaml"
+    fi
+  '';
 in
 {
   options.${namespace}.services.adguardhome = with types; {
@@ -75,5 +82,11 @@ in
         ;
     }
     // cfg.extraOptions;
+
+    systemd.services.adguardhome = lib.mkIf cfg.secrets.enable {
+      serviceConfig.ExecStartPre = lib.mkAfter [
+        "+${secretConfigScript}"
+      ];
+    };
   };
 }
