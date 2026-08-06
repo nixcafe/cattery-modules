@@ -42,11 +42,7 @@ in
       enable = mkServiceOption "sanoid zfs snapshot";
     };
     syncoid = {
-      enable = mkOption {
-        type = types.bool;
-        default = false;
-        description = "syncoid zfs replication";
-      };
+      enable = mkServiceOption "syncoid zfs replication";
     };
     beszel = {
       enable = mkServiceOption "beszel monitoring";
