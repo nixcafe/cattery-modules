@@ -22,9 +22,14 @@ in
     };
 
     ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
-      xdg.data.directories = [
-        "opencode"
-      ];
+      xdg = {
+        data.directories = [
+          "opencode"
+        ];
+        state.directories = [
+          "opencode"
+        ];
+      };
     };
   };
 
