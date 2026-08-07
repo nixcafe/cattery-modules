@@ -7,6 +7,7 @@
 }:
 let
   host = purr.meta.host or "localhost";
+  inherit (lib) optional;
   inherit (lib.${namespace}.secrets) mkAppSecretsOption;
   inherit (config.${namespace}.secrets) files;
 
@@ -18,12 +19,10 @@ in
     enable = cfgParent.enable && config.${namespace}.secrets.enable;
     appName = "adguardhome";
     dirPath = "adguardhome";
-    fixedConfig = [
-      {
-        name = "config";
-        fileName = "AdGuardHome.yaml";
-      }
-    ];
+    fixedConfig = optional cfgParent.useWizard {
+      name = "config";
+      fileName = "AdGuardHome.yaml";
+    };
     scope = "hosts-global";
     currentInfo = {
       inherit host;

@@ -53,8 +53,19 @@ in
         AdGuard Home configuration. Refer to
         <https://github.com/AdguardTeam/AdGuardHome/wiki/Configuration#configuration-file>
         for details on supported values.
+
+        Ignored when {option}`useWizard` is enabled.
       '';
     };
+    useWizard =
+      lib.mkEnableOption "use the host AdGuardHome.yaml configuration file instead of declarative settings"
+      // {
+        description = ''
+          Whether to use the full AdGuardHome.yaml config file managed through agenix
+          instead of declarative {option}`settings`. Requires the agenix secret
+          `adguardhome/AdGuardHome.yaml` declared under `cattery.secrets`.
+        '';
+      };
     extraArgs = mkOption {
       type = listOf str;
       default = [ ];
@@ -77,13 +88,13 @@ in
         mutableSettings
         host
         port
-        settings
         extraArgs
         ;
+      settings = lib.mkIf (!cfg.useWizard) cfg.settings;
     }
     // cfg.extraOptions;
 
-    systemd.services.adguardhome = lib.mkIf cfg.secrets.enable {
+    systemd.services.adguardhome = lib.mkIf (cfg.useWizard && cfg.secrets.enable) {
       serviceConfig.ExecStartPre = lib.mkAfter [
         "+${secretConfigScript}"
       ];
