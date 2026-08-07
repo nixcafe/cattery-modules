@@ -11,9 +11,7 @@ let
     types
     mkMerge
     optionalAttrs
-    optionals
     ;
-  inherit (types) coercedTo;
   inherit (pkgs.stdenv.hostPlatform) isLinux;
   inherit (config.${namespace}) user;
 
@@ -58,7 +56,6 @@ let
   };
 
   cfg = config.${namespace}.cli-apps.dev-kit.git;
-  cfgSecrets = cfg.secrets;
 in
 {
   options.${namespace}.cli-apps.dev-kit.git = with types; {
@@ -106,44 +103,10 @@ in
       });
       default = null;
     };
-    includeNames = mkOption {
-      default = [ ];
-      type = listOf (
-        coercedTo str (name: { inherit name; }) (submodule {
-          options = {
-            name = mkOption {
-              type = str;
-              description = "Name of the agenix-managed git config file.";
-            };
-            condition = mkOption {
-              type = nullOr str;
-              default = null;
-              description = ''
-                Include this configuration only when `condition` matches.
-                Allowed conditions are described in
-                {manpage}`git-config(1)`.
-              '';
-            };
-          };
-        })
-      );
-      description = ''
-        Names of secret config files that should be included via git's
-        `include.path` / `includeIf.<condition>.path` directive.
-        These are agenix-managed files.
-
-        Each entry can be a plain string (the secret name) or an attrset
-        with `name` and optional `condition`.
-
-        See
-        {manpage}`git-config(1)`
-        for more information.
-      '';
-    };
     includes = mkOption {
       type = listOf attrs;
       default = [ ];
-      description = "Manual git include entries, merged with secret-based includes.";
+      description = "Manual git include entries passed to programs.git.includes.";
     };
     ignores = mkOption {
       type = listOf str;
@@ -177,20 +140,11 @@ in
         inherit (cfg)
           signing
           ignores
+          includes
           ;
         enable = true;
         package = pkgs.gitFull;
         lfs.enable = true;
-        includes =
-          let
-            secretIncludes = optionals cfgSecrets.enable (
-              map (item: {
-                path = cfgSecrets.files.${item.name}.target;
-                inherit (item) condition;
-              }) cfg.includeNames
-            );
-          in
-          secretIncludes ++ cfg.includes;
 
         settings = mkMerge [
           (optionalAttrs (cfg.sendEmail != null) { sendemail = cfg.sendEmail; })
