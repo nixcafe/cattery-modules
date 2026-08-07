@@ -23,12 +23,19 @@ in
         # feishu
         ".bytertc"
       ];
-      xdg.config.directories = [
-        "Signal"
-        "Element"
-        # feishu
-        "bytertc"
-      ];
+      xdg = {
+        cache.directories = [
+          # feishu
+          "LarkShell"
+        ];
+        config.directories = [
+          "Signal"
+          "Element"
+          # feishu
+          "bytertc"
+          "LarkShell"
+        ];
+      };
     };
   };
 }
