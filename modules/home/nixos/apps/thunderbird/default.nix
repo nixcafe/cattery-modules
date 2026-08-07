@@ -120,6 +120,14 @@ in
       };
     };
 
+    accounts.calendar.accounts = lib.mkIf (user.addToAccounts && user.calendar != null) {
+      ${user.name}.thunderbird.enable = true;
+    };
+
+    accounts.contact.accounts = lib.mkIf (user.addToAccounts && user.contact != null) {
+      ${user.name}.thunderbird.enable = true;
+    };
+
     ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
       directories = [
         ".thunderbird"

@@ -107,6 +107,185 @@ in
         default = cfg.settings.email.smtp or null;
       };
     };
+    calendar = mkOption {
+      type = nullOr (submodule {
+        options = {
+          primary = mkOption {
+            type = bool;
+            default = true;
+            description = ''
+              Whether this is the primary calendar account.
+            '';
+          };
+          primaryCollection = mkOption {
+            type = nullOr str;
+            default = null;
+            description = ''
+              The primary collection of the account. Required when the
+              account has multiple collections.
+            '';
+          };
+          local = mkOption {
+            type = submodule {
+              options = {
+                path = mkOption {
+                  type = str;
+                  default = "${home}/.calendar/${name}";
+                  description = "The path of the storage.";
+                };
+                type = mkOption {
+                  type = enum [
+                    "filesystem"
+                    "singlefile"
+                  ];
+                  default = "filesystem";
+                  description = "The type of the storage.";
+                };
+                fileExt = mkOption {
+                  type = nullOr str;
+                  default = ".ics";
+                  description = "The file extension to use.";
+                };
+                encoding = mkOption {
+                  type = nullOr str;
+                  default = null;
+                  description = ''
+                    File encoding for items, both content and file name.
+                  '';
+                };
+              };
+            };
+            default = { };
+            description = "Local configuration for the calendar.";
+          };
+          remote = mkOption {
+            type = nullOr (submodule {
+              options = {
+                type = mkOption {
+                  type = enum [
+                    "caldav"
+                    "http"
+                    "google_calendar"
+                  ];
+                  description = "The type of the storage.";
+                };
+                url = mkOption {
+                  type = nullOr str;
+                  default = null;
+                  description = "The URL of the storage.";
+                };
+                userName = mkOption {
+                  type = nullOr str;
+                  default = cfg.email.userName;
+                  description = "User name for authentication.";
+                };
+                passwordCommand = mkOption {
+                  type = nullOr (listOf str);
+                  default = null;
+                  example = [
+                    "pass"
+                    "caldav"
+                  ];
+                  description = ''
+                    A command that prints the password to standard output.
+                  '';
+                };
+              };
+            });
+            default = null;
+            description = "Remote configuration for the calendar.";
+          };
+        };
+      });
+      default = cfg.settings.calendar or null;
+      description = ''
+        The calendar account of the user. When set and
+        `cattery.user.addToAccounts` is enabled, this is injected into
+        `accounts.calendar.accounts`.${name}.
+      '';
+    };
+    contact = mkOption {
+      type = nullOr (submodule {
+        options = {
+          local = mkOption {
+            type = submodule {
+              options = {
+                path = mkOption {
+                  type = str;
+                  default = "${home}/.contacts/${name}";
+                  description = "The path of the storage.";
+                };
+                type = mkOption {
+                  type = enum [
+                    "filesystem"
+                    "singlefile"
+                  ];
+                  default = "filesystem";
+                  description = "The type of the storage.";
+                };
+                fileExt = mkOption {
+                  type = nullOr str;
+                  default = ".vcf";
+                  description = "The file extension to use.";
+                };
+                encoding = mkOption {
+                  type = nullOr str;
+                  default = null;
+                  description = ''
+                    File encoding for items, both content and file name.
+                  '';
+                };
+              };
+            };
+            default = { };
+            description = "Local configuration for the contacts.";
+          };
+          remote = mkOption {
+            type = nullOr (submodule {
+              options = {
+                type = mkOption {
+                  type = enum [
+                    "carddav"
+                    "http"
+                    "google_contacts"
+                  ];
+                  description = "The type of the storage.";
+                };
+                url = mkOption {
+                  type = nullOr str;
+                  default = null;
+                  description = "The URL of the storage.";
+                };
+                userName = mkOption {
+                  type = nullOr str;
+                  default = cfg.email.userName;
+                  description = "User name for authentication.";
+                };
+                passwordCommand = mkOption {
+                  type = nullOr (listOf str);
+                  default = null;
+                  example = [
+                    "pass"
+                    "carddav"
+                  ];
+                  description = ''
+                    A command that prints the password to standard output.
+                  '';
+                };
+              };
+            });
+            default = null;
+            description = "Remote configuration for the contacts.";
+          };
+        };
+      });
+      default = cfg.settings.contact or null;
+      description = ''
+        The contacts account of the user. When set and
+        `cattery.user.addToAccounts` is enabled, this is injected into
+        `accounts.contact.accounts`.${name}.
+      '';
+    };
     home = mkOption {
       type = nullOr str;
       default = config.home.homeDirectory;
@@ -184,5 +363,22 @@ in
         };
       };
     }
+
+    (mkIf (cfg.addToAccounts && cfg.calendar != null) {
+      accounts.calendar.accounts.${name} = {
+        inherit (cfg.calendar)
+          primary
+          primaryCollection
+          local
+          remote
+          ;
+      };
+    })
+
+    (mkIf (cfg.addToAccounts && cfg.contact != null) {
+      accounts.contact.accounts.${name} = {
+        inherit (cfg.contact) local remote;
+      };
+    })
   ];
 }
