@@ -120,13 +120,27 @@ in
       };
     };
 
-    accounts.calendar.accounts = lib.mkIf (user.addToAccounts && user.calendar != null) {
-      ${user.name}.thunderbird.enable = true;
-    };
+    accounts.calendar.accounts = lib.mkIf (user.addToAccounts && user.calendar != [ ]) (
+      lib.listToAttrs (
+        map (account: {
+          inherit (account) name;
+          value = {
+            thunderbird.enable = true;
+          };
+        }) user.calendar
+      )
+    );
 
-    accounts.contact.accounts = lib.mkIf (user.addToAccounts && user.contact != null) {
-      ${user.name}.thunderbird.enable = true;
-    };
+    accounts.contact.accounts = lib.mkIf (user.addToAccounts && user.contact != [ ]) (
+      lib.listToAttrs (
+        map (account: {
+          inherit (account) name;
+          value = {
+            thunderbird.enable = true;
+          };
+        }) user.contact
+      )
+    );
 
     ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
       directories = [

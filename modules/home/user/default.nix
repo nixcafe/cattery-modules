@@ -14,9 +14,10 @@ let
     mkOption
     types
     optionalAttrs
+    listToAttrs
     ;
 
-  name = cfg.settings.name or "nixos";
+  inherit (cfg) name;
   home = if isLinux then "/home/${name}" else "/Users/${name}";
 
   cfg = config.${namespace}.user;
@@ -108,182 +109,217 @@ in
       };
     };
     calendar = mkOption {
-      type = nullOr (submodule {
-        options = {
-          primary = mkOption {
-            type = bool;
-            default = true;
-            description = ''
-              Whether this is the primary calendar account.
-            '';
-          };
-          primaryCollection = mkOption {
-            type = nullOr str;
-            default = null;
-            description = ''
-              The primary collection of the account. Required when the
-              account has multiple collections.
-            '';
-          };
-          local = mkOption {
-            type = submodule {
-              options = {
-                path = mkOption {
-                  type = str;
-                  default = "${home}/.calendar/${name}";
-                  description = "The path of the storage.";
+      type = listOf (
+        submodule (
+          { config, ... }:
+          let
+            accountName = config.name;
+          in
+          {
+            options = {
+              name = mkOption {
+                type = str;
+                default = "${name}-calendar";
+                description = ''
+                  The name of the calendar account, used as the account
+                  identifier and displayed name.
+                '';
+              };
+              primary = mkOption {
+                type = bool;
+                default = false;
+                description = ''
+                  Whether this is the primary calendar account. At most
+                  one account may be primary.
+                '';
+              };
+              primaryCollection = mkOption {
+                type = nullOr str;
+                default = null;
+                description = ''
+                  The primary collection of the account. Required when the
+                  account has multiple collections.
+                '';
+              };
+              local = mkOption {
+                type = submodule {
+                  options = {
+                    path = mkOption {
+                      type = str;
+                      default = "${home}/.calendar/${accountName}";
+                      description = "The path of the storage.";
+                    };
+                    type = mkOption {
+                      type = enum [
+                        "filesystem"
+                        "singlefile"
+                      ];
+                      default = "filesystem";
+                      description = "The type of the storage.";
+                    };
+                    fileExt = mkOption {
+                      type = nullOr str;
+                      default = ".ics";
+                      description = "The file extension to use.";
+                    };
+                    encoding = mkOption {
+                      type = nullOr str;
+                      default = null;
+                      description = ''
+                        File encoding for items, both content and file name.
+                      '';
+                    };
+                  };
                 };
-                type = mkOption {
-                  type = enum [
-                    "filesystem"
-                    "singlefile"
-                  ];
-                  default = "filesystem";
-                  description = "The type of the storage.";
-                };
-                fileExt = mkOption {
-                  type = nullOr str;
-                  default = ".ics";
-                  description = "The file extension to use.";
-                };
-                encoding = mkOption {
-                  type = nullOr str;
-                  default = null;
-                  description = ''
-                    File encoding for items, both content and file name.
-                  '';
-                };
+                default = { };
+                description = "Local configuration for the calendar.";
+              };
+              remote = mkOption {
+                type = nullOr (submodule {
+                  options = {
+                    type = mkOption {
+                      type = enum [
+                        "caldav"
+                        "http"
+                        "google_calendar"
+                      ];
+                      description = "The type of the storage.";
+                    };
+                    url = mkOption {
+                      type = nullOr str;
+                      default = null;
+                      description = "The URL of the storage.";
+                    };
+                    userName = mkOption {
+                      type = nullOr str;
+                      default = name;
+                      description = "User name for authentication.";
+                    };
+                    passwordCommand = mkOption {
+                      type = nullOr (listOf str);
+                      default = null;
+                      example = [
+                        "pass"
+                        "caldav"
+                      ];
+                      description = ''
+                        A command that prints the password to standard output.
+                      '';
+                    };
+                  };
+                });
+                default = null;
+                description = "Remote configuration for the calendar.";
               };
             };
-            default = { };
-            description = "Local configuration for the calendar.";
-          };
-          remote = mkOption {
-            type = nullOr (submodule {
-              options = {
-                type = mkOption {
-                  type = enum [
-                    "caldav"
-                    "http"
-                    "google_calendar"
-                  ];
-                  description = "The type of the storage.";
-                };
-                url = mkOption {
-                  type = nullOr str;
-                  default = null;
-                  description = "The URL of the storage.";
-                };
-                userName = mkOption {
-                  type = nullOr str;
-                  default = cfg.email.userName;
-                  description = "User name for authentication.";
-                };
-                passwordCommand = mkOption {
-                  type = nullOr (listOf str);
-                  default = null;
-                  example = [
-                    "pass"
-                    "caldav"
-                  ];
-                  description = ''
-                    A command that prints the password to standard output.
-                  '';
-                };
-              };
-            });
-            default = null;
-            description = "Remote configuration for the calendar.";
-          };
-        };
-      });
-      default = cfg.settings.calendar or null;
+          }
+        )
+      );
+      default = cfg.settings.calendar or [ ];
       description = ''
-        The calendar account of the user. When set and
-        `cattery.user.addToAccounts` is enabled, this is injected into
-        `accounts.calendar.accounts`.${name}.
+        A list of calendar accounts. Each account is injected into
+        `accounts.calendar.accounts.<name>` when
+        `cattery.user.addToAccounts` is enabled. The account name
+        defaults to `<user>-calendar` and can be overridden.
       '';
     };
     contact = mkOption {
-      type = nullOr (submodule {
-        options = {
-          local = mkOption {
-            type = submodule {
-              options = {
-                path = mkOption {
-                  type = str;
-                  default = "${home}/.contacts/${name}";
-                  description = "The path of the storage.";
+      type = listOf (
+        submodule (
+          { config, ... }:
+          let
+            accountName = config.name;
+          in
+          {
+            options = {
+              name = mkOption {
+                type = str;
+                default = "${name}-contact";
+                description = ''
+                  The name of the contact account, used as the account
+                  identifier and displayed name.
+                '';
+              };
+              local = mkOption {
+                type = submodule {
+                  options = {
+                    path = mkOption {
+                      type = str;
+                      default = "${home}/.contacts/${accountName}";
+                      description = "The path of the storage.";
+                    };
+                    type = mkOption {
+                      type = enum [
+                        "filesystem"
+                        "singlefile"
+                      ];
+                      default = "filesystem";
+                      description = "The type of the storage.";
+                    };
+                    fileExt = mkOption {
+                      type = nullOr str;
+                      default = ".vcf";
+                      description = "The file extension to use.";
+                    };
+                    encoding = mkOption {
+                      type = nullOr str;
+                      default = null;
+                      description = ''
+                        File encoding for items, both content and file name.
+                      '';
+                    };
+                  };
                 };
-                type = mkOption {
-                  type = enum [
-                    "filesystem"
-                    "singlefile"
-                  ];
-                  default = "filesystem";
-                  description = "The type of the storage.";
-                };
-                fileExt = mkOption {
-                  type = nullOr str;
-                  default = ".vcf";
-                  description = "The file extension to use.";
-                };
-                encoding = mkOption {
-                  type = nullOr str;
-                  default = null;
-                  description = ''
-                    File encoding for items, both content and file name.
-                  '';
-                };
+                default = { };
+                description = "Local configuration for the contacts.";
+              };
+              remote = mkOption {
+                type = nullOr (submodule {
+                  options = {
+                    type = mkOption {
+                      type = enum [
+                        "carddav"
+                        "http"
+                        "google_contacts"
+                      ];
+                      description = "The type of the storage.";
+                    };
+                    url = mkOption {
+                      type = nullOr str;
+                      default = null;
+                      description = "The URL of the storage.";
+                    };
+                    userName = mkOption {
+                      type = nullOr str;
+                      default = name;
+                      description = "User name for authentication.";
+                    };
+                    passwordCommand = mkOption {
+                      type = nullOr (listOf str);
+                      default = null;
+                      example = [
+                        "pass"
+                        "carddav"
+                      ];
+                      description = ''
+                        A command that prints the password to standard output.
+                      '';
+                    };
+                  };
+                });
+                default = null;
+                description = "Remote configuration for the contacts.";
               };
             };
-            default = { };
-            description = "Local configuration for the contacts.";
-          };
-          remote = mkOption {
-            type = nullOr (submodule {
-              options = {
-                type = mkOption {
-                  type = enum [
-                    "carddav"
-                    "http"
-                    "google_contacts"
-                  ];
-                  description = "The type of the storage.";
-                };
-                url = mkOption {
-                  type = nullOr str;
-                  default = null;
-                  description = "The URL of the storage.";
-                };
-                userName = mkOption {
-                  type = nullOr str;
-                  default = cfg.email.userName;
-                  description = "User name for authentication.";
-                };
-                passwordCommand = mkOption {
-                  type = nullOr (listOf str);
-                  default = null;
-                  example = [
-                    "pass"
-                    "carddav"
-                  ];
-                  description = ''
-                    A command that prints the password to standard output.
-                  '';
-                };
-              };
-            });
-            default = null;
-            description = "Remote configuration for the contacts.";
-          };
-        };
-      });
-      default = cfg.settings.contact or null;
+          }
+        )
+      );
+      default = cfg.settings.contact or [ ];
       description = ''
-        The contacts account of the user. When set and
-        `cattery.user.addToAccounts` is enabled, this is injected into
-        `accounts.contact.accounts`.${name}.
+        A list of contact accounts. Each account is injected into
+        `accounts.contact.accounts.<name>` when
+        `cattery.user.addToAccounts` is enabled. The account name
+        defaults to `<user>-contact` and can be overridden.
       '';
     };
     home = mkOption {
@@ -364,21 +400,31 @@ in
       };
     }
 
-    (mkIf (cfg.addToAccounts && cfg.calendar != null) {
-      accounts.calendar.accounts.${name} = {
-        inherit (cfg.calendar)
-          primary
-          primaryCollection
-          local
-          remote
-          ;
-      };
+    (mkIf (cfg.addToAccounts && cfg.calendar != [ ]) {
+      accounts.calendar.accounts = listToAttrs (
+        map (account: {
+          inherit (account) name;
+          value = {
+            inherit (account)
+              primary
+              primaryCollection
+              local
+              remote
+              ;
+          };
+        }) cfg.calendar
+      );
     })
 
-    (mkIf (cfg.addToAccounts && cfg.contact != null) {
-      accounts.contact.accounts.${name} = {
-        inherit (cfg.contact) local remote;
-      };
+    (mkIf (cfg.addToAccounts && cfg.contact != [ ]) {
+      accounts.contact.accounts = listToAttrs (
+        map (account: {
+          inherit (account) name;
+          value = {
+            inherit (account) local remote;
+          };
+        }) cfg.contact
+      );
     })
   ];
 }
