@@ -23,8 +23,8 @@ in
     package = lib.mkPackageOption pkgs "adguardhome" { };
     openFirewall = mkOption {
       type = bool;
-      default = false;
-      description = "Open the AdGuard Home web interface port (TCP) in the firewall. Does not open the port needed to access the DNS resolver.";
+      default = true;
+      description = "Open firewall ports for the web interface (TCP) and DNS resolver (53).";
     };
     allowDHCP = mkOption {
       type = bool;
@@ -79,6 +79,10 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    networking.firewall = lib.mkIf cfg.openFirewall {
+      allowedUDPPorts = [ 53 ];
+      allowedTCPPorts = [ 53 ];
+    };
     services.adguardhome = {
       enable = true;
       inherit (cfg)
