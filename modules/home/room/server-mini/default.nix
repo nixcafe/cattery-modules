@@ -17,6 +17,7 @@ in
   config = lib.mkIf cfg.enable {
     ${namespace} = {
       room.basis = mkDefaultEnabled;
+      system.impermanence.xdg.userDirs.enable = lib.mkDefault false;
 
       cli-apps = {
         shell = {
