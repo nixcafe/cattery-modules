@@ -5,6 +5,7 @@
   ...
 }:
 let
+  inherit (lib) mkDefault;
   inherit (lib.${namespace}.module) mkDefaultEnabled;
 
   cfg = config.${namespace}.room.basis;
@@ -32,7 +33,7 @@ in
         locale = mkDefaultEnabled;
         network = mkDefaultEnabled;
         time = mkDefaultEnabled;
-        boot.kernel = mkDefaultEnabled;
+        boot.kernel.useLatest = mkDefault true;
       };
 
       # shared

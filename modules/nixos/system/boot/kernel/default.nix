@@ -52,16 +52,26 @@ let
     pkgs.linuxKernel.packages."linux_${
       builtins.replaceStrings [ "." ] [ "_" ] latestZfsCompatibleVersion
     }";
+
+  kernelPackages =
+    if cfg.useLatestZfsCompatible then
+      latestZfsCompatibleKernel
+    else if cfg.version != null then
+      pkgs.linuxKernel.packages."linux_${builtins.replaceStrings [ "." ] [ "_" ] cfg.version}"
+    else
+      pkgs.linuxPackages_latest;
 in
 {
   options.${namespace}.system.boot.kernel = with types; {
-    enable = lib.mkEnableOption "kernel";
+    # Pick the kernel to boot: latest by default, or an explicit version.
+    useLatest = lib.mkEnableOption "the latest Linux kernel";
     version = mkOption {
-      type = str;
-      default = "latest";
+      type = nullOr str;
+      default = null;
       description = ''
-        Linux kernel version to use (e.g. 'latest', '6.12', '6.6').
-        Ignored when `useLatestZfsCompatible` is enabled.
+        Explicit Linux kernel version to use (e.g. '6.12', '6.6').
+        Takes precedence over `useLatest`. Ignored when
+        `useLatestZfsCompatible` is enabled.
       '';
     };
     useLatestZfsCompatible = lib.mkEnableOption "the newest vanilla kernel whose ZFS module builds";
@@ -73,16 +83,10 @@ in
     useIpForward = lib.mkEnableOption "IP forwarding";
   };
 
-  config = lib.mkIf cfg.enable {
-    boot.kernelPackages =
-      if cfg.useLatestZfsCompatible then
-        latestZfsCompatibleKernel
-      else if cfg.version == "latest" then
-        pkgs.linuxPackages_latest
-      else
-        pkgs.linuxKernel.packages."linux_${builtins.replaceStrings [ "." ] [ "_" ] cfg.version}";
+  config = lib.mkIf (cfg.useLatest || cfg.useLatestZfsCompatible || cfg.version != null) {
+    boot.kernelPackages = kernelPackages;
 
-    boot.zfs = lib.mkIf (cfg.version == "latest" || cfg.useLatestZfsCompatible) {
+    boot.zfs = lib.mkIf (cfg.useLatest || cfg.useLatestZfsCompatible) {
       package = if cfg.useLatestZfsCompatible then pkgs.zfs else pkgs.zfs_unstable;
     };
 
@@ -94,7 +98,7 @@ in
 
     assertions = [
       {
-        assertion = !(cfg.useLatestZfsCompatible && cfg.version != "latest");
+        assertion = !(cfg.useLatestZfsCompatible && cfg.version != null);
         message = "cattery.system.boot.kernel: `useLatestZfsCompatible` and an explicit `version` are mutually exclusive; pick one";
       }
     ];
