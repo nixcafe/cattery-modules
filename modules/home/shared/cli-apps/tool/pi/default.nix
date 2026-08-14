@@ -5,6 +5,7 @@
   ...
 }:
 let
+  inherit (config.${namespace}.user) settings;
   cfg = config.${namespace}.cli-apps.tool.pi;
 in
 {
@@ -15,7 +16,7 @@ in
     };
     settings = lib.mkOption {
       type = lib.types.attrs;
-      default = { };
+      default = settings.pi.settings or { };
       description = ''
         Configuration written to `~/.pi/agent/settings.json`.
         See https://pi.dev/docs/latest/settings for the documentation.
@@ -23,7 +24,7 @@ in
     };
     models = lib.mkOption {
       type = lib.types.attrs;
-      default = { };
+      default = settings.pi.models or { };
       description = ''
         Custom model providers written to `~/.pi/agent/models.json`.
         See https://pi.dev/docs/latest/models for the documentation.
@@ -31,7 +32,7 @@ in
     };
     context = lib.mkOption {
       type = lib.types.nullOr (lib.types.either lib.types.lines lib.types.path);
-      default = null;
+      default = settings.pi.context or null;
       description = ''
         Global context written to `~/.pi/agent/AGENTS.md`, either as inline
         content or a path to a file.
@@ -39,7 +40,7 @@ in
     };
     extraPackages = lib.mkOption {
       type = lib.types.listOf lib.types.package;
-      default = [ ];
+      default = settings.pi.extraPackages or [ ];
       description = ''
         Extra packages available to pi, added to the PATH of the wrapped
         binary (e.g. `nodejs` and `bun` for npm-installed packages).
