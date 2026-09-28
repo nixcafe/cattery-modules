@@ -8,17 +8,17 @@
 }:
 let
   inherit (purr.meta) isLinux;
+  inherit (lib) mkOption types;
 
   cfg = config.${namespace}.system.fonts;
 in
 {
   options.${namespace}.system.fonts = {
     enable = lib.mkEnableOption "fonts";
-  };
 
-  config = lib.mkMerge [
-    (lib.mkIf cfg.enable {
-      fonts.packages = with pkgs; [
+    packages = mkOption {
+      type = types.listOf types.package;
+      default = with pkgs; [
         open-sans
         noto-fonts
         noto-fonts-cjk-sans
@@ -44,6 +44,20 @@ in
         nerd-fonts.iosevka
         nerd-fonts.monaspace
       ];
+      defaultText = lib.literalExpression "cattery default font packages";
+      description = "Font packages to install system-wide.";
+    };
+
+    extraPackages = mkOption {
+      type = types.listOf types.package;
+      default = [ ];
+      description = "Additional font packages appended to {option}`packages`.";
+    };
+  };
+
+  config = lib.mkMerge [
+    (lib.mkIf cfg.enable {
+      fonts.packages = cfg.packages ++ cfg.extraPackages;
     })
 
     (lib.optionalAttrs isLinux {
