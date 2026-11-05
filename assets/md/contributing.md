@@ -82,7 +82,7 @@ in
 * **Enable pattern**: Every module has an `enable` option
 * **extraOptions**: Every module exposes `extraOptions = mkOption { type = attrs; default = {}; }` for extensibility
 * **persistence**: Home-manager modules with state use a `persistence` option (default `true`)
-* **Platform gating**: Use `config.purr.isLinux` / `config.purr.isDarwin` for platform-specific logic
+* **Platform gating**: Use `purr.meta.isLinux` / `purr.meta.isDarwin` for platform-specific logic
 * **Rooms**: Use `mkDefaultEnabled` from `lib.cattery.module` for sub-module enables in room profiles
 
 ## Branch Naming
