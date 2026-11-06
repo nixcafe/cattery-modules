@@ -138,7 +138,6 @@ in
     programs = {
       git = {
         inherit (cfg)
-          signing
           ignores
           includes
           ;
@@ -158,6 +157,9 @@ in
 
           cfg.settings
         ];
+      }
+      // optionalAttrs (cfg.signing != null) {
+        inherit (cfg) signing;
       }
       // cfg.extraOptions;
 
