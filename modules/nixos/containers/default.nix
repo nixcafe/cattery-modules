@@ -1,4 +1,5 @@
 {
+  pkgs,
   lib,
   inputs,
   namespace,
@@ -13,13 +14,19 @@ let
     mkDefault
     mkOption
     types
+    concatMap
     concatMapAttrs
     intersectLists
     mergeAttrsList
     foldl'
+    unique
     ;
 
   cfg = config.${namespace}.containers;
+
+  # The outer `config` is the host configuration. The submodule below also
+  # uses the name `config`, so keep the host value under a distinct name.
+  hostStateVersion = config.system.stateVersion;
 
   servicesEnum = [
     "postgresql"
@@ -29,6 +36,7 @@ let
   ];
   sharedServicesEnum = [
     "wg-quick"
+    "sing-box"
     "openssh"
   ];
 
@@ -79,10 +87,15 @@ let
           type = enum [
             "host"
             "none"
+            "bridge"
           ];
           default = "none";
           description = ''
-            `none` -- Completely isolate a container from the host and other containers. none is not available for Swarm services.
+            `host` -- Share the host network namespace.
+            `none` -- Use a private veth pair. Addresses are generated unless
+            `autoGenerateStaticIp` is disabled.
+            `bridge` -- Use a private veth pair and attach the host side to
+            `hostBridge`.
           '';
         };
         hostBridge = mkOption {
@@ -137,7 +150,7 @@ let
           description = "IPv6 address of the container-side of the veth pair.";
         };
         autoGenerateStaticIp = lib.mkEnableOption "generate container static ip" // {
-          default = config.networkMode == "none";
+          default = config.networkMode == "none" && config.hostBridge == null;
         };
         bindMounts = mkOption {
           type = attrs;
@@ -151,6 +164,19 @@ let
             An extra attribute set of directories that is bound to the container.
           '';
         };
+        dns = mkOption {
+          type = nullOr (listOf str);
+          default = null;
+          example = [
+            "1.1.1.1"
+            "8.8.8.8"
+          ];
+          description = ''
+            DNS servers to configure inside the container. When set, the
+            container no longer copies the host's resolv.conf, which otherwise
+            breaks name resolution in private network namespaces.
+          '';
+        };
         hostModules = {
           enable = lib.mkEnableOption "Using host Modules." // {
             default = true;
@@ -162,8 +188,17 @@ let
               ./../../shared
             ];
             description = ''
-              The source of the modules.
-              Relative paths are relative to the `modules/nixos/container/default.nix`
+              Directories recursively scanned for NixOS modules to import into
+              the container. Relative paths are relative to this module file.
+            '';
+          };
+          exclude = mkOption {
+            type = listOf path;
+            default = [ ./../../nixos/containers ];
+            description = ''
+              Directories excluded from the recursive module scan. The
+              containers module itself is excluded by default so a container
+              does not inherit the host's container definitions.
             '';
           };
           # Automatically load and start
@@ -194,9 +229,9 @@ let
           '';
         };
         config = mkOption {
-          type = attrs;
+          type = types.deferredModule;
           default = { };
-          description = "NixOS configuration attributes to merge into the container's configuration.";
+          description = "NixOS configuration module or attribute set to merge into the container's configuration.";
         };
         extraOptions = mkOption {
           type = attrs;
@@ -215,112 +250,206 @@ in
   };
 
   config = {
-    containers = concatMapAttrs (name: ctr: {
-      ${name} = {
-        inherit (ctr)
-          autoStart
-          forwardPorts
-          hostAddress
-          hostAddress6
-          localAddress
-          localAddress6
-          hostBridge
-          ;
-
-        privateNetwork = ctr.networkMode != "host";
-        bindMounts =
-          let
-            autoLoaderSecrets = lib.mkIf ctr.hostModules.autoLoader.bindSecretsEtc (
-              (foldl' (
-                acc: name:
-                acc
-                // (
-                  let
-                    service = config.${namespace}.services.${name};
-                    path = service.secrets.etc.dirPath or "";
-                    enable = service.secrets.enable or false;
-                  in
-                  optionalAttrs (enable && path != "") {
-                    "/etc/${path}".isReadOnly = true;
-                  }
-                )
-              ) { } ctr.hostModules.autoLoader.services)
-              // (foldl' (
-                acc: name:
-                acc
-                // (
-                  let
-                    service = config.${namespace}.shared.services.${name};
-                    path = service.secrets.etc.dirPath or "";
-                    enable = service.secrets.enable or false;
-                  in
-                  optionalAttrs (enable && path != "") {
-                    "/etc/${path}".isReadOnly = true;
-                  }
-                )
-              ) { } ctr.hostModules.autoLoader.shared.services)
-            );
-          in
-          autoLoaderSecrets // ctr.bindMounts;
-
-        config =
-          let
-            hostModules = with inputs; [
-              # These are fixed values, unfortunately I have to import them manually
-              agenix.nixosModules.default
-              home-manager.nixosModules.home-manager
-              lanzaboote.nixosModules.lanzaboote
-              vscode-server.nixosModules.default
-              nixos-wsl.nixosModules.default
-              nix-gaming.nixosModules.pipewireLowLatency
-            ];
-            userAttrs =
-              if ctr.hostModules.enable then
-                { ${namespace}.user.name = ctr.userName; }
-              else
-                {
-                  users.users.${ctr.userName} = lib.mkIf (ctr.userName != "root") {
-                    isNormalUser = true;
-                    uid = 1000;
-                    group = "users";
-                    home = "/home/${ctr.userName}";
-                    extraGroups = [ "wheel" ];
-                  };
-                };
-            autoLoader = {
-              ${namespace} = {
-                services = mergeAttrsList (
-                  map (service: {
-                    ${service}.enable = mkDefault true;
-                  }) ctr.hostModules.autoLoader.services
-                );
-                shared.services = mergeAttrsList (
-                  map (service: {
-                    ${service}.enable = mkDefault true;
-                  }) ctr.hostModules.autoLoader.shared.services
-                );
-              };
-            };
-          in
+    assertions = lib.concatLists (
+      lib.mapAttrsToList (
+        name: ctr:
+        lib.optional
+          (
+            ctr.hostBridge != null
+            && (
+              ctr.hostAddress != null
+              || ctr.hostAddress6 != null
+              || ctr.localAddress != null
+              || ctr.localAddress6 != null
+            )
+          )
           {
-            imports = ctr.modules ++ (optionals ctr.hostModules.enable hostModules);
-            system.stateVersion = mkDefault config.system.stateVersion;
+            assertion = false;
+            message = "containers.${name}: hostBridge cannot be combined with hostAddress/localAddress; disable autoGenerateStaticIp or remove hostBridge.";
           }
-          // userAttrs
-          // ctr.config
-          // autoLoader;
+        ++
+          lib.optional
+            (
+              ctr.networkMode == "host"
+              && (
+                ctr.hostBridge != null
+                || ctr.forwardPorts != [ ]
+                || ctr.hostAddress != null
+                || ctr.hostAddress6 != null
+                || ctr.localAddress != null
+                || ctr.localAddress6 != null
+              )
+            )
+            {
+              assertion = false;
+              message = "containers.${name}: networkMode = \"host\" ignores hostBridge, forwardPorts, and static addresses; use networkMode = \"none\" or \"bridge\" for those options.";
+            }
+        ++ lib.optional (ctr.networkMode == "bridge" && ctr.hostBridge == null) {
+          assertion = false;
+          message = "containers.${name}: networkMode = \"bridge\" requires hostBridge.";
+        }
+      ) cfg
+    );
 
-        specialArgs =
-          ctr.specialArgs
-          // (optionalAttrs ctr.hostModules.enable {
-            inherit
-              namespace
-              inputs
-              purr
-              ;
-          });
-      }
-      // ctr.extraOptions;
+    containers = concatMapAttrs (name: ctr: {
+      ${name} =
+        let
+          isExcluded =
+            path:
+            lib.any (
+              excluded: path == excluded || lib.hasPrefix (toString excluded + "/") (toString path)
+            ) ctr.hostModules.exclude;
+
+          hostModulePaths = optionals ctr.hostModules.enable (
+            unique (
+              builtins.filter (path: !(isExcluded path)) (
+                concatMap (src: inputs.purr.lib.loadModules src) ctr.hostModules.src
+              )
+            )
+          );
+
+          # Both NixOS and shared modules live under the same service option
+          # tree (`cattery.services.<name>`). Keep the historical
+          # `shared.services` option name for compatibility, but enable both
+          # groups through `cattery.services`.
+          autoServices = unique (
+            ctr.hostModules.autoLoader.services ++ ctr.hostModules.autoLoader.shared.services
+          );
+
+          hostModules = with inputs; [
+            impermanence.nixosModules.impermanence
+            agenix.nixosModules.default
+            home-manager.nixosModules.home-manager
+            catppuccin.nixosModules.catppuccin
+            lanzaboote.nixosModules.lanzaboote
+            vscode-server.nixosModules.default
+            nixos-wsl.nixosModules.default
+            nix-gaming.nixosModules.pipewireLowLatency
+          ];
+
+          userAttrs =
+            if ctr.hostModules.enable then
+              { ${namespace}.user.name = mkDefault ctr.userName; }
+            else
+              {
+                users.users.${ctr.userName} = lib.mkIf (ctr.userName != "root") {
+                  isNormalUser = mkDefault true;
+                  uid = mkDefault 1000;
+                  group = mkDefault "users";
+                  home = mkDefault "/home/${ctr.userName}";
+                  extraGroups = mkDefault [ "wheel" ];
+                };
+              };
+
+          autoLoader = optionalAttrs (ctr.hostModules.enable && autoServices != [ ]) {
+            ${namespace}.services = mergeAttrsList (
+              map (service: {
+                ${service}.enable = mkDefault true;
+              }) autoServices
+            );
+          };
+        in
+        {
+          inherit (ctr)
+            autoStart
+            forwardPorts
+            hostAddress
+            hostAddress6
+            localAddress
+            localAddress6
+            hostBridge
+            ;
+
+          privateNetwork = ctr.networkMode != "host";
+          bindMounts =
+            let
+              autoLoaderSecrets =
+                optionalAttrs (ctr.hostModules.enable && ctr.hostModules.autoLoader.bindSecretsEtc)
+                  (
+                    foldl' (
+                      acc: serviceName:
+                      let
+                        service = lib.attrByPath [ "${namespace}" "services" serviceName ] { } config;
+                        secrets = service.secrets or { };
+                        etc = secrets.etc or { };
+                        files = etc.files or { };
+                        enabled = (secrets.enable or false) && (etc.enable or false);
+                      in
+                      if !enabled then
+                        acc
+                      else
+                        foldl' (
+                          fileAcc: filePath:
+                          let
+                            source = lib.attrByPath [ filePath "source" ] null files;
+                          in
+                          if source == null then
+                            fileAcc
+                          else
+                            fileAcc
+                            // {
+                              "/etc/${filePath}" = {
+                                hostPath = source;
+                                isReadOnly = true;
+                              };
+                            }
+                        ) acc (builtins.attrNames files)
+                    ) { } autoServices
+                  );
+            in
+            autoLoaderSecrets // ctr.bindMounts // (ctr.extraOptions.bindMounts or { });
+
+          config = lib.mkMerge [
+            {
+              imports = ctr.modules ++ optionals ctr.hostModules.enable (hostModules ++ hostModulePaths);
+              system.stateVersion = mkDefault hostStateVersion;
+
+              # The host owns the block devices; fstrim inside a container is
+              # ineffective and can fail when discard is unavailable.
+              services.fstrim.enable = mkDefault false;
+            }
+            (optionalAttrs ctr.hostModules.enable {
+              home-manager.users.${ctr.userName}.home.stateVersion = mkDefault hostStateVersion;
+            })
+            (optionalAttrs (ctr.dns != null) {
+              # container-config.nix sets this to mkDefault true and the start
+              # script copies the host resolv.conf into the container. That is
+              # wrong for private network namespaces, where the host resolver
+              # may not be reachable. 900 beats mkDefault but still lets users
+              # override it in ctr.config.
+              networking.useHostResolvConf = lib.mkOverride 900 false;
+              networking.nameservers = ctr.dns;
+            })
+            (optionalAttrs (ctr.networkMode == "none") {
+              # The container init script configures eth0 before systemd starts.
+              # Keep NetworkManager (enabled by room.container) from replacing
+              # those static addresses with its own DHCP configuration.
+              networking.networkmanager.unmanaged = [ "eth0" ];
+            })
+            userAttrs
+            autoLoader
+            ctr.config
+            (ctr.extraOptions.config or { })
+          ];
+
+          specialArgs =
+            ctr.specialArgs
+            // {
+              inherit
+                namespace
+                inputs
+                lib
+                purr
+                ;
+              system = pkgs.stdenv.hostPlatform.system;
+            }
+            // (ctr.extraOptions.specialArgs or { });
+        }
+        // builtins.removeAttrs ctr.extraOptions [
+          "config"
+          "bindMounts"
+          "specialArgs"
+        ];
     }) cfg;
   };
 }
