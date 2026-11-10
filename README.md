@@ -55,7 +55,7 @@ Rooms enable their submodules with `lib.mkDefault`, so individual settings overr
 
 cattery-modules is a Nix flake that provides the `cattery` option namespace. It works with NixOS, home-manager, and nix-darwin, and includes modules for NixOS-WSL and Proxmox LXC.
 
-Rooms are bundles of modules. You can enable a room and use its defaults, or enable individual modules under the same namespace. The `modules/` tree currently contains 261 Nix module files, including room definitions and secret helpers. `nix flake check` evaluates all of them.
+Rooms are bundles of modules. You can enable a room and use its defaults, or enable individual modules under the same namespace. The `modules/` tree currently contains 262 Nix module files, including room definitions and secret helpers. `nix flake check` evaluates all of them.
 
 ## Room hierarchy
 
