@@ -10,7 +10,7 @@ cattery-modules is a Nix flake maintained by the [nixcafe](https://github.com/ni
 - Module namespace: `cattery`
 - Module outputs: `nixosModules`, `homeModules`, `darwinModules`
 
-The `modules/` tree contains 261 `.nix` files, including room definitions and secret helpers. The module-eval check imports and calls every one of them.
+The `modules/` tree contains 262 `.nix` files, including room definitions and secret helpers. The module-eval check imports and calls every one of them.
 
 ## Repository layout
 
