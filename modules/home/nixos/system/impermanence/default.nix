@@ -34,22 +34,33 @@ let
   xdg =
     let
       getDirectory = removePrefix "${config.home.homeDirectory}/";
+      # xdg-user-dirs 0.20 added Projects. Keep every user directory optional so
+      # `xdg.userDirs.projects = null` does not break persistence evaluation.
+      getUserDir =
+        name:
+        let
+          path = config.xdg.userDirs.${name} or null;
+        in
+        if path == null then null else getDirectory path;
       cacheHome = getDirectory config.xdg.cacheHome;
       configHome = getDirectory config.xdg.configHome;
       dataHome = getDirectory config.xdg.dataHome;
       stateHome = getDirectory config.xdg.stateHome;
     in
     {
-      userDirs = optionals (cfg.xdg.userDirs.enable && cfg.xdg.userDirs.full) [
-        (getDirectory config.xdg.userDirs.desktop)
-        (getDirectory config.xdg.userDirs.documents)
-        (getDirectory config.xdg.userDirs.download)
-        (getDirectory config.xdg.userDirs.music)
-        (getDirectory config.xdg.userDirs.pictures)
-        (getDirectory config.xdg.userDirs.publicShare)
-        (getDirectory config.xdg.userDirs.templates)
-        (getDirectory config.xdg.userDirs.videos)
-      ];
+      userDirs = optionals (cfg.xdg.userDirs.enable && cfg.xdg.userDirs.full) (
+        builtins.filter (x: x != null) [
+          (getUserDir "desktop")
+          (getUserDir "documents")
+          (getUserDir "download")
+          (getUserDir "music")
+          (getUserDir "pictures")
+          (getUserDir "projects")
+          (getUserDir "publicShare")
+          (getUserDir "templates")
+          (getUserDir "videos")
+        ]
+      );
       cache = {
         directories = optionals cfg.xdg.cache.enable (
           if cfg.xdg.cache.full then [ cacheHome ] else getDirectoryPath cacheHome cfg.xdg.cache.directories

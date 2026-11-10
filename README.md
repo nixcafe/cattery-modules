@@ -105,7 +105,7 @@ room.basis
 - Modules for NixOS, home-manager, and nix-darwin, plus platform modules for NixOS-WSL and Proxmox LXC.
 - Theming, desktop, gaming, server, development, shell, security, and secret-management modules.
 - agenix helpers for services such as nginx, PostgreSQL, Forgejo, WireGuard, and cloudflared.
-- Impermanence support for NixOS and home-manager.
+- Impermanence support for NixOS and home-manager, including XDG user directories and the Projects directory.
 - Modules that wrap another service or program often expose an `extraOptions` attribute for configuration that is merged into the wrapped module.
 
 ## Module categories
