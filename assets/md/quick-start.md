@@ -14,9 +14,9 @@ Add cattery as a flake input:
 }
 ```
 
-## NixOS (Full System)
+## NixOS
 
-The most common setup — full NixOS system with all modules available:
+Import the bundled NixOS modules and enable a room:
 
 ```nix
 # flake.nix
@@ -48,11 +48,11 @@ The most common setup — full NixOS system with all modules available:
 }
 ```
 
-Run `nixos-rebuild switch` and you're done.
+Then run `nixos-rebuild switch`.
 
-## home-manager (User-Level)
+## home-manager
 
-Standalone home-manager (Linux/macOS, no root access needed):
+Standalone home-manager works on Linux and macOS and does not need root access:
 
 ```nix
 # flake.nix
@@ -84,7 +84,7 @@ Standalone home-manager (Linux/macOS, no root access needed):
 home-manager switch --flake .#alice
 ```
 
-## nix-darwin (macOS)
+## nix-darwin
 
 ```nix
 # flake.nix
@@ -127,7 +127,7 @@ darwin-rebuild switch --flake .#macbook
 }
 ```
 
-## Proxmox LXC Container
+## Proxmox LXC
 
 ```nix
 {
@@ -139,15 +139,15 @@ darwin-rebuild switch --flake .#macbook
 }
 ```
 
-## Picking Individual Modules
+## Individual modules
 
-Don't want a full room? Enable modules one at a time:
+If you do not want a room, enable modules directly:
 
 ```nix
 {
   cattery = {
     desktop.hyprland.enable = true;
-    themes.catppuccin.enable = true;
+    desktop.addons.catppuccin.enable = true;
     services.tailscale.enable = true;
     cli-apps.dev-kit.git.enable = true;
     cli-apps.dev-kit.rust.enable = true;
@@ -157,42 +157,46 @@ Don't want a full room? Enable modules one at a time:
 }
 ```
 
-## Customizing Rooms
+## Customizing rooms
 
-Rooms use `lib.mkDefault` for sub-module enables — you can opt out of anything:
+Room sub-module enables use `lib.mkDefault`, so you can turn individual modules off or on:
 
 ```nix
 {
   cattery = {
     room.desktop.dev.enable = true;
+
     # Override room defaults:
-    cli-apps.dev-kit.javascript.enable = false;  # I use bun standalone
-    desktop.hyprland.enable = false;              # I prefer Niri
+    cli-apps.dev-kit.javascript.enable = false; # use bun standalone
+    desktop.hyprland.enable = false;
     desktop.niri.enable = true;
   };
 }
 ```
 
-## Setting User Info
+## User information
 
-Many modules use `cattery.user` for defaults (git identity, email, GPG, shell):
+Several modules read `cattery.user` for defaults, including git identity, email, GPG, and the login shell:
 
 ```nix
-{
+{ pkgs, ... }: {
   cattery.user = {
     name = "alice";
+    realName = "Alice";
     email = {
       address = "alice@example.com";
-      userName = "Alice";
+      userName = "alice";
     };
-    defaultUserShell = "fish";  # auto-enables fish module
+    defaultUserShell = pkgs.fish; # also enables the fish module by default
     gpg.signKey = "ABCD1234";
   };
 }
 ```
 
-## Next Steps
+`cattery.user.home`, `uid`, and `gid` are read-only values taken from the system user.
 
-* **[Rooms](/rooms)** — see what each room includes
-* **[Modules](/modules)** — browse all 244+ modules
-* **[Secrets & agenix](/secrets)** — set up encrypted secrets
+## Next steps
+
+* [Rooms](/rooms): see what each room enables
+* [Modules](/modules): browse the module catalog
+* [Secrets and agenix](/secrets): set up encrypted secrets

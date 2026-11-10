@@ -2,12 +2,12 @@
 
 cattery-modules follows [GitHub Flow](https://docs.github.com/en/get-started/using-github/github-flow) with `main` as the trunk branch.
 
-## Development Environment
+## Development environment
 
 ```bash
 git clone https://github.com/nixcafe/cattery-modules.git
 cd cattery-modules
-nix develop     # enters dev shell (or direnv allow)
+nix develop
 ```
 
 The dev shell provides:
@@ -15,43 +15,44 @@ The dev shell provides:
 | Tool | Purpose |
 |---|---|
 | `nixfmt` | Nix code formatter |
-| `deadnix` | Remove dead/unused Nix code |
+| `deadnix` | Find dead or unused Nix code |
 | `statix` | Lint Nix files (`repeated_keys` disabled) |
 
-Pre-commit hooks install automatically on `nix develop`.
+The shell hook installs the pre-commit hooks. If you use direnv, `direnv allow` loads the same shell.
 
-## Project Architecture
+## Project structure
 
 ```
 cattery-modules/
 ├── flake.nix                  # Flake entrypoint using purr.lib.mkFlake
 ├── modules/
-│   ├── nixos/                 # NixOS-specific modules
-│   │   ├── room/              # Room profiles (composite module bundles)
-│   │   ├── services/          # System services (nginx, postgresql, ...)
-│   │   ├── desktop/           # Desktop environments & themes
-│   │   ├── apps/              # GUI applications
-│   │   ├── cli-apps/          # CLI tools & dev kits
-│   │   ├── system/            # Boot, GPU, network, locale, ...
-│   │   ├── security/          # PAM, firewall
+│   ├── nixos/                 # NixOS modules
+│   │   ├── room/              # Room profiles
+│   │   ├── services/          # Services (nginx, postgresql, ...)
+│   │   ├── desktop/           # Compositors, themes, display managers
+│   │   ├── apps/              # NixOS-side application modules
+│   │   ├── cli-apps/          # NixOS-side CLI modules
+│   │   ├── system/            # Boot, GPU, network, locale, file systems
+│   │   ├── security/          # PAM
 │   │   └── containers/        # Declarative NixOS containers
 │   ├── home/                  # home-manager modules
+│   │   ├── room/              # Home-manager room profiles
 │   │   ├── shared/            # Cross-platform home modules
 │   │   ├── nixos/             # NixOS-specific home modules
 │   │   └── darwin/            # Darwin-specific home modules
 │   ├── darwin/                # nix-darwin modules
-│   └── shared/                # Shared between NixOS and darwin
+│   └── shared/                # Modules shared between module sets
 ├── lib/
 │   ├── module/                # mkDefaultEnabled, mkDefaultDisabled
-│   ├── secrets/               # agenix helper utilities
+│   ├── secrets/               # agenix helper functions
 │   └── utils/                 # General utilities
 ├── shells/                    # Dev shell definition
-└── checks/                    # git-hooks + module-eval checks
+└── checks/                    # git-hooks and module-eval checks
 ```
 
-## Module Conventions
+## Module conventions
 
-Every module follows the same pattern:
+Most modules follow this shape:
 
 ```nix
 {
@@ -76,74 +77,80 @@ in
 }
 ```
 
-### Key Conventions
+### Key conventions
 
-* **Namespace**: Always use `${namespace}` — maps to `cattery`
-* **Enable pattern**: Every module has an `enable` option
-* **extraOptions**: Every module exposes `extraOptions = mkOption { type = attrs; default = {}; }` for extensibility
-* **persistence**: Home-manager modules with state use a `persistence` option (default `true`)
-* **Platform gating**: Use `purr.meta.isLinux` / `purr.meta.isDarwin` for platform-specific logic
-* **Rooms**: Use `mkDefaultEnabled` from `lib.cattery.module` for sub-module enables in room profiles
+* **Namespace**: Use `${namespace}`. The flake sets it to `cattery`.
+* **Enable option**: Most modules have an `enable` option.
+* **extraOptions**: Many modules expose `extraOptions = mkOption { type = attrs; default = { }; }` and merge it into the underlying options.
+* **persistence**: Many home-manager modules that write state have a `persistence` option, default `true`.
+* **Platform checks**: Use `purr.meta.isLinux` and `purr.meta.isDarwin` for platform-specific code.
+* **Rooms**: Use `mkDefaultEnabled` from `lib.cattery.module` for sub-module enables.
 
-## Branch Naming
+## Branch naming
 
 | Prefix | Purpose |
 |---|---|
 | `feat/` | New features or modules |
 | `fix/` | Bug fixes |
-| `chore/` | Maintenance, dependency updates |
+| `chore/` | Maintenance and dependency updates |
 | `docs/` | Documentation |
 
 ## Workflow
 
-1. Create a feature branch from `main`
-2. Make changes
+1. Create a branch from `main`.
+
+2. Make changes.
+
 3. Test locally:
+
    ```bash
-   nix flake check     # lint + eval all 244+ modules
+   nix flake check     # lint and evaluate all 261 modules
    nix fmt             # format all files
    ```
+
 4. Optionally test on a real machine:
+
    ```bash
    nixos-rebuild test --flake .#myhost
    home-manager switch --flake .#alice
    ```
-5. Push and open a PR against `main`
-6. **Require at least one review approval** before merge
-7. On merge to `main`, FlakeHub auto-publishes a new rolling release
 
-## CI/CD
+5. Push the branch and open a pull request against `main`.
 
-### Pull Requests
+6. Get at least one review approval.
 
-`nix flake check --accept-flake-config` runs on every PR. This includes:
+7. On merge to `main`, FlakeHub publishes a new rolling release.
 
-* **nixfmt** — format check
-* **deadnix** — dead code check
-* **statix** — lint check
-* **module-eval** — import & call check for all 244+ modules
+## CI
 
-### Push to Main
+Pull requests to `main` run `nix flake check`. The check includes:
 
-FlakeHub automatically publishes a new rolling release at `nixcafe/cattery-modules`.
+* **nixfmt**: format check
+* **deadnix**: dead code check
+* **statix**: lint check
+* **module-eval**: import and call check for all 261 module files
 
-## Adding a New Module
+A push to `main` triggers the FlakeHub workflow, which publishes a rolling release at `nixcafe/cattery-modules`.
 
-1. Create the module file under the appropriate directory:
-   * NixOS-only: `modules/nixos/<category>/<name>/default.nix`
-   * cross-platform home: `modules/home/shared/<category>/<name>/default.nix`
-   * NixOS-specific home: `modules/home/nixos/<category>/<name>/default.nix`
+## Adding a module
 
-2. Follow the standard pattern with `enable`, `extraOptions`, and `persistence` (for stateful home modules)
+1. Create the module file in the appropriate directory:
+   * NixOS: `modules/nixos/<category>/<name>/default.nix`
+   * Shared between module sets: `modules/shared/<category>/<name>/default.nix`
+   * Cross-platform home-manager: `modules/home/shared/<category>/<name>/default.nix`
+   * NixOS-specific home-manager: `modules/home/nixos/<category>/<name>/default.nix`
+   * Darwin-specific home-manager: `modules/home/darwin/<category>/<name>/default.nix`
 
-3. If the module needs secrets, add a companion `secrets/default.nix` using `mkAppSecretsOption` / `mkHomeAppSecretsOption` from `lib.cattery.secrets`
+2. Add `enable` and any module-specific options. Add `extraOptions` when the module wraps a NixOS or home-manager option set.
 
-4. Add to a room if appropriate — use `mkDefaultEnabled` for sub-module enables
+3. If the module needs secrets, add a companion `secrets/default.nix` and use `mkAppSecretsOption` or `mkHomeAppSecretsOption` from `lib.cattery.secrets`.
 
-5. Run `nix flake check` and `nix fmt`
+4. Add the module to a room when appropriate. Use `mkDefaultEnabled` for sub-module enables.
 
-## Branch Protection
+5. Run `nix flake check` and `nix fmt`.
 
-* Pull request reviews are required (at least 1 approval)
-* Status checks must pass before merging
-* Stale reviews are dismissed when new commits are pushed
+## Branch protection
+
+* Pull request reviews are required (at least one approval).
+* Status checks must pass before merging.
+* Stale reviews are dismissed when new commits are pushed.

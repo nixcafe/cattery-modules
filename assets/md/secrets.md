@@ -1,104 +1,137 @@
 # Secrets & agenix
 
-cattery integrates [agenix](https://github.com/ryantm/agenix) for encrypted secret management. Every service module that needs secrets has a companion `*.secrets` sub-module that auto-wires encrypted config files.
+cattery integrates [agenix](https://github.com/ryantm/agenix) for encrypted secrets. Service modules that need configuration files have a companion `secrets` module. The companion module adds the encrypted files to `age.secrets`. Many of these modules also link the decrypted file into `/etc`.
 
-## Architecture
+## File layout
+
+`cattery.secrets.secretsPath` defaults to `<user.home>/agenix`. The files under that directory are grouped by scope:
 
 ```
-secrets/
-├── hosts/<host>/global/       # host-specific, root-owned (e.g., nginx conf.d)
-├── hosts/<host>/users/<user>/ # host-specific, user-owned (e.g., git config)
-├── shared/global/              # shared across all hosts, root-owned
-└── shared/users/<user>/       # shared across all hosts, user-owned
+<secretsPath>/
+├── hosts/<host>/global/        # host-specific, root-owned
+├── hosts/<host>/users/<user>/  # host-specific, user-owned
+├── shared/global/              # shared across hosts, root-owned
+└── shared/users/<user>/        # shared across hosts, user-owned
 ```
 
-Secrets are encrypted with age and can be decrypted with SSH keys or YubiKeys.
+If you keep secrets in your flake, point the option at that directory:
 
-## Enabling Secrets
+```nix
+cattery.secrets.secretsPath = ./secrets;
+```
+
+The keys in `secrets.nix` must match the file paths under `secretsPath`.
+
+## Enabling secrets
 
 ```nix
 {
   cattery.secrets.enable = true;
-
-  # Optional: YubiKey support
-  cattery.secrets.yubikey.enable = true;
 }
 ```
 
-## Service Secrets
+`enable` installs the agenix CLI and generates `age.secrets` from the configured files. `cattery.secrets.secretsDir` and `cattery.secrets.secretsMountPoint` are passed to agenix when set.
 
-Every service that supports secrets has a `secrets` sub-module. It auto-enables when both the parent service and `cattery.secrets` are enabled:
+## Service secrets
+
+Most companion modules enable themselves when both the parent service and `cattery.secrets` are enabled:
 
 ```nix
 cattery = {
   secrets.enable = true;
 
-  # This auto-wires encrypted config files:
-  services.nginx.enable = true;     # → encrypted nginx conf.d
-  services.forgejo.enable = true;   # → encrypted forgejo app.ini
-  services.postgresql.enable = true;# → encrypted postgresql.conf
-  services.wg-quick.enable = true;  # → encrypted wireguard configs
-  services.cloudflared.enable = true; # → encrypted tunnel credentials
+  services.nginx.enable = true;      # encrypted nginx conf.d files
+  services.forgejo.enable = true;    # encrypted Forgejo app.ini when useWizard is set
+  services.postgresql.enable = true; # encrypted PostgreSQL config when useWizard is set
+  services.wg-quick = {
+    enable = true;
+    configNames = [ "wg0" ];
+  };
+  services.cloudflared.enable = true; # encrypted tunnel credentials
 };
 ```
 
-## Available Secret Modules
+For services with a host configuration file, set `useWizard = true` on the service to use the encrypted file instead of declarative settings.
 
-| Module | Secret Files |
+`cattery.nix.secrets` is different: it is disabled by default. Set `cattery.nix.secrets.enable = true` to add the encrypted include to `nix.extraOptions`.
+
+## Secret modules
+
+| Module | Secret files |
 |---|---|
-| `cattery.secrets` | Master secrets config (hosts, shared, files) |
-| `cattery.nix.secrets` | Encrypted nix config (`!include` in nix.extraOptions) |
-| `cattery.services.nginx.secrets` | nginx conf.d files |
-| `cattery.services.acme.secrets` | ACME DNS provider env files |
-| `cattery.services.forgejo.secrets` | forgejo app.ini |
-| `cattery.services.gitea.secrets` | gitea app.ini |
-| `cattery.services.gitea-actions-runner.secrets` | Runner token env files |
-| `cattery.services.postgresql.secrets` | postgresql.conf, pg\_hba.conf, pg\_ident.conf |
-| `cattery.services.vaultwarden.secrets` | vaultwarden env file |
-| `cattery.services.wg-quick.secrets` | WireGuard config files |
+| `cattery.secrets` | Main secrets configuration (hosts, shared, files) |
+| `cattery.nix.secrets` | Encrypted Nix configuration included through `nix.extraOptions` |
+| `cattery.services.nginx.secrets` | nginx `conf.d` files |
+| `cattery.services.acme.secrets` | ACME DNS provider environment files |
+| `cattery.services.adguardhome.secrets` | `AdGuardHome.yaml` when `useWizard` is set |
+| `cattery.services.forgejo.secrets` | Forgejo `app.ini` when `useWizard` is set |
+| `cattery.services.gitea.secrets` | Gitea `app.ini` when `useWizard` is set |
+| `cattery.services.gitea-actions-runner.secrets` | Runner token environment files |
+| `cattery.services.postgresql.secrets` | PostgreSQL configuration when `useWizard` is set |
+| `cattery.services.vaultwarden.secrets` | Vaultwarden environment file |
 | `cattery.services.cloudflared.secrets` | Tunnel credential files |
-| `cattery.services.sing-box.secrets` | sing-box config.json |
-| `cattery.system.fileSystems.samba.secrets` | Samba credential files |
-| `cattery.cli-apps.ssh.secrets` | SSH known\_hosts files |
-| `cattery.cli-apps.security.gnupg.secrets` | GPG keyring files |
-| `cattery.cli-apps.dev-kit.git.secrets` | Git include configs |
+| `cattery.services.wg-quick.secrets` | WireGuard configuration files |
+| `cattery.services.sing-box.secrets` | sing-box `config.json` |
+| `cattery.services.samba.secrets` | Samba `smb.conf` when `useWizard` is set |
+| `cattery.services.nfs.secrets` | NFS exports file when `useWizard` is set |
+| `cattery.services.sanoid.secrets` | Sanoid configuration when `useWizard` is set |
+| `cattery.services.target.secrets` | iSCSI target configuration when `useWizard` is set |
+| `cattery.services.beszel.secrets` | Beszel agent environment file |
+| `cattery.system.fileSystems.samba.secrets` | Samba client credential files |
+| `cattery.system.fileSystems.webdav.secrets` | WebDAV credentials |
+| `cattery.cli-apps.ssh.secrets` | SSH include files (home-manager) or known hosts files (NixOS) |
+| `cattery.cli-apps.security.gnupg.secrets` | GnuPG files |
+| `cattery.cli-apps.dev-kit.git.secrets` | Git include configuration |
 
-## Secret Scopes
+## Secret scopes
 
-Each secret is categorized by scope:
-
-| Scope | Path pattern | Owner | Use case |
+| Scope | Path | Owner | Typical use |
 |---|---|---|---|
-| `hosts-global` | `hosts/<host>/global/` | root | System-level configs (nginx, postgresql, forgejo) |
-| `hosts-user` | `hosts/<host>/users/<user>/` | user | Per-user configs on specific hosts (git, GPG, SSH) |
-| `shared-global` | `shared/global/` | root | System configs shared across all hosts |
-| `shared-user` | `shared/users/<user>/` | user | User configs shared across all hosts |
+| `hosts-global` | `hosts/<host>/global/` | root | System configuration for one host |
+| `hosts-user` | `hosts/<host>/users/<user>/` | user | User configuration for one host |
+| `shared-global` | `shared/global/` | root | System configuration shared by all hosts |
+| `shared-user` | `shared/users/<user>/` | user | User configuration shared by all hosts |
 
-## Example: Setting Up Secrets
+Not every module uses the same default scope. For example, `cattery.services.acme.secrets`, `cattery.services.cloudflared.secrets`, and `cattery.system.fileSystems.samba.secrets` default to `shared-global`. The module source sets the default for each companion module.
 
-1. Create your age key (once per host/user):
+## Setting up secrets
+
+1. Generate an age identity if you do not already have one:
 
 ```bash
-mkdir -p ~/.config/sops/age
-nix run github:ryantm/agenix -- -e ~/.config/sops/age/keys.txt
+mkdir -p ~/.config/age
+age-keygen -o ~/.config/age/keys.txt
 ```
 
-2. Create a `.age` file with public keys:
+If `age-keygen` is not installed, use `nix run nixpkgs#age -- keygen -o ~/.config/age/keys.txt`.
 
-```
+2. Add the public key to `secrets.nix`. The file lists each encrypted file and its recipients:
+
+```nix
 # secrets.nix
 {
   "hosts/server/global/nginx.conf.age".publicKeys = [ alice server ];
 }
 ```
 
-3. Encrypt your secret:
+3. Encrypt the file. Run the command from the directory that contains `secrets.nix`:
 
 ```bash
-nix run github:ryantm/agenix -- -e secrets/hosts/server/global/nginx.conf.age
+cd ~/agenix
+nix run github:ryantm/agenix -- -e hosts/server/global/nginx.conf.age
 ```
 
-4. Enable the service — the secret is auto-mounted:
+If you set `cattery.secrets.secretsPath = ./secrets`, run the same command from that directory.
+
+4. Add the identity to the host. On NixOS, agenix reads the host SSH keys by default. To use the key generated in step 1:
+
+```nix
+{
+  age.identityPaths = [ "/home/alice/.config/age/keys.txt" ];
+}
+```
+
+5. Enable the service and the secrets module:
 
 ```nix
 cattery = {
@@ -107,21 +140,15 @@ cattery = {
 };
 ```
 
-The encrypted file is decrypted at boot and mounted at its target path (e.g., `/etc/nginx/conf.d/nginx.conf`).
+The file is decrypted during activation and linked to its target, for example `/etc/nginx/conf.d/nginx.conf`.
 
-## YubiKey Support
+## YubiKey support
 
-Enable YubiKey-based decryption:
+`cattery.secrets.yubikey.enable` is declared, but the current module does not add `age-plugin-yubikey`. The package override is commented out in `modules/shared/secrets/default.nix`, so enabling the option alone does not configure a YubiKey identity. To use a YubiKey, add the plugin and the identity path through the agenix options.
 
-```nix
-cattery.secrets.yubikey.enable = true;
-```
+## Impermanence and secrets
 
-This configures agenix to use YubiKey identities. Requires a YubiKey with an age-compatible PIV key.
-
-## Impermanence + Secrets
-
-When using impermanence (ephemeral root), secrets are automatically persisted. agenix decrypts at boot and the decrypted files are stored on the persistent volume.
+When `cattery.system.impermanence.enable` is set on NixOS, the module persists `/etc/ssh` and sets `age.identityPaths` to the copies under `/persistent/etc/ssh`. The host keys used by agenix then survive reboots. Decrypted secrets stay in the agenix runtime directory (normally `/run/agenix`); the impermanence module does not copy them to the persistent volume.
 
 ```nix
 cattery = {

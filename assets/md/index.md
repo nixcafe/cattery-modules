@@ -1,6 +1,6 @@
 # cattery
 
-cattery is a curated collection of **244+ Nix modules** for NixOS, nix-darwin, and home-manager. Choose a **room** — a pre-configured module bundle — enable it, and get a complete system with theming, desktop, gaming, server, dev tools, and more. No boilerplate.
+cattery is a collection of 261 Nix modules for NixOS, nix-darwin, and home-manager. The modules are grouped into rooms: named sets of modules that enable each other with shared defaults. Enable a room to turn on a group of related features, then override the individual modules you want to change.
 
 ```nix
 # flake.nix
@@ -22,74 +22,75 @@ cattery is a curated collection of **244+ Nix modules** for NixOS, nix-darwin, a
 }
 ```
 
-One line — full developer desktop with Hyprland, Catppuccin theming, VS Code, JetBrains, Docker, databases, git, shell tools, and more.
+`cattery.room.desktop.dev` enables the desktop chain and a set of developer tools. See [Rooms](/rooms) for the full contents of each room.
 
 ***
 
-## What is a Room?
+## What is a room?
 
-A **room** is a pre-configured bundle of modules with sensible defaults. Enable one room and you get dozens of modules enabled automatically. Each room extends the one below it — enable `desktop.dev` and you get the full chain:
+A room is a module that enables other modules with `lib.mkDefault`. It does not add configuration of its own. Enabling a room also enables the rooms it depends on. This is the NixOS graph:
 
 ```
 room.basis
- ├─ room.general
- ├─ room.server-mini → room.server
- ├─ room.container
- └─ room.desktop.basis
-      └─ room.desktop.general
-           ├─ room.desktop.dev
-           ├─ room.desktop.game
-           └─ room.desktop.wsl
-
-room.game  (standalone, not in desktop chain)
+ ├─ room.general                 (basis + boot.efi)
+ ├─ room.server-mini             (basis + acme, optional cloud-init and qemu-guest)
+ │   └─ room.server              (server-mini)
+ │       └─ room.server.nas      (server + optional storage services)
+ ├─ room.container               (basis + acme, boot.isContainer)
+ └─ room.desktop.basis           (basis + desktop hardware and fonts)
+     └─ room.desktop.general     (desktop.basis + boot.efi)
+         ├─ room.desktop.dev      (desktop.general + dev tools)
+         ├─ room.desktop.game     (desktop.general + steam)
+         └─ room.desktop.wsl      (desktop.basis + wsl)
 ```
 
-Rooms use `lib.mkDefault` for all sub-module enables, so you can **override any individual module**:
+Home-manager has its own smaller chain and a standalone `room.game`. nix-darwin provides `room.basis` and `room.desktop.dev`.
+
+Because sub-module enables use `lib.mkDefault`, explicit settings take precedence:
 
 ```nix
 cattery.room.desktop.dev.enable = true;
-cattery.apps.jetbrains.enable = false;  # I prefer neovim
+cattery.apps.jetbrains.enable = false; # use neovim instead
 ```
 
 ***
 
-## Why cattery?
+## What cattery includes
 
-| Feature | Description |
+| Feature | Notes |
 |---|---|
-| **Room-based** | One enable gives you dozens of pre-configured modules |
-| **244+ modules** | Covers theming, desktop, gaming, servers, dev, security, secrets |
-| **Sensible defaults** | Every module ships with good defaults — override what you need |
-| **Cross-platform** | NixOS, nix-darwin, home-manager, NixOS-WSL |
-| **agenix secrets** | Built-in encrypted secret management with YubiKey support |
-| **Impermanence** | Ephemeral root support with persistent state directories |
-| **Extensible** | Compose rooms with `extraModules` from other flakes |
+| **261 modules** | Theming, desktops, gaming, services, CLI tools, development kits, security, and platform integration |
+| **Room profiles** | Preset groups such as `room.desktop.dev` and `room.server` |
+| **agenix secrets** | Encrypted configuration files for services such as nginx, PostgreSQL, Forgejo, WireGuard, and cloudflared |
+| **Impermanence** | Ephemeral root with persistent state directories |
+| **Platforms** | NixOS, nix-darwin, home-manager, NixOS-WSL, and Proxmox LXC |
+| **Overrides** | Most modules accept `extraOptions`, and room defaults use `lib.mkDefault` |
 
-## Module Categories
+## Module categories
 
-| Category | Modules | Highlights |
-|---|---|---|
-| **Theming** | Catppuccin (GTK, Qt, Plasma, Hyprland) | System-wide color scheme |
-| **Desktop** | Hyprland, Niri, GNOME, KDE Plasma | Wayland compositors + addons |
-| **Gaming** | Steam, GPU (AMD/NVIDIA), launchers | Full gaming setup |
-| **Security** | agenix secrets, impermanence, Secure Boot, GPG, YubiKey | Defense in depth |
-| **Services** | nginx, PostgreSQL, Forgejo, Tailscale, Vaultwarden, Docker, cloudflared, smartdns | Production-ready |
-| **Dev Tools** | VS Code, JetBrains, Git, Rust, Go, Java, JS, Nix, Ollama | Polyglot dev kits |
-| **Shell & CLI** | fish, zsh, nushell, direnv, starship, atuin, yazi, neovim, helix | Modern terminal |
-| **Platform** | NixOS-WSL, Proxmox LXC, nix-darwin | Everywhere |
+| Category | Modules |
+|---|---|
+| **Theming** | Catppuccin for GTK, Qt, Plasma, Hyprland, and SDDM |
+| **Desktop** | Hyprland (charm-cat and caelestia themes), Niri, GNOME, KDE Plasma configuration |
+| **Gaming** | Steam, gale, Heroic, HMCL, AMD GPU |
+| **Security** | agenix, impermanence, lanzaboote, YubiKey, GPG |
+| **Services** | nginx, PostgreSQL, Forgejo, Gitea, Tailscale, Vaultwarden, Docker, Samba, NFS, ZFS tools, Kubernetes, K3s, monitoring |
+| **Dev tools** | VS Code, Cursor, JetBrains, dev-kit (git, nix, rust, go, java, javascript, cpp, lua, wasm, jj, dive), Ollama |
+| **Shell and CLI** | fish, zsh, nushell, direnv, starship, atuin, yazi, neovim, helix |
+| **Platform** | NixOS-WSL, Proxmox LXC, nix-darwin, Homebrew |
 
-## Integration Modes
+## Integration modes
 
-cattery works everywhere:
+The flake exports a module set for each platform:
 
 ```nix
-# NixOS (full system)
+# NixOS
 imports = [ cattery-modules.nixosModules.default ];
 
-# home-manager (user-level)
+# home-manager
 imports = [ cattery-modules.homeModules.default ];
 
-# nix-darwin (macOS)
+# nix-darwin
 imports = [ cattery-modules.darwinModules.default ];
 ```
 
@@ -97,11 +98,11 @@ imports = [ cattery-modules.darwinModules.default ];
 
 | Page | Description |
 |---|---|
-| [Quick Start](/quick-start) | Full setup guide for NixOS, home-manager, darwin |
-| [Rooms](/rooms) | Complete room hierarchy with module listings |
-| [Modules](/modules) | Full catalog of all 244+ modules |
-| [Secrets & agenix](/secrets) | Encrypted secret management |
-| [Contributing](/contributing) | Development guide |
+| [Quick Start](/quick-start) | Setup for NixOS, home-manager, nix-darwin, WSL, and Proxmox LXC |
+| [Rooms](/rooms) | Room hierarchy and the modules each room enables |
+| [Modules](/modules) | Catalog of modules and their options |
+| [Secrets and agenix](/secrets) | Encrypted secret management |
+| [Contributing](/contributing) | Development and contribution guide |
 
 ## License
 
