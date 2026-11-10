@@ -319,7 +319,7 @@ The home-manager `xdg.userDirs`, `xdg.cache`, `xdg.config`, `xdg.data`, and `xdg
 | `cattery.cli-apps.tool.fastfetch` | System information fetcher | `enable`, `settings` |
 | `cattery.cli-apps.tool.hyfetch` | Pride-themed fastfetch fork | `enable`, `settings` |
 | `cattery.cli-apps.tool.http-utils` | wget, curl, aria2, wrk, oha | `enable` |
-| `cattery.cli-apps.tool.compressor` | p7zip, gzip, zip, unzip, xz, zstd | `enable` |
+| `cattery.cli-apps.tool.compressor` | p7zip, unar, gzip, bzip2, zip, unzip, xz, zstd | `enable` |
 | `cattery.cli-apps.tool.monitoring` | glances, inxi, iftop, btop, htop | `enable` |
 | `cattery.cli-apps.tool.network` | inetutils (telnet, ping) | `enable` |
 | `cattery.cli-apps.tool.installer` | disko, colmena, nixos-anywhere, deploy-rs | `enable`, `persistence` |
