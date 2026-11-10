@@ -1,2 +1,2 @@
--- Start waybar — scoped to hyprland only
+-- Start waybar, scoped to hyprland only
 hl.exec-once("waybar")
