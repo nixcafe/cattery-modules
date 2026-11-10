@@ -62,7 +62,7 @@ cattery.apps.jetbrains.enable = false; # use neovim instead
 | **262 modules** | Theming, desktops, gaming, services, CLI tools, development kits, security, and platform integration |
 | **Room profiles** | Preset groups such as `room.desktop.dev` and `room.server` |
 | **agenix secrets** | Encrypted configuration files for services such as nginx, PostgreSQL, Forgejo, WireGuard, and cloudflared |
-| **Impermanence** | Ephemeral root with persistent state directories |
+| **Impermanence** | Ephemeral root and home with persistent state, including XDG user directories |
 | **Platforms** | NixOS, nix-darwin, home-manager, NixOS-WSL, and Proxmox LXC |
 | **Overrides** | Most modules accept `extraOptions`, and room defaults use `lib.mkDefault` |
 
@@ -102,6 +102,7 @@ imports = [ cattery-modules.darwinModules.default ];
 | [Rooms](/rooms) | Room hierarchy and the modules each room enables |
 | [Modules](/modules) | Catalog of modules and their options |
 | [Secrets and agenix](/secrets) | Encrypted secret management |
+| [Impermanence](/impermanence) | Persist system and home state across reboots |
 | [Contributing](/contributing) | Development and contribution guide |
 
 ## License

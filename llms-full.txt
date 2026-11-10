@@ -9,6 +9,7 @@ Sitemap:
 - [Rooms](/rooms): Room profiles and the modules they enable
 - [Modules](/modules): Module reference for cattery
 - [Secrets & agenix](/secrets): Encrypted secret management with agenix
+- [Impermanence](/impermanence): Persist system and home state across reboots
 - [Contributing](/contributing): How to contribute to cattery-modules
 -->
 
@@ -76,7 +77,7 @@ cattery.apps.jetbrains.enable = false; # use neovim instead
 | **262 modules** | Theming, desktops, gaming, services, CLI tools, development kits, security, and platform integration |
 | **Room profiles** | Preset groups such as `room.desktop.dev` and `room.server` |
 | **agenix secrets** | Encrypted configuration files for services such as nginx, PostgreSQL, Forgejo, WireGuard, and cloudflared |
-| **Impermanence** | Ephemeral root with persistent state directories |
+| **Impermanence** | Ephemeral root and home with persistent state, including XDG user directories |
 | **Platforms** | NixOS, nix-darwin, home-manager, NixOS-WSL, and Proxmox LXC |
 | **Overrides** | Most modules accept `extraOptions`, and room defaults use `lib.mkDefault` |
 
@@ -116,6 +117,7 @@ imports = [ cattery-modules.darwinModules.default ];
 | [Rooms](/rooms) | Room hierarchy and the modules each room enables |
 | [Modules](/modules) | Catalog of modules and their options |
 | [Secrets and agenix](/secrets) | Encrypted secret management |
+| [Impermanence](/impermanence) | Persist system and home state across reboots |
 | [Contributing](/contributing) | Development and contribution guide |
 
 ## License
@@ -725,13 +727,17 @@ See the [Secrets and agenix](/secrets) page for setup details.
 
 ### Impermanence
 
+See [Impermanence](/impermanence) for setup examples and the full list of persisted paths.
+
 | Module | Description | Options |
 |---|---|---|
 | `cattery.system.impermanence` | Ephemeral root with persistent state (NixOS) | `enable`, `directories`, `files`, `persistencePath`, `extraOptions` |
 | `cattery.system.impermanence` | Ephemeral home with persistent state (home-manager) | `enable`, `directories`, `files`, `persistencePath`, `xdg.userDirs`, `xdg.cache`, `xdg.config`, `xdg.data`, `xdg.state`, `extraOptions` |
 | `cattery.system.fileSystems.btrfs.impermanence` | BTRFS subvolume rolling for impermanence | Per subvolume: `device`, `tempDir`, `oldSubvolDir`, `subvol` |
 
-The home-manager `xdg.userDirs`, `xdg.cache`, `xdg.config`, `xdg.data`, and `xdg.state` options each have `enable`, `directories`, and `files` sub-options.
+The home-manager module persists `.ssh`, `.pki`, and the XDG user directories by default.
+
+`xdg.userDirs` has `enable` and a read-only `full`. `xdg.cache`, `xdg.config`, `xdg.data`, and `xdg.state` add `directories` and `files`. Set `xdg.userDirs.projects = null` to skip the `Projects` directory introduced by `xdg-user-dirs` 0.20.
 
 ### Secure Boot
 
@@ -1295,7 +1301,7 @@ The file is decrypted during activation and linked to its target, for example `/
 
 ## Impermanence and secrets
 
-When `cattery.system.impermanence.enable` is set on NixOS, the module persists `/etc/ssh` and sets `age.identityPaths` to the copies under `/persistent/etc/ssh`. The host keys used by agenix then survive reboots. Decrypted secrets stay in the agenix runtime directory (normally `/run/agenix`); the impermanence module does not copy them to the persistent volume.
+When `cattery.system.impermanence.enable` is set on NixOS, the module persists `/etc/ssh` and sets `age.identityPaths` to the copies under `/persistent/etc/ssh`. The host keys used by agenix then survive reboots. The home-manager impermanence module does the same for the user's `.ssh` directory. Decrypted secrets stay in the agenix runtime directory (normally `/run/agenix`); the impermanence modules do not copy them to the persistent volume. See [Impermanence](/impermanence) for the full path list.
 
 ```nix
 cattery = {
@@ -1303,6 +1309,144 @@ cattery = {
   system.impermanence.enable = true;
 };
 ```
+
+# Impermanence
+
+cattery has two impermanence modules. The NixOS module persists system paths; the home-manager module persists user state. Both wrap [nix-community/impermanence](https://github.com/nix-community/impermanence) and default to `/persistent`.
+
+## NixOS
+
+```nix
+{
+  cattery.system.impermanence = {
+    enable = true;
+    directories = [
+      "/var/lib/my-service"
+    ];
+    files = [
+      "/etc/my-service.conf"
+    ];
+  };
+}
+```
+
+`environment.persistence."/persistent"` gets these entries by default:
+
+| Path | Type |
+|---|---|
+| `/var/log` | directory |
+| `/var/lib` | directory |
+| `/etc/NetworkManager/system-connections` | directory |
+| `/etc/ssh` | directory |
+| `/etc/machine-id` | file |
+
+`directories` and `files` append to that list. `extraOptions` is merged into the same attribute set.
+
+The module also points `age.identityPaths` at the SSH host keys under `/persistent`, so agenix can decrypt host secrets after a reboot.
+
+## home-manager
+
+```nix
+{
+  cattery.system.impermanence = {
+    enable = true;
+    xdg.userDirs.projects = null;
+  };
+}
+```
+
+The module only writes persistence entries when `home.persistence` exists. In a NixOS + home-manager setup, that happens when `impermanence.nixosModules.impermanence` and `home-manager.nixosModules.home-manager` are imported; `cattery.nixosModules.default` includes both. Don't import `impermanence.homeManagerModules.*` yourself. Standalone home-manager has no `home.persistence`, so the module does nothing.
+
+`directories` and `files` add paths on top of the defaults. `extraOptions` is merged into `home.persistence."/persistent"`.
+
+Default entries:
+
+| Path | Notes |
+|---|---|
+| `.ssh` | directory, mode `0700` |
+| `.pki` | directory, mode `0700` |
+| XDG user directories | Desktop, Documents, Downloads, Music, Pictures, Projects, Public, Templates, Videos |
+| `~/.cache` | only the listed entries unless `xdg.cache.full` is true |
+| `~/.config` | only the listed entries unless `xdg.config.full` is true |
+| `~/.local/share` | only the listed entries unless `xdg.data.full` is true |
+| `~/.local/state` | only the listed entries unless `xdg.state.full` is true |
+
+The module also points `age.identityPaths` at `.ssh/id_ed25519` and `.ssh/id_rsa` under `/persistent`.
+
+### XDG user directories
+
+`xdg.userDirs.enable` is `true` by default, and `xdg.userDirs.full` cannot be turned off. Every non-null XDG directory is persisted:
+
+```text
+Desktop
+Documents
+Downloads
+Music
+Pictures
+Projects
+Public
+Templates
+Videos
+```
+
+`Projects` comes from `xdg-user-dirs` 0.20 and Home Manager's `xdg.userDirs.projects`. To skip it:
+
+```nix
+{
+  cattery.system.impermanence.xdg.userDirs.projects = null;
+}
+```
+
+Null entries are filtered out before they reach impermanence. Setting the option to `null` also clears `XDG_PROJECTS_DIR`, so Home Manager stops creating `~/Projects`.
+
+### XDG cache, config, data, and state
+
+Each of `xdg.cache`, `xdg.config`, `xdg.data`, and `xdg.state` has:
+
+| Option | Default | Description |
+|---|---|---|
+| `enable` | `true` | Include this XDG base directory |
+| `full` | `false` | Persist the whole base directory |
+| `directories` | `[ ]` | Subdirectories to persist |
+| `files` | `[ ]` | Files to persist |
+
+Without `full`, only the entries in `directories` and `files` are persisted.
+
+```nix
+{
+  cattery.system.impermanence = {
+    xdg = {
+      config.directories = [ "my-app" ];
+      data.files = [ "my-app/state.db" ];
+      cache.directories = [ "my-app/cache" ];
+    };
+  };
+}
+```
+
+## BTRFS rollback
+
+`cattery.system.fileSystems.btrfs.impermanence` runs in initrd. It snapshots the current subvolume, deletes it, creates a fresh one, then mounts root. Configure one entry per subvolume:
+
+```nix
+{
+  cattery.system.fileSystems.btrfs.impermanence."@home".device =
+    "/dev/disk/by-uuid/2f1dc58e-6d8a-4cb4-8247-b4e9acf39681";
+}
+```
+
+| Option | Default | Description |
+|---|---|---|
+| `device` | required | Block device containing the subvolume |
+| `subvol` | entry name | Subvolume to roll back |
+| `tempDir` | `/btrfs_<subvol>_tmp` | Temporary mount point |
+| `oldSubvolDir` | `old_<subvol>` | Where old snapshots are kept |
+
+Archives older than 30 days are deleted.
+
+## Secrets
+
+The NixOS module persists `/etc/ssh`; the home-manager module persists `.ssh`. Decrypted secrets stay in `/run/agenix` and are not copied to `/persistent`.
 
 # Contributing
 

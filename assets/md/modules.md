@@ -106,13 +106,17 @@ See the [Secrets and agenix](/secrets) page for setup details.
 
 ### Impermanence
 
+See [Impermanence](/impermanence) for setup examples and the full list of persisted paths.
+
 | Module | Description | Options |
 |---|---|---|
 | `cattery.system.impermanence` | Ephemeral root with persistent state (NixOS) | `enable`, `directories`, `files`, `persistencePath`, `extraOptions` |
 | `cattery.system.impermanence` | Ephemeral home with persistent state (home-manager) | `enable`, `directories`, `files`, `persistencePath`, `xdg.userDirs`, `xdg.cache`, `xdg.config`, `xdg.data`, `xdg.state`, `extraOptions` |
 | `cattery.system.fileSystems.btrfs.impermanence` | BTRFS subvolume rolling for impermanence | Per subvolume: `device`, `tempDir`, `oldSubvolDir`, `subvol` |
 
-The home-manager `xdg.userDirs`, `xdg.cache`, `xdg.config`, `xdg.data`, and `xdg.state` options each have `enable`, `directories`, and `files` sub-options.
+The home-manager module persists `.ssh`, `.pki`, and the XDG user directories by default.
+
+`xdg.userDirs` has `enable` and a read-only `full`. `xdg.cache`, `xdg.config`, `xdg.data`, and `xdg.state` add `directories` and `files`. Set `xdg.userDirs.projects = null` to skip the `Projects` directory introduced by `xdg-user-dirs` 0.20.
 
 ### Secure Boot
 

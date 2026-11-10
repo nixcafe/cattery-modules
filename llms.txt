@@ -7,4 +7,5 @@ cattery: NixOS, nix-darwin, and home-manager modules organized as room profiles
 - [Rooms](/rooms): Room profiles and the modules they enable
 - [Modules](/modules): Module reference for cattery
 - [Secrets & agenix](/secrets): Encrypted secret management with agenix
+- [Impermanence](/impermanence): Persist system and home state across reboots
 - [Contributing](/contributing): How to contribute to cattery-modules

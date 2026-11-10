@@ -148,7 +148,7 @@ The file is decrypted during activation and linked to its target, for example `/
 
 ## Impermanence and secrets
 
-When `cattery.system.impermanence.enable` is set on NixOS, the module persists `/etc/ssh` and sets `age.identityPaths` to the copies under `/persistent/etc/ssh`. The host keys used by agenix then survive reboots. Decrypted secrets stay in the agenix runtime directory (normally `/run/agenix`); the impermanence module does not copy them to the persistent volume.
+When `cattery.system.impermanence.enable` is set on NixOS, the module persists `/etc/ssh` and sets `age.identityPaths` to the copies under `/persistent/etc/ssh`. The host keys used by agenix then survive reboots. The home-manager impermanence module does the same for the user's `.ssh` directory. Decrypted secrets stay in the agenix runtime directory (normally `/run/agenix`); the impermanence modules do not copy them to the persistent volume. See [Impermanence](/impermanence) for the full path list.
 
 ```nix
 cattery = {
