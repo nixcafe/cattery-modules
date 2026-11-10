@@ -1,6 +1,6 @@
 <h1 align="center">cattery-modules</h1>
 <p align="center">
-  A curated collection of <strong>244+ Nix modules</strong> — choose a room, enable it, and get a complete system with theming, desktop, gaming, server, dev tools, and more.
+  Nix modules for NixOS, home-manager, and nix-darwin. Enable a room to configure a system, or pick individual modules.
   <br />
   <a href="https://cattery.nixcafe.org"><strong>cattery.nixcafe.org</strong></a>
 </p>
@@ -12,7 +12,9 @@
 
 ---
 
-## Quick Start
+## Quick start
+
+Add the flake input and import the default NixOS module:
 
 ```nix
 # flake.nix
@@ -27,90 +29,143 @@
 }
 ```
 
+Then enable a room:
+
 ```nix
 # configuration.nix
-{ config, ... }: {
+{ ... }: {
   cattery.room.desktop.dev.enable = true;
 }
 ```
 
-One line — full developer desktop. `nixos-rebuild switch`, done.
+This enables the NixOS side of the room. The same room names exist in home-manager for user packages. Import `cattery-modules.homeModules.default` in your home-manager configuration and enable the room there as well:
+
+```nix
+# home-manager configuration, with inputs passed through extraSpecialArgs
+{ inputs, ... }: {
+  imports = [ inputs.cattery-modules.homeModules.default ];
+
+  cattery.room.desktop.dev.enable = true;
+}
+```
+
+Rooms enable their submodules with `lib.mkDefault`, so individual settings override the room defaults.
 
 ## What is cattery?
 
-cattery provides **rooms** (pre-configured module bundles) and **244+ individual modules** for NixOS, nix-darwin, home-manager, and NixOS-WSL. Enable a room and get dozens of modules with sensible defaults. Override anything you want.
+cattery-modules is a Nix flake that provides the `cattery` option namespace. It works with NixOS, home-manager, and nix-darwin, and includes modules for NixOS-WSL and Proxmox LXC.
+
+Rooms are bundles of modules. You can enable a room and use its defaults, or enable individual modules under the same namespace. The `modules/` tree currently contains 261 Nix module files, including room definitions and secret helpers. `nix flake check` evaluates all of them.
+
+## Room hierarchy
+
+NixOS rooms:
 
 ```
-room.basis                          # mtr, nix-ld, cron, openssh, locale, network, time, kernel
- └─ room.general                    # basis + boot.efi
-     ├─ room.server-mini            # basis + cloud-init, qemu-guest, acme
-     │   └─ room.server             # basis + server-mini (passthrough)
-     ├─ room.container              # basis + acme, boot.isContainer
-     └─ room.desktop.basis          # basis + automount, wireless, peripherals, fonts, fcitx5
-          └─ room.desktop.general   # desktop.basis + boot.efi
-               ├─ room.desktop.dev  # desktop.general + yubikey, docker, vscode-server
-               ├─ room.desktop.game # desktop.general + steam
-               └─ room.desktop.wsl  # desktop.basis + wsl
+room.basis
+├─ room.general (basis + EFI boot)
+├─ room.container (basis + ACME, container boot)
+├─ room.server-mini (basis + ACME, optional cloud-init and qemu-guest)
+│  └─ room.server (basis + server-mini)
+│     └─ room.server.nas (server + Samba, NFS, optional ZFS, sanoid, syncoid, Beszel, netdata, iSCSI target)
+└─ room.desktop.basis (basis + automount, fcitx5, wireless, peripherals, fonts, FIDO2)
+   ├─ room.desktop.general (desktop.basis + EFI boot)
+   │  ├─ room.desktop.dev (desktop.general + Docker, VS Code server, YubiKey, binfmt)
+   │  └─ room.desktop.game (desktop.general + Steam)
+   └─ room.desktop.wsl (desktop.basis + WSL)
+```
 
-room.game                           # standalone (home-manager): basis + vscode, zed, messengers, video
+home-manager rooms:
+
+```
+room.basis
+├─ room.general (basis + shells and CLI tools)
+├─ room.container (basis + starship, acme-sh)
+├─ room.server-mini (basis + starship)
+│  └─ room.server (general + server-mini + acme-sh)
+│     └─ room.server.nas (server + disk tools)
+├─ room.desktop.basis (general + graphics, useful apps, XDG)
+│  ├─ room.desktop.general (desktop.basis + terminals, editors, browser)
+│  │  ├─ room.desktop.dev (desktop.general + JetBrains, dev kits, CLI tools)
+│  │  └─ room.desktop.game (desktop.general + messengers, game apps)
+│  └─ room.desktop.wsl (desktop.basis)
+└─ room.game (basis + editors, messengers, video, game apps)
+```
+
+nix-darwin rooms:
+
+```
+room.basis
+└─ room.desktop.dev (basis + FIDO2)
 ```
 
 ## Features
 
-- **244+ modules** — theming, desktop, gaming, servers, dev tools, security, secrets
-- **Room-based quick start** — one enable gives you a fully configured system
-- **agenix secrets** — encrypted configs for nginx, postgres, forgejo, wireguard, cloudflared, and more
-- **Impermanence** — ephemeral root with persistent state directories
-- **Cross-platform** — NixOS, nix-darwin, home-manager, NixOS-WSL, Proxmox LXC
-- **Extensible** — every module accepts `extraOptions`, every room uses `mkDefault`
+- Rooms bundle related modules and enable them with `lib.mkDefault`.
+- Modules for NixOS, home-manager, and nix-darwin, plus platform modules for NixOS-WSL and Proxmox LXC.
+- Theming, desktop, gaming, server, development, shell, security, and secret-management modules.
+- agenix helpers for services such as nginx, PostgreSQL, Forgejo, WireGuard, and cloudflared.
+- Impermanence support for NixOS and home-manager.
+- Modules that wrap another service or program often expose an `extraOptions` attribute for configuration that is merged into the wrapped module.
 
-## Module Categories
+## Module categories
 
 | Category | Highlights |
 |---|---|
-| **Theming** | Catppuccin (GTK, Qt, Plasma, Hyprland, SDDM) |
-| **Desktop** | Hyprland (charm-cat & caelestia themes), Niri, GNOME, KDE Plasma |
-| **Gaming** | Steam, AMD GPU, game launchers |
+| **Theming** | Catppuccin for NixOS and home-manager, plus charm-cat and caelestia Hyprland themes |
+| **Desktop** | Hyprland, Niri, GNOME, KDE Plasma, LightDM |
+| **Gaming** | Steam, Gale, AMD GPU, PipeWire low-latency |
 | **Security** | agenix, impermanence, Secure Boot (lanzaboote), YubiKey, GPG |
-| **Services** | nginx, PostgreSQL, Forgejo, Gitea, Tailscale, Vaultwarden, Docker |
-| **Dev Tools** | VS Code, JetBrains, all dev-kits (git, rust, go, java, js, cpp, lua, wasm), Ollama |
-| **Shell & CLI** | fish, zsh, nushell, direnv, starship, atuin, yazi, neovim, helix |
+| **Services** | nginx, PostgreSQL, Forgejo, Gitea, Tailscale, Vaultwarden, Docker, Kubernetes, K3s |
+| **Dev tools** | VS Code, JetBrains, Ollama, and dev kits for C++, Go, Java, JavaScript, Lua, Nix, Rust, and WebAssembly |
+| **Shell and CLI** | fish, zsh, nushell, direnv, starship, atuin, yazi, neovim, helix |
 | **Platform** | NixOS-WSL, Proxmox LXC, nix-darwin |
 
-## Picking Individual Modules
+## Picking individual modules
+
+In a NixOS module:
 
 ```nix
 cattery = {
-  themes.catppuccin.enable = true;
+  desktop.addons.catppuccin.enable = true;
   desktop.hyprland.enable = true;
   services.tailscale.enable = true;
+};
+```
+
+In a home-manager module:
+
+```nix
+cattery = {
+  desktop.addons.catppuccin.enable = true;
+  desktop.hyprland.enable = true;
   cli-apps.dev-kit.git.enable = true;
   cli-apps.dev-kit.rust.enable = true;
 };
 ```
 
-## Customizing Rooms
+## Customizing rooms
 
-All sub-module enables use `lib.mkDefault` — your overrides always win:
+Room submodules are enabled with `lib.mkDefault`, so your overrides take precedence. This example is for a home-manager module:
 
 ```nix
 cattery.room.desktop.dev.enable = true;
-cattery.apps.jetbrains.enable = false;       # I prefer neovim
-cattery.desktop.hyprland.enable = false;     # I prefer Niri
+cattery.apps.jetbrains.enable = false;    # use another IDE instead
+cattery.desktop.hyprland.enable = false;  # use Niri instead
 cattery.desktop.niri.enable = true;
 ```
 
 ## Development
 
 ```bash
-nix develop     # enter dev shell (nixfmt, deadnix, statix)
-nix flake check # lint + eval all 244+ modules
-nix fmt         # format all files
+nix develop     # dev shell with nixfmt, deadnix, statix
+nix flake check # run pre-commit hooks and evaluate every module file
+nix fmt         # format Nix files
 ```
 
 ## Documentation
 
-Full documentation at **[cattery.nixcafe.org](https://cattery.nixcafe.org)** — quick start, room hierarchy, full module catalog, secrets guide, and contributing.
+Documentation for the module catalog, rooms, secrets, and contributing is at [cattery.nixcafe.org](https://cattery.nixcafe.org).
 
 ## License
 
