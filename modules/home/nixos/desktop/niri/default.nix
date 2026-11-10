@@ -83,7 +83,7 @@ in
         Each file can be deployed via xdg.configFile."niri/<name>.kdl"
         in your sub-modules, then add "<name>.kdl" here to enable it.
 
-        This works like hyprland's `require` — sub-modules write their config
+        This works like hyprland's `require`; sub-modules write their config
         files and register them here as a toggle switch.
       '';
     };

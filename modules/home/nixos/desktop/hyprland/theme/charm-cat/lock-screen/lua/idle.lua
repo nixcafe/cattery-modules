@@ -1,2 +1,2 @@
--- Start hypridle — scoped to hyprland only
+-- Start hypridle, scoped to hyprland only
 hl.exec-once("hypridle")

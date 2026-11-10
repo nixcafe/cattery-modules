@@ -32,11 +32,11 @@ in
         The data directory for PostgreSQL.  When left as `null`, uses the
         nixpkgs default (`/var/lib/postgresql/<version>`).  When set, the
         sysadmin is responsible for ensuring the directory exists with
-        appropriate ownership (`postgres:postgres`) — `initdb` will set
+        appropriate ownership (`postgres:postgres`); `initdb` will set
         the correct permissions (0700) automatically.
 
         When `useWizard` is enabled, make sure your agenix `postgresql.conf`
-        does **not** set `data_directory` — let PGDATA handle it.
+        does **not** set `data_directory`; let PGDATA handle it.
       '';
     };
     openFirewall = lib.mkEnableOption "postgresql open firewall";
@@ -49,7 +49,7 @@ in
         description = ''
           When `useWizard` is enabled, this file (decrypted by agenix)
           is appended as an `include` at the end of `postgresql.conf`,
-          giving it the final word on all settings — nixpkgs handles
+          giving it the final word on all settings; nixpkgs handles
           infrastructure (`hba_file`, `ident_file`, etc.) and the
           agenix file overrides runtime tuning.
 
