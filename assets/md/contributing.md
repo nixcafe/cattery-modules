@@ -104,7 +104,7 @@ in
 3. Test locally:
 
    ```bash
-   nix flake check     # lint and evaluate all 261 modules
+   nix flake check     # lint and evaluate all 262 modules
    nix fmt             # format all files
    ```
 
@@ -128,7 +128,7 @@ Pull requests to `main` run `nix flake check`. The check includes:
 * **nixfmt**: format check
 * **deadnix**: dead code check
 * **statix**: lint check
-* **module-eval**: import and call check for all 261 module files
+* **module-eval**: import and call check for all 262 module files
 
 A push to `main` triggers the FlakeHub workflow, which publishes a rolling release at `nixcafe/cattery-modules`.
 

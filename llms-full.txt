@@ -14,7 +14,7 @@ Sitemap:
 
 # cattery
 
-cattery is a collection of 261 Nix modules for NixOS, nix-darwin, and home-manager. The modules are grouped into rooms: named sets of modules that enable each other with shared defaults. Enable a room to turn on a group of related features, then override the individual modules you want to change.
+cattery is a collection of 262 Nix modules for NixOS, nix-darwin, and home-manager. The modules are grouped into rooms: named sets of modules that enable each other with shared defaults. Enable a room to turn on a group of related features, then override the individual modules you want to change.
 
 ```nix
 # flake.nix
@@ -73,7 +73,7 @@ cattery.apps.jetbrains.enable = false; # use neovim instead
 
 | Feature | Notes |
 |---|---|
-| **261 modules** | Theming, desktops, gaming, services, CLI tools, development kits, security, and platform integration |
+| **262 modules** | Theming, desktops, gaming, services, CLI tools, development kits, security, and platform integration |
 | **Room profiles** | Preset groups such as `room.desktop.dev` and `room.server` |
 | **agenix secrets** | Encrypted configuration files for services such as nginx, PostgreSQL, Forgejo, WireGuard, and cloudflared |
 | **Impermanence** | Ephemeral root with persistent state directories |
@@ -89,7 +89,7 @@ cattery.apps.jetbrains.enable = false; # use neovim instead
 | **Gaming** | Steam, gale, Heroic, HMCL, AMD GPU |
 | **Security** | agenix, impermanence, lanzaboote, YubiKey, GPG |
 | **Services** | nginx, PostgreSQL, Forgejo, Gitea, Tailscale, Vaultwarden, Docker, Samba, NFS, ZFS tools, Kubernetes, K3s, monitoring |
-| **Dev tools** | VS Code, Cursor, JetBrains, dev-kit (git, nix, rust, go, java, javascript, cpp, lua, wasm, jj, dive), Ollama |
+| **Dev tools** | VS Code, Cursor, JetBrains, dev-kit (git, nix, rust, go, java, javascript, cpp, lua, wasm, jj, dive), Ollama, Codex |
 | **Shell and CLI** | fish, zsh, nushell, direnv, starship, atuin, yazi, neovim, helix |
 | **Platform** | NixOS-WSL, Proxmox LXC, nix-darwin, Homebrew |
 
@@ -619,7 +619,7 @@ You can start with a room and then disable or add individual modules.
 
 # Modules
 
-cattery defines 261 module files under the `cattery` namespace. The count includes room profiles and `secrets` companion modules. Enable modules individually or use a room. The tables below list the modules and their main options. See the module source for the full option set.
+cattery defines 262 module files under the `cattery` namespace. The count includes room profiles and `secrets` companion modules. Enable modules individually or use a room. The tables below list the modules and their main options. See the module source for the full option set.
 
 ## Theming
 
@@ -952,6 +952,7 @@ The home-manager `xdg.userDirs`, `xdg.cache`, `xdg.config`, `xdg.data`, and `xdg
 | `cattery.cli-apps.tool.feishu-cli` | Feishu CLI | `enable`, `persistence` |
 | `cattery.cli-apps.tool.lark-cli` | Lark CLI | `enable`, `persistence` |
 | `cattery.cli-apps.tool.ollama` | Ollama | `enable` |
+| `cattery.cli-apps.tool.codex` | OpenAI Codex CLI | `enable`, `persistence`, `settings`, `context` |
 | `cattery.cli-apps.tool.misc` | Pre-commit cache persistence | `enable`, `persistence` |
 | `cattery.cli-apps.tool.ventoy` | Ventoy bootable USB tool | `enable` |
 | `cattery.cli-apps.tool.acme-sh` | acme.sh ACME client | `enable` |
@@ -1409,7 +1410,7 @@ in
 3. Test locally:
 
    ```bash
-   nix flake check     # lint and evaluate all 261 modules
+   nix flake check     # lint and evaluate all 262 modules
    nix fmt             # format all files
    ```
 
@@ -1433,7 +1434,7 @@ Pull requests to `main` run `nix flake check`. The check includes:
 * **nixfmt**: format check
 * **deadnix**: dead code check
 * **statix**: lint check
-* **module-eval**: import and call check for all 261 module files
+* **module-eval**: import and call check for all 262 module files
 
 A push to `main` triggers the FlakeHub workflow, which publishes a rolling release at `nixcafe/cattery-modules`.
 

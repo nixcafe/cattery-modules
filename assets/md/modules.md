@@ -1,6 +1,6 @@
 # Modules
 
-cattery defines 261 module files under the `cattery` namespace. The count includes room profiles and `secrets` companion modules. Enable modules individually or use a room. The tables below list the modules and their main options. See the module source for the full option set.
+cattery defines 262 module files under the `cattery` namespace. The count includes room profiles and `secrets` companion modules. Enable modules individually or use a room. The tables below list the modules and their main options. See the module source for the full option set.
 
 ## Theming
 
@@ -333,6 +333,7 @@ The home-manager `xdg.userDirs`, `xdg.cache`, `xdg.config`, `xdg.data`, and `xdg
 | `cattery.cli-apps.tool.feishu-cli` | Feishu CLI | `enable`, `persistence` |
 | `cattery.cli-apps.tool.lark-cli` | Lark CLI | `enable`, `persistence` |
 | `cattery.cli-apps.tool.ollama` | Ollama | `enable` |
+| `cattery.cli-apps.tool.codex` | OpenAI Codex CLI | `enable`, `persistence`, `settings`, `context` |
 | `cattery.cli-apps.tool.misc` | Pre-commit cache persistence | `enable`, `persistence` |
 | `cattery.cli-apps.tool.ventoy` | Ventoy bootable USB tool | `enable` |
 | `cattery.cli-apps.tool.acme-sh` | acme.sh ACME client | `enable` |

@@ -1,6 +1,6 @@
 # cattery
 
-cattery is a collection of 261 Nix modules for NixOS, nix-darwin, and home-manager. The modules are grouped into rooms: named sets of modules that enable each other with shared defaults. Enable a room to turn on a group of related features, then override the individual modules you want to change.
+cattery is a collection of 262 Nix modules for NixOS, nix-darwin, and home-manager. The modules are grouped into rooms: named sets of modules that enable each other with shared defaults. Enable a room to turn on a group of related features, then override the individual modules you want to change.
 
 ```nix
 # flake.nix
@@ -59,7 +59,7 @@ cattery.apps.jetbrains.enable = false; # use neovim instead
 
 | Feature | Notes |
 |---|---|
-| **261 modules** | Theming, desktops, gaming, services, CLI tools, development kits, security, and platform integration |
+| **262 modules** | Theming, desktops, gaming, services, CLI tools, development kits, security, and platform integration |
 | **Room profiles** | Preset groups such as `room.desktop.dev` and `room.server` |
 | **agenix secrets** | Encrypted configuration files for services such as nginx, PostgreSQL, Forgejo, WireGuard, and cloudflared |
 | **Impermanence** | Ephemeral root with persistent state directories |
@@ -75,7 +75,7 @@ cattery.apps.jetbrains.enable = false; # use neovim instead
 | **Gaming** | Steam, gale, Heroic, HMCL, AMD GPU |
 | **Security** | agenix, impermanence, lanzaboote, YubiKey, GPG |
 | **Services** | nginx, PostgreSQL, Forgejo, Gitea, Tailscale, Vaultwarden, Docker, Samba, NFS, ZFS tools, Kubernetes, K3s, monitoring |
-| **Dev tools** | VS Code, Cursor, JetBrains, dev-kit (git, nix, rust, go, java, javascript, cpp, lua, wasm, jj, dive), Ollama |
+| **Dev tools** | VS Code, Cursor, JetBrains, dev-kit (git, nix, rust, go, java, javascript, cpp, lua, wasm, jj, dive), Ollama, Codex |
 | **Shell and CLI** | fish, zsh, nushell, direnv, starship, atuin, yazi, neovim, helix |
 | **Platform** | NixOS-WSL, Proxmox LXC, nix-darwin, Homebrew |
 
