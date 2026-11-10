@@ -15,13 +15,17 @@ in
 
   config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [
-      # cli stuff
-      p7zip
+      # archive tools
+      p7zip # 7z and other common formats
+      unar # RAR, including RAR5
+
+      # compression tools
       gzip
+      bzip2
       zip
       unzip
-      xz # a general-purpose data compression software, successor of LZMA
-      zstd # zstandard real-time compression algorithm
+      xz # general-purpose data compression, successor of LZMA
+      zstd # Zstandard real-time compression
     ];
   };
 
