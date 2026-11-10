@@ -1,109 +1,139 @@
 # AGENTS.md
 
-## Project Overview
+## Project overview
 
-**cattery-modules** is a collection of Nix modules for system and home-manager configuration, maintained by the [nixcafe](https://github.com/nixcafe) organization.
+cattery-modules is a Nix flake maintained by the [nixcafe](https://github.com/nixcafe) organization. It provides the `cattery` module namespace for NixOS, home-manager, and nix-darwin, including platform modules for NixOS-WSL and Proxmox LXC.
 
-- **Repo**: https://github.com/nixcafe/cattery-modules
-- **FlakeHub**: https://flakehub.com/flake/nixcafe/cattery-modules
-- **Language**: Nix (flake-based)
-- **Module namespace**: `cattery`
-- **Supported targets**: NixOS, home-manager, nix-darwin, NixOS-WSL
+- Repository: https://github.com/nixcafe/cattery-modules
+- FlakeHub: https://flakehub.com/flake/nixcafe/cattery-modules
+- Language: Nix, using `purr.lib.mkFlake`
+- Module namespace: `cattery`
+- Module outputs: `nixosModules`, `homeModules`, `darwinModules`
 
-## Project Structure
+The `modules/` tree contains 261 `.nix` files, including room definitions and secret helpers. The module-eval check imports and calls every one of them.
+
+## Repository layout
 
 ```
 cattery-modules/
 ├── flake.nix              # Flake entrypoint, uses purr.lib.mkFlake
 ├── modules/
-│   ├── darwin/            # nix-darwin specific modules
+│   ├── darwin/            # nix-darwin modules
 │   ├── home/              # home-manager modules
 │   ├── nixos/             # NixOS modules
-│   └── shared/            # Shared modules (both NixOS & home-manager)
+│   └── shared/            # Modules loaded by both NixOS and nix-darwin
 ├── lib/
-│   ├── module/            # Module helper utilities
+│   ├── module/            # Module helpers such as mkDefaultEnabled
 │   ├── secrets/           # agenix secret helpers
 │   └── utils/             # General utilities
-├── checks/                # Pre-commit check outputs (auto-generated)
-├── shells/                # Dev shell definitions
+├── checks/
+│   ├── git-hooks/         # Pre-commit hook definitions
+│   └── module-eval/       # Imports and calls every module file
+├── shells/                # Development shell
 └── .github/
     ├── workflows/
     │   ├── ci.yml                          # CI: nix flake check
-    │   └── flakehub-publish-rolling.yml    # Auto-publish to FlakeHub
+    │   └── flakehub-publish-rolling.yml    # Publish main to FlakeHub
     └── PULL_REQUEST_TEMPLATE.md
 ```
 
-## GitHub Flow
+`modules/home/shared` groups home-manager modules used on both Linux and macOS. Platform-specific home modules live under `modules/home/nixos` and `modules/home/darwin`. This is separate from `modules/shared`, which is loaded by both the NixOS and nix-darwin module sets.
 
-This project follows **GitHub Flow** with `main` as the trunk branch.
+## Flake outputs
 
-### Branch Naming
+- `nixosModules.default` imports every module under `modules/nixos` and `modules/shared`, plus the third-party modules listed in `extraModules.nixos`.
+- `homeModules.default` imports every module under `modules/home`, plus the third-party modules listed in `extraModules.home`.
+- `darwinModules.default` imports every module under `modules/darwin` and `modules/shared`, plus the third-party modules listed in `extraModules.darwin`.
+- Each output also exposes modules by category, for example `nixosModules.services`, `homeModules.cli-apps`, and `darwinModules.system`.
+- `lib.cattery.module`, `lib.cattery.secrets`, and `lib.cattery.utils` contain the helper functions.
+
+## Rooms
+
+Rooms live in `modules/nixos/room`, `modules/home/room`, and `modules/darwin/room`.
+
+- NixOS defines 11 rooms: `room.basis`, `room.general`, `room.container`, `room.server-mini`, `room.server`, `room.server.nas`, `room.desktop.basis`, `room.desktop.general`, `room.desktop.dev`, `room.desktop.game`, and `room.desktop.wsl`.
+- home-manager defines the same 11 rooms plus `room.game`.
+- nix-darwin defines `room.basis` and `room.desktop.dev`.
+
+Room modules enable their submodules with `lib.mkDefault` (usually through `lib.cattery.module.mkDefaultEnabled`), so a user setting takes precedence over a room default.
+
+## GitHub flow
+
+This project uses `main` as the trunk branch. Changes go through a branch and a pull request.
+
+### Branch naming
 
 | Prefix   | Purpose       |
 | -------- | ------------- |
 | `feat/`  | New features  |
 | `fix/`   | Bug fixes     |
-| `chore/`  | Maintenance   |
+| `chore/` | Maintenance   |
 | `docs/`  | Documentation |
 
 ### Workflow
 
-1. Create a feature branch from `main`
-2. Make changes and test locally:
-   - `nix flake check` (lint + eval all modules)
-   - `nix fmt` (format with nixfmt)
-   - Test on a real machine: `nixos-rebuild test` or `home-manager switch`
-3. Push branch and open a PR against `main`
-4. Fill in the PR template (description + checklist)
-5. CI runs `nix flake check --accept-flake-config` on every PR and push to `main`
-6. Require at least one review approval before merge
-7. On merge to `main`, FlakeHub auto-publishes a new rolling release
+1. Create a branch from `main`.
+2. Make the change.
+3. Run `nix fmt` and `nix flake check`.
+4. Test the change on a machine when it affects a configuration: `nixos-rebuild test`, `home-manager switch`, or `darwin-rebuild switch`.
+5. Push the branch and open a pull request against `main`.
+6. Fill in the PR template.
+7. CI runs `nix flake check` on every pull request and every push to `main`.
+8. Wait for review before merging.
+9. A push to `main` publishes a new rolling release to FlakeHub.
 
-### Pre-commit Hooks
+## Checks and pre-commit hooks
 
-Configured via `git-hooks.nix` (auto-generated `.pre-commit-config.yaml`):
+`checks/git-hooks/default.nix` configures the hooks through `git-hooks.nix`. The `.pre-commit-config.yaml` file is generated from that configuration.
 
-| Hook     | Purpose                           |
-| -------- | --------------------------------- |
-| deadnix  | Remove dead/unused Nix code       |
-| nixfmt   | Format `.nix` files               |
-| statix   | Lint `.nix` files (repeated_keys disabled) |
+| Hook     | Purpose                                    |
+| -------- | ------------------------------------------ |
+| `deadnix` | Remove dead or unused Nix code            |
+| `nixfmt`  | Format `.nix` files                       |
+| `statix`  | Lint `.nix` files (repeated keys disabled) |
 
-To install hooks: `nix develop` (direnv auto-loads via `.envrc`)
+`nix develop` installs the hooks through the shell hook. The `.envrc` file loads the same shell through direnv.
 
-## Key Flake Inputs
+`checks/module-eval/default.nix` imports and calls every `.nix` file under `modules/nixos`, `modules/shared`, `modules/home`, and `modules/darwin`. It fails if a file cannot be imported or called, and reports the total number of files it checked.
 
-| Input              | Purpose                                  |
-| ------------------ | ---------------------------------------- |
-| `purr`             | Module bundling helper (`mkFlake`)       |
-| `home-manager`     | Home-manager modules                     |
-| `nix-darwin`       | macOS module support                     |
-| `nixos-wsl`        | WSL integration                          |
-| `impermanence`     | Ephemeral root support                   |
-| `agenix`           | Secret management                        |
-| `lanzaboote`       | Secure Boot                              |
-| `catppuccin`       | Catppuccin theming                       |
-| `plasma-manager`   | KDE Plasma configuration                 |
-| `nix-gaming`       | PipeWire low-latency & gaming packages     |
-| `rust-overlay`     | Rust toolchains                          |
-| `pre-commit-hooks` | Dev shell pre-commit hooks               |
-| `vscode-server`    | VS Code remote server                    |
-| `nix-index-database` | Command-not-found index               |
+## Key flake inputs
 
-## Code Conventions
+| Input                | Purpose                                      |
+| -------------------- | -------------------------------------------- |
+| `nixpkgs`            | nixpkgs (nixos-unstable)                     |
+| `purr`               | Flake framework and module bundling          |
+| `home-manager`       | home-manager modules                         |
+| `darwin`             | nix-darwin modules                           |
+| `nixos-wsl`          | WSL integration                              |
+| `impermanence`       | Ephemeral root support                       |
+| `agenix`             | Secret management                            |
+| `lanzaboote`         | Secure Boot                                  |
+| `catppuccin`         | Catppuccin theming                           |
+| `caelestia-shell`    | Caelestia Hyprland shell                     |
+| `plasma-manager`     | KDE Plasma configuration                     |
+| `nix-gaming`         | PipeWire low-latency and gaming packages     |
+| `rust-overlay`       | Rust toolchains                              |
+| `git-hooks`          | Pre-commit hooks                             |
+| `vscode-server`      | VS Code remote server                        |
+| `nix-index-database` | Command-not-found index                      |
+| `develop-templates`  | Development templates used by the Nix module |
 
-- All code and comments must be in English
-- Module namespace: `cattery` (e.g., `cattery.gaming`, `cattery.themes.catppuccin`)
-- Module files use `enable` option pattern for feature toggles
-- Follow existing module structure: `options` → `config` with `mkIf cfg.enable`
-- Use `lib.mkEnableOption` and `lib.mkIf` from the module system
-- Format all Nix files with `nixfmt` before committing
+## Code conventions
 
-## Useful Commands
+- Write code and comments in English.
+- Use the `cattery` namespace for options, for example `cattery.services.nginx` and `cattery.desktop.hyprland`.
+- Feature modules expose an `enable` option and guard their configuration with `lib.mkIf cfg.enable`.
+- Use `lib.mkEnableOption` and `lib.mkIf` from the module system.
+- Enable room submodules with `lib.mkDefault`, usually through `lib.cattery.module.mkDefaultEnabled`.
+- Put secret helper options in a `secrets/default.nix` file next to the service module.
+- Add `extraOptions` to modules that wrap another service or program when users need to pass through configuration.
+- Run `nix fmt` before committing.
+
+## Useful commands
 
 ```bash
-nix develop              # Enter dev shell (auto via direnv)
-nix flake check          # Run all checks (lint + eval)
+nix develop              # Enter the dev shell (also loaded by direnv)
+nix flake check          # Run hooks and evaluate every module file
 nix fmt                  # Format all Nix files
 nix flake update         # Update flake inputs
 ```
