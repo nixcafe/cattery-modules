@@ -36,16 +36,6 @@ in
       default = true;
       description = "Allow changes made on the AdGuard Home web interface to persist between service restarts.";
     };
-    host = mkOption {
-      type = str;
-      default = "0.0.0.0";
-      description = "Host address to bind the HTTP server to.";
-    };
-    port = mkOption {
-      type = port;
-      default = 3000;
-      description = "Port to serve HTTP pages on.";
-    };
     settings = mkOption {
       type = nullOr attrs;
       default = null;
@@ -90,10 +80,10 @@ in
         openFirewall
         allowDHCP
         mutableSettings
-        host
-        port
         extraArgs
         ;
+      # Keep `settings' null in wizard mode so AdGuardHome uses the config
+      # file installed from the agenix secret instead of a generated one.
       settings = lib.mkIf (!cfg.useWizard) cfg.settings;
     }
     // cfg.extraOptions;
