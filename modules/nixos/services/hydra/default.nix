@@ -79,6 +79,20 @@ in
         Extra lines appended to the Hydra configuration file.
       '';
     };
+    queueRunner = mkOption {
+      type = attrs;
+      default = { };
+      description = ''
+        Options forwarded to `services.hydra.queueRunner`, such as the gRPC
+        endpoint used by `hydra-builder` agents:
+        `queueRunner.grpc.address`, `queueRunner.grpc.port`,
+        `queueRunner.settings.tokenPaths`, ...
+
+        Upstream `grpc.address` defaults to `[::1]`, so remote builders only
+        need an explicit override (for example `0.0.0.0` or `[::]`) when the
+        queue runner should accept connections from other machines.
+      '';
+    };
     extraOptions = mkOption {
       type = attrs;
       default = { };
@@ -108,6 +122,9 @@ in
     }
     // (lib.optionalAttrs (cfg.extraConfig != "") {
       extraConfig = lib.mkAfter cfg.extraConfig;
+    })
+    // (lib.optionalAttrs (cfg.queueRunner != { }) {
+      inherit (cfg) queueRunner;
     })
     // cfg.extraOptions;
   };
