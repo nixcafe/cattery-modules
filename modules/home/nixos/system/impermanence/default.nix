@@ -207,26 +207,33 @@ in
   config = lib.mkIf (cfg.enable && isLinux) (
     optionalAttrs hasPersistence {
       home.persistence.${cfg.persistencePath} = {
-        files = xdg.cache.files ++ xdg.config.files ++ xdg.data.files ++ xdg.state.files ++ cfg.files;
+        # Several modules may persist the same path (for example the
+        # Antigravity apps all share ~/.gemini); merge them before handing
+        # the list to impermanence, which asserts that entries are unique.
+        files = lib.unique (
+          xdg.cache.files ++ xdg.config.files ++ xdg.data.files ++ xdg.state.files ++ cfg.files
+        );
         # all file permissions need to be set in the directory yourself
         # (if there are existing files, please copy them to the persistent directory intact)
-        directories = map (x: if builtins.isAttrs x then builtins.removeAttrs x [ "mode" ] else x) (
-          [
-            {
-              directory = ".ssh";
-              mode = "0700";
-            }
-            {
-              directory = ".pki";
-              mode = "0700";
-            }
-          ]
-          ++ xdg.userDirs
-          ++ xdg.cache.directories
-          ++ xdg.config.directories
-          ++ xdg.data.directories
-          ++ xdg.state.directories
-          ++ cfg.directories
+        directories = lib.unique (
+          map (x: if builtins.isAttrs x then builtins.removeAttrs x [ "mode" ] else x) (
+            [
+              {
+                directory = ".ssh";
+                mode = "0700";
+              }
+              {
+                directory = ".pki";
+                mode = "0700";
+              }
+            ]
+            ++ xdg.userDirs
+            ++ xdg.cache.directories
+            ++ xdg.config.directories
+            ++ xdg.data.directories
+            ++ xdg.state.directories
+            ++ cfg.directories
+          )
         );
       }
       // cfg.extraOptions;
