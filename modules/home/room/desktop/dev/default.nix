@@ -24,6 +24,8 @@ in
         instant-messengers = mkDefaultEnabled;
         jetbrains = mkDefaultEnabled;
         code-cursor = mkDefaultEnabled;
+        antigravity-hub = mkDefaultEnabled;
+        antigravity-ide = mkDefaultEnabled;
       };
       cli-apps = {
 
@@ -56,6 +58,7 @@ in
         };
 
         tool = {
+          antigravity-cli = mkDefaultEnabled;
           ollama = mkDefaultEnabled;
         };
 
