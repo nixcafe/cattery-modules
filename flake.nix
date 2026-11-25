@@ -79,6 +79,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.purr.follows = "purr";
     };
+
+    kimi-code = {
+      url = "github:MoonshotAI/kimi-code";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

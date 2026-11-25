@@ -59,7 +59,12 @@ in
 
         tool = {
           antigravity-cli = mkDefaultEnabled;
+          cursor-cli = mkDefaultEnabled;
+          github-copilot-cli = mkDefaultEnabled;
+          goose = mkDefaultEnabled;
+          kimi-code = mkDefaultEnabled;
           ollama = mkDefaultEnabled;
+          qwen-code = mkDefaultEnabled;
         };
 
         video = {
