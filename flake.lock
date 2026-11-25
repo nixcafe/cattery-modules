@@ -383,6 +383,26 @@
         "type": "github"
       }
     },
+    "kimi-code": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1795591609,
+        "narHash": "sha256-Bp/FzTC9DkOP88DhT4pcmNSa9p3a6TOATW75aQtvVfw=",
+        "owner": "MoonshotAI",
+        "repo": "kimi-code",
+        "rev": "2da1daf53512f291ac9ce73e577be04a6eef40ab",
+        "type": "github"
+      },
+      "original": {
+        "owner": "MoonshotAI",
+        "repo": "kimi-code",
+        "type": "github"
+      }
+    },
     "lanzaboote": {
       "inputs": {
         "crane": "crane",
@@ -650,6 +670,7 @@
         "git-hooks": "git-hooks_2",
         "home-manager": "home-manager",
         "impermanence": "impermanence",
+        "kimi-code": "kimi-code",
         "lanzaboote": "lanzaboote",
         "nix-gaming": "nix-gaming",
         "nix-index-database": "nix-index-database",
