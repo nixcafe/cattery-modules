@@ -49,7 +49,17 @@ in
         };
 
         operations = {
-          cloud = mkDefaultEnabled;
+          cloud = mkDefaultEnabled // {
+            azure = mkDefaultEnabled;
+            digitalocean = mkDefaultEnabled;
+            gcp = mkDefaultEnabled;
+            hetzner = mkDefaultEnabled;
+            ibm = mkDefaultEnabled;
+            linode = mkDefaultEnabled;
+            openstack = mkDefaultEnabled;
+            oracle = mkDefaultEnabled;
+            vultr = mkDefaultEnabled;
+          };
           kubernetes = mkDefaultEnabled;
         };
 

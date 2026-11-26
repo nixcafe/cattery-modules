@@ -26,13 +26,17 @@ in
 
     ${namespace}.system.impermanence = lib.mkIf cfg.persistence {
       # Aliyun CLI keeps profiles, plugin caches, and downloaded extensions
-      # under ~/.aliyun. The bundled ossutil extension stores its own
-      # profiles in ~/.ossutilconfig.
+      # under ~/.aliyun. AWS CLI keeps profiles, credentials, and SSO cache
+      # under ~/.aws. Turso stores its settings under ~/.config/turso.
       directories = [
         ".aliyun"
+        ".aws"
       ];
       files = [
         ".ossutilconfig"
+      ];
+      xdg.config.directories = [
+        "turso"
       ];
     };
   };
